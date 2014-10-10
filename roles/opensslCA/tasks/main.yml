@@ -1,0 +1,37 @@
+---
+- name : make ca dir
+  file: path={{ x509cadir }} owner=root group=root state=directory
+  sudo: true
+
+- name : make newcerts dir
+  file: path={{ x509cadir }}/newcerts owner=root group=root state=directory
+  sudo: true
+
+- name : make private dir
+  file: path={{ x509cadir }}/private mode=700 owner=root group=root state=directory
+  sudo: true
+
+- name: initialise ca
+  shell: echo 01 > serial ; touch index.txt
+  args: 
+    chdir: "{{ x509cadir }}"
+    creates: index.txt
+  sudo: true
+
+- name: template openssl.cnf
+  template: dest={{ x509cadir }}/openssl.cnf src=openssl_cnf.j2
+  sudo: true
+
+- name: generate key
+  shell: openssl genrsa -out private/cakey.pem 2048
+  args:
+    chdir: "{{ x509cadir }}"
+    creates: private/cakey.pem
+  sudo: true
+
+- name: generate cert
+  shell: openssl req -new -x509 -key private/cakey.pem -out cacert.pem -days 3650 -config openssl.cnf
+  args:
+    chdir: "{{ x509cadir }}"
+    creates: cacert.pem
+  sudo: true

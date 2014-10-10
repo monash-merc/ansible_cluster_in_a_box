@@ -1,0 +1,10 @@
+[ req ]
+distinguished_name = default_name
+prompt = no
+
+[ default_name ]
+countryName = NA
+stateOrProvinceName = NA
+organizationName    = NA
+commonName = {{ ansible_hostname }}.{{ ansible_domain }}
+
