@@ -1,0 +1,4 @@
+--- 
+- 
+  name: "Install OpenVPN"
+  yum: "name=openvpn state=present"

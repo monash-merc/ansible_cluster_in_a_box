@@ -4,4 +4,4 @@
 -
   include: copyConfigurationFile.yml
 - 
-  include: buildCA.yml
+  include: buildClientCert.yml

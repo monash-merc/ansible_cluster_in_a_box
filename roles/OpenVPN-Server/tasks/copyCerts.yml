@@ -1,0 +1,41 @@
+--- 
+- 
+  failed_when: "CAcert.stat.exists  == false"
+  name: "Checking if CA certificate exist"
+  register: CAcert
+  stat: path="/etc/easy-rsa/2.0/keys/ca.crt"
+- 
+  name: "Copying CA certificate"
+  shell: "cp -rpvf /etc/easy-rsa/2.0/keys/ca.crt /etc/openvpn/"
+  when: "CAcert.stat.exists  == true"
+- 
+  failed_when: "ServerCert.stat.exists  == false"
+  name: "Check if Server certificate exist"
+  register: ServerCert
+  stat: "path=/etc/easy-rsa/2.0/keys/{{ inventory_hostname }}.crt"
+- 
+  name: "Copying Server certificate"
+  shell: "cp -rpvf /etc/easy-rsa/2.0/keys/{{ inventory_hostname }}.crt /etc/openvpn/"
+  when: "ServerCert.stat.exists  == true"
+- 
+  failed_when: "ServerKey.stat.exists  == false"
+  name: "Check if Server key exist"
+  register: ServerKey
+  stat: "path=/etc/easy-rsa/2.0/keys/{{ inventory_hostname }}.key"
+- 
+  name: "Copying Server key"
+  shell: "cp -rpvf /etc/easy-rsa/2.0/keys/{{ inventory_hostname }}.key /etc/openvpn/"
+  when: "ServerKey.stat.exists  == true"
+- 
+  file: "src=/etc/easy-rsa/2.0/keys/dh512.pem dest=/etc/openvpn/dh512.pem state=link"
+  name: "Create symlink for Diffie Hellman"
+- 
+  copy: "src=server.conf dest=/etc/openvpn/server.conf owner=root group=root mode=644"
+  name: "Copying server.conf to the OpenVPN server"
+- 
+  name: "Editing server.conf"
+  replace: "dest=/etc/openvpn/server.conf regexp=vm-server replace={{ inventory_hostname }}"
+- 
+  name: "Starting openvpn"
+  service: "name=openvpn enabled=yes state=started"
+
