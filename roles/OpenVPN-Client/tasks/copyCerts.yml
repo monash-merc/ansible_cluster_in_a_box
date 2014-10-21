@@ -1,0 +1,43 @@
+--- 
+- 
+  failed_when: "CAcert.stat.exists  == false"
+  name: "Check if CA certificate exist"
+  register: CAcert
+  stat: path=/etc/easy-rsa/2.0/keys/ca.crt
+  delegate_to: 127.0.0.1
+- 
+  copy: "src=/etc/easy-rsa/2.0/keys/ca.crt dest=/etc/openvpn/ca.crt owner=root group=root mode=644 force=yes"
+  name: "Copying CA certificate"
+  when: "CAcert.stat.exists  == true"
+- 
+  failed_when: "ClientCert.stat.exists  == false"
+  name: "Check if Client certificate exist"
+  register: ClientCert
+  stat: "path=/etc/easy-rsa/2.0/keys/{{ inventory_hostname }}.crt"
+  delegate_to: 127.0.0.1
+- 
+  copy: "src=/etc/easy-rsa/2.0/keys/{{ inventory_hostname }}.crt dest=/etc/openvpn/{{ inventory_hostname }}.crt owner=root group=root mode=644 force=yes"
+  name: "Copying Client certificate"
+  when: "ClientCert.stat.exists  == true"
+- 
+  failed_when: "ClientKey.stat.exists  == false"
+  name: "Check if Server key exist"
+  register: ClientKey
+  stat: "path=/etc/easy-rsa/2.0/keys/{{ inventory_hostname }}.key"
+  delegate_to: 127.0.0.1
+- 
+  copy: "src=/etc/easy-rsa/2.0/keys/{{ inventory_hostname }}.key dest=/etc/openvpn/{{ inventory_hostname }}.key owner=root group=root mode=600 force=yes"
+  name: "Copying Client key"
+  when: "ClientKey.stat.exists  == true"
+- 
+  copy: "src=client.conf dest=/etc/openvpn/client.conf owner=root group=root mode=644"
+  name: "Copying client.conf to the OpenVPN client"
+- 
+  name: "Editing client.conf: Replacing Server Name"
+  replace: "dest=/etc/openvpn/client.conf regexp=vm-server replace={{ server | mandatory }}"
+- 
+  name: "Editing client.conf: Replacing Client Name"
+  replace: "dest=/etc/openvpn/client.conf regexp=vm-server replace={{ inventory_hostname }}"
+- 
+  name: "Starting openvpn"
+  service: "name=openvpn enabled=yes state=started"

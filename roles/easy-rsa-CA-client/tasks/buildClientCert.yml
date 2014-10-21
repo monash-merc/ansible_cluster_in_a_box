@@ -7,5 +7,5 @@
 - 
   delegate_to: "127.0.0.1"
   name: "Creating Client certificate"
-  shell: " cd /etc/easy-rsa/2.0; source ./vars; export EASY_RSA=\\\"${EASY_RSA:-.}\\\"; \"$EASY_RSA/pkitool\" --csr {{ client }} ;\"$E ASY_RSA/pkitool\" --sign {{ client }}"
+  shell: ' cd /etc/easy-rsa/2.0; source ./vars; export EASY_RSA="${EASY_RSA:-.}"; "$EASY_RSA"/pkitool --csr {{ client }} ;"$EASY_RSA"/pkitool --sign {{ client }}'
 
