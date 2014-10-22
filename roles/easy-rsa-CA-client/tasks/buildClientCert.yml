@@ -1,11 +1,27 @@
 --- 
 - 
-  delegate_to: "vm-118-138-240-224.erc.monash.edu.au"
+  delegate_to: "{{ server }}"
   name: "Check if certificate exist"
   register: cert
-  stat: "path=/etc/easy-rsa/2.0/keys/{{ client }}.crt"
+  stat: "path=/etc/easy-rsa/2.0/keys/{{ inventory_hostname }}.crt"
 - 
-  delegate_to: "vm-118-138-240-224.erc.monash.edu.au"
+  delegate_to: "{{ server }}"
   name: "Creating Client certificate"
-  shell: ' cd /etc/easy-rsa/2.0; source ./vars; export EASY_RSA="${EASY_RSA:-.}"; "$EASY_RSA"/pkitool --csr {{ client }} ;"$EASY_RSA"/pkitool --sign {{ client }}'
+  shell: " cd /etc/easy-rsa/2.0; source ./vars; export EASY_RSA=\"${EASY_RSA:-.}\"; \"$EASY_RSA\"/pkitool --csr {{ inventory_hostname }} ;\"$EASY_RSA\"/pkitool --sign {{ inventory_hostname }}"
+  when: "cert.stat.exists  == false"
+- 
+  delegate_to: "{{ server }}"
+  fetch: "src=/etc/easy-rsa/2.0/keys/{{ inventory_hostname }}.crt dest=certDir/ fail_on_missing=yes validate_md5=yes flat=yes"
+  name: "Copy the Client Certificate to the master node"
+- 
+  delegate_to: "{{ server }}"
+  fetch: "src=/etc/easy-rsa/2.0/keys/{{ inventory_hostname }}.key dest=certDir/ fail_on_missing=yes validate_md5=yes flat=yes"
+  name: "Copy the Client Certificate to the master node"
+- 
+  delegate_to: "{{ server }}"
+  fetch: "src=/etc/easy-rsa/2.0/keys/ca.crt dest=certDir/ fail_on_missing=yes validate_md5=yes flat=yes"
+  name: "Copy the Client Certificate to the master node"
+- 
+  local_action: "command mv {{ ansible_env['PWD'] }}/certDir {{ ansible_env['PWD'] }}/roles/OpenVPN-Client/files/"
+  name: "Moving certDir to files"
 
