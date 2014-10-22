@@ -1,0 +1,157 @@
+#!/usr/bin/env python
+import sys, os, string, subprocess, socket, ansible.runner, re
+import copy, shlex,uuid, random, multiprocessing, time, shutil
+import novaclient.v1_1.client as nvclient
+import novaclient.exceptions as nvexceptions
+import glanceclient.v2.client as glclient
+import keystoneclient.v2_0.client as ksclient
+
+class Authenticate:
+	
+	def __init__(self, username, passwd):
+		self.username=username
+		self.passwd=passwd
+		self.tenantName= os.environ['OS_TENANT_NAME']
+		self.authUrl="https://keystone.rc.nectar.org.au:5000/v2.0"
+		kc = ksclient.Client(   auth_url=self.authUrl,
+					username=self.username,
+					password=self.passwd)
+		self.tenantList=kc.tenants.list()
+		self.novaSemaphore = multiprocessing.BoundedSemaphore(value=1)
+	
+	def createNovaObject(self,tenantName):
+		for tenant in self.tenantList:
+			if tenant.name == tenantName:
+				try:
+					nc = nvclient.Client(	auth_url=self.authUrl,
+						username=self.username,
+						api_key=self.passwd,
+						project_id=tenant.name,
+						tenant_id=tenant.id,
+						service_type="compute"
+						)
+					return nc
+				except nvexceptions.ClientException:
+					raise
+	
+	def gatherInfo(self):
+
+		for tenant in self.tenantList: print tenant.name
+		tenantName = raw_input("Please select a project: (Default MCC-On-R@CMON):")
+		if not tenantName or tenantName not in [tenant.name for tenant in self.tenantList]: 
+			tenantName = "MCC_On_R@CMON"
+		print tenantName,"selected\n"
+		
+		## Fetch the Nova Object
+
+		nc = self.createNovaObject(tenantName)
+		
+		## Get the Flavor
+		flavorList = nc.flavors.list()
+		for flavor in flavorList: print flavor.name
+		flavorName = raw_input("Please select a Flavor Name: (Default m1.xxlarge):")
+		if not flavorName or flavorName not in [flavor.name for flavor in flavorList]:
+			flavorName = "m1.xxlarge"
+		print flavorName,"selected\n"
+
+		
+		## Get the Availability Zones
+		az_p1 = subprocess.Popen(shlex.split\
+		("nova availability-zone-list"),stdout=subprocess.PIPE)
+		az_p2 = subprocess.Popen(shlex.split\
+		("""awk '{if ($2 && $2 != "Name")print $2}'"""),\
+		stdin=az_p1.stdout,stdout=subprocess.PIPE)
+		availabilityZonesList =  subprocess.Popen(shlex.split\
+		("sort"),stdin=az_p2.stdout,stdout=subprocess.PIPE).communicate()[0]
+		print  availabilityZonesList
+		availabilityZone = raw_input("Please select an availability zone: (Default monash-01):")
+		if not availabilityZone or \
+		availabilityZone not in [ zone for zone in availabilityZonesList.split()]:
+			availabilityZone = "monash-01"
+		print availabilityZone,"selected\n"
+		
+		## Get the number of instances to spawn
+		numberOfInstances = raw_input\
+		("Please specify the number of instances to launch: (Default 1):")
+		if not numberOfInstances or \
+		not isinstance(int(numberOfInstances), int):
+			numberOfInstances = 1
+		subprocess.call(['clear'])
+		flavorObj = nc.flavors.find(name=flavorName)
+		print "Creating",numberOfInstances,\
+		"instance(s) in",availabilityZone,"zone..."
+		instanceList = []
+		for counter in range(0,int(numberOfInstances)):
+			nodeName = "MCC-Node"+str(random.randrange(1,1000))
+			try:
+				novaInstance =  nc.servers.create\
+				(name=nodeName,image="ddc13ccd-483c-4f5d-a5fb-4b968aaf385b",\
+				flavor=flavorObj,key_name="shahaan",\
+				availability_zone=availabilityZone)
+				instanceList.append(novaInstance)
+			except nvexceptions.ClientException:
+				raise
+				continue
+				
+		while 'BUILD' in [novaInstance.status \
+		for novaInstance in instanceList]:
+			for count in range(0,len(instanceList)):
+				time.sleep(5)
+				if instanceList[count].status != 'BUILD': 
+					continue
+				else:
+					try:
+						instanceList[count] = nc.servers.get(instanceList[count].id)
+					except nvexceptions.ClientException or \
+					nvexceptions.ConnectionRefused or \
+					nvexceptions.InstanceInErrorState:
+						raise
+						del instanceList[count]
+						continue
+		activeHostsList = []
+		SSHports = []
+		for novaInstance in instanceList:
+			if novaInstance.status == 'ACTIVE':
+				hostname = socket.gethostbyaddr(novaInstance.networks.values()[0][0])[0]
+				activeHostsList.append(hostname)
+				SSHDict = {}
+				SSHDict['IP'] = novaInstance.networks.values()[0][0]
+				SSHDict['status'] = 'CLOSED'
+				SSHports.append(SSHDict) 
+		print "Scanning if port 22 is open..."
+		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		while 'CLOSED' in [host['status'] for host in SSHports]:
+			for instance in range(0,len(SSHports)):
+				sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+				if SSHports[instance]['status'] == 'CLOSED' and not sock.connect_ex((SSHports[instance]['IP'], 22)):
+					SSHports[instance]['status'] = 'OPEN'
+					print "Port 22, opened for IP:",SSHports[instance]['IP']
+				else:
+					time.sleep(5)
+				sock.close()
+				
+		fr = open('/etc/ansible/hosts.rpmsave','r+')
+		fw = open('hosts.temp','w+')
+		lines = fr.readlines()
+		for line in lines:
+			fw.write(line)
+			if re.search('\[new-servers\]',line):
+				for host in activeHostsList: fw.write(host+'\n')
+		fr.close()
+		fw.close()
+		shutil.move('hosts.temp','/etc/ansible/hosts')
+		print "Building the Nodes now..."
+		subprocess.call(shlex.split("/mnt/nectar-nfs/root/swStack/ansible/bin/ansible-playbook /mnt/nectar-nfs/root/ansible-config-root/mcc-nectar-dev/buildNew.yml -v"))	
+
+if __name__ == "__main__":
+	username = os.environ['OS_USERNAME']
+	passwd = os.environ['OS_PASSWORD']
+	choice = raw_input(username + " ? (y/n):")
+	while choice and choice not in ("n","y"):
+		print "y or n please"
+		choice = raw_input()
+	if choice == "n":
+		username = raw_input("username :")
+		passwd = raw_input("password :")
+	auth = Authenticate(username, passwd)
+	auth.gatherInfo()
