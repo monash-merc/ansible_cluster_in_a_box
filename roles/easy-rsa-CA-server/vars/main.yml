@@ -1,2 +1,0 @@
----
-client: "{{ inventory_hostname }}"
