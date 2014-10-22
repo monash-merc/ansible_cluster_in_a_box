@@ -22,6 +22,6 @@
   fetch: "src=/etc/easy-rsa/2.0/keys/ca.crt dest=certDir/ fail_on_missing=yes validate_md5=yes flat=yes"
   name: "Copy the Client Certificate to the master node"
 - 
-  local_action: "command mv {{ ansible_env['PWD'] }}/certDir {{ ansible_env['PWD'] }}/roles/OpenVPN-Client/files/"
+  local_action: "command mv {{ ansible_env['PWD'] }}/ansible_cluster_in_a_box/certDir {{ ansible_env['PWD'] }}/ansible_cluster_in_a_box/roles/OpenVPN-Client/files/"
   name: "Moving certDir to files"
 
