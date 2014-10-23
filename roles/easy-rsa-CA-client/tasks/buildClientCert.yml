@@ -22,6 +22,6 @@
   fetch: "src=/etc/easy-rsa/2.0/keys/ca.crt dest=certDir/ fail_on_missing=yes validate_md5=yes flat=yes"
   name: "Copy the Client Certificate to the master node"
 - 
-  local_action: "command mv certDir /tmp/{{ inventory_hostname }}.cert"
-  name: "Moving certDir to /tmp"
+  local_action: "command mv certDir {{ ansible_env['PWD'] }}/{{ inventory_hostname }}.cert"
+  name: "Moving certDir"
 
