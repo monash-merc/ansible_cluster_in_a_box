@@ -1,0 +1,7 @@
+---
+csrdir: /var/x509csr
+certname: "{{ ansible_hostname }}"
+cahost: "{{ groups['x509ca'][0] }}"
+ca_ssh_host: "{{ hostvars[cahost]['ansible_ssh_host'] }}"
+causer: "{{ hostvars[cahost]['ansible_user_id'] }}"
+cadir: "{{ x509cadir }}"

@@ -1,34 +1,13 @@
 --- 
 - 
-  failed_when: "CAcert.stat.exists  == false"
-  name: "Check if CA certificate exist"
-  register: CAcert
-  stat: path=/etc/easy-rsa/2.0/keys/ca.crt
-  delegate_to: 127.0.0.1
-- 
-  copy: "src=/etc/easy-rsa/2.0/keys/ca.crt dest=/etc/openvpn/ca.crt owner=root group=root mode=644 force=yes"
+  copy: "src={{ ansible_env['PWD'] }}/{{ inventory_hostname }}.cert/ca.crt dest=/etc/openvpn/ca.crt  mode=644 owner=root group=root"
   name: "Copying CA certificate"
-  when: "CAcert.stat.exists  == true"
 - 
-  failed_when: "ClientCert.stat.exists  == false"
-  name: "Check if Client certificate exist"
-  register: ClientCert
-  stat: "path=/etc/easy-rsa/2.0/keys/{{ inventory_hostname }}.crt"
-  delegate_to: 127.0.0.1
-- 
-  copy: "src=/etc/easy-rsa/2.0/keys/{{ inventory_hostname }}.crt dest=/etc/openvpn/{{ inventory_hostname }}.crt owner=root group=root mode=644 force=yes"
+  copy: "src={{ ansible_env['PWD'] }}/{{ inventory_hostname }}.cert/{{ inventory_hostname }}.crt dest=/etc/openvpn/{{ inventory_hostname }}.crt mode=644 owner=root group=root"
   name: "Copying Client certificate"
-  when: "ClientCert.stat.exists  == true"
 - 
-  failed_when: "ClientKey.stat.exists  == false"
-  name: "Check if Server key exist"
-  register: ClientKey
-  stat: "path=/etc/easy-rsa/2.0/keys/{{ inventory_hostname }}.key"
-  delegate_to: 127.0.0.1
-- 
-  copy: "src=/etc/easy-rsa/2.0/keys/{{ inventory_hostname }}.key dest=/etc/openvpn/{{ inventory_hostname }}.key owner=root group=root mode=600 force=yes"
+  copy: "src={{ ansible_env['PWD'] }}/{{ inventory_hostname }}.cert/{{ inventory_hostname }}.key dest=/etc/openvpn/{{ inventory_hostname }}.key  mode=600 owner=root group=root"
   name: "Copying Client key"
-  when: "ClientKey.stat.exists  == true"
 - 
   copy: "src=client.conf dest=/etc/openvpn/client.conf owner=root group=root mode=644"
   name: "Copying client.conf to the OpenVPN client"
@@ -41,3 +20,7 @@
 - 
   name: "Starting openvpn"
   service: "name=openvpn enabled=yes state=started"
+- 
+  local_action: "command rm -rf {{ ansible_env['PWD'] }}/{{ inventory_hostname }}.cert"
+  name: "Removing Cert Directory"
+
