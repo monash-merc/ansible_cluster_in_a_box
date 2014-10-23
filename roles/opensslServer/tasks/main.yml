@@ -1,0 +1,83 @@
+- include_vars: roles/opensslca/vars/main.yml
+
+- name: install system packages apt
+  apt: name=openssl state=installed update_cache=true
+  sudo: true
+  when: ansible_os_family == 'Debian'
+
+- name: install system packages yum
+  yum: name=openssl state=installed
+  sudo: true
+  when: ansible_os_family == 'RedHat'
+
+- name : make csr dir
+  file: path={{ csrdir }} owner=root group=root state=directory
+  sudo: true
+
+- name : make private dir
+  file: path={{ csrdir }}/private mode=700 owner=root group=root state=directory
+  sudo: true
+
+- name: template openssl.cnf
+  template: dest={{ csrdir }}/openssl.cnf src=openssl_cnf.j2
+  sudo: true
+
+- name: generate key
+  shell: openssl genrsa -out private/key.pem 2048
+  args:
+    chdir: "{{ csrdir }}"
+    creates: private/key.pem
+  sudo: true
+  register: needCert
+
+- name: generate csr
+  shell: openssl req -new -key private/key.pem -out {{ certname }}.csr -days 3650 -config openssl.cnf
+  args:
+    chdir: "{{ csrdir }}"
+    creates: "{{ certname }}.csr"
+  sudo: true
+  when: needCert|changed
+
+#
+# Copy the CSR from the host to localhost, then from localhost to the CA server
+#
+
+
+
+- name: copy csr to localhost
+  shell: scp {{ hostvars[ansible_hostname]['ansible_user_id'] }}@{{ ansible_ssh_host }}:/{{ csrdir }}/{{ certname }}.csr /tmp/{{ certname }}.csr
+  delegate_to: 127.0.0.1
+  when: needCert|changed
+
+- name: echo vars
+  shell: echo {{ causer }}@{{ ca_ssh_host }}
+
+- name: copy csr to CA
+  shell: scp /tmp/{{ certname }}.csr {{ causer }}@{{ ca_ssh_host }}:/tmp/{{ certname }}.csr
+  delegate_to: 127.0.0.1
+  when: needCert|changed
+
+
+#
+# Signing tasks
+# 
+
+- name: sign certs
+  shell: yes | openssl ca -config {{ cadir }}/openssl.cnf -days 3650 -in /tmp/{{ certname }}.csr -out /tmp/{{ certname }}.cert
+  sudo: true
+  delegate_to: "{{ cahost }}"
+  when: needCert|changed
+
+#
+# Copy cert from cahost to localhost then back to ansible_host
+#
+
+- name: copy cert to localhost
+  shell: scp {{ causer }}@{{ ca_ssh_host }}:/tmp/{{ certname }}.cert /tmp/{{ certname }}.cert
+  delegate_to: 127.0.0.1
+  when: needCert|changed
+
+- name: copy cert to ansible_host
+  copy: src=/tmp/{{ certname }}.cert dest={{ csrdir }}/{{ certname }}.cert
+  sudo: True
+  when: needCert|changed

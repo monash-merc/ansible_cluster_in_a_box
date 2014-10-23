@@ -1,0 +1,3 @@
+---
+depdenencies:
+  - {role: commonVars }
