@@ -1,0 +1,12 @@
+--- 
+- 
+  hosts: openvpn-clients
+  remote_user: ec2-user
+  roles: 
+    - easy-rsa-CA-client
+    - OpenVPN-Client
+  sudo: true
+  vars: 
+    ansible_ssh_private_key_file: /root/.ssh/shahaan.pem
+    ansible_ssh_user: ec2-user
+    server: "vm-118-138-240-224.erc.monash.edu.au"
