@@ -2,6 +2,7 @@
   template: dest=/tmp/groups src=groups.j2
   run_once: True
   delegate_to: 127.0.0.1
+  when: create_facts
 
 - name: make hosts data
   command: ./scripts/makehosts.py /tmp/groups {{ domain }}
