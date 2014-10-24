@@ -1,14 +1,10 @@
 --- 
 - 
   delegate_to: "{{ server }}"
-  name: "Check if certificate exist"
-  register: cert
-  stat: "path=/etc/easy-rsa/2.0/keys/{{ inventory_hostname }}.crt"
-- 
-  delegate_to: "{{ server }}"
   name: "Creating Client certificate"
   shell: " cd /etc/easy-rsa/2.0; source ./vars; export EASY_RSA=\"${EASY_RSA:-.}\"; \"$EASY_RSA\"/pkitool --csr {{ inventory_hostname }} ;\"$EASY_RSA\"/pkitool --sign {{ inventory_hostname }}"
-  when: "cert.stat.exists  == false"
+  args:
+   creates: /etc/easy-rsa/2.0/keys/{{ inventory_hostname }}.crt
 - 
   delegate_to: "{{ server }}"
   fetch: "src=/etc/easy-rsa/2.0/keys/{{ inventory_hostname }}.crt dest=certDir/ fail_on_missing=yes validate_md5=yes flat=yes"
