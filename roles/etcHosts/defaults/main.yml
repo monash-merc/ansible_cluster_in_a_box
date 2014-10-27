@@ -1,3 +1,4 @@
 ---
 domain: testdomain.massive.org.au
-create_facts: true
+get_groups: true
+edit_hosts: true
