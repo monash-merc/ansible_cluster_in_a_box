@@ -39,8 +39,7 @@ proto tcp
 # The hostname/IP and port of the server.
 # You can have multiple remote entries
 # to load balance between the servers.
-remote vm-server 1194
-;remote my-server-2 1194
+remote {{ server }} 1194
 
 # Choose a random host from the remote
 # list for load-balancing.  Otherwise
@@ -86,8 +85,8 @@ persist-tun
 # for each client.  A single ca
 # file can be used for all clients.
 ca ca.crt
-cert vm-dummy.crt
-key vm-dummy.key
+cert {{ inventory_hostname }}.crt
+key {{ inventory_hostname }}.key
 
 # Verify server certificate by checking
 # that the certicate has the nsCertType
