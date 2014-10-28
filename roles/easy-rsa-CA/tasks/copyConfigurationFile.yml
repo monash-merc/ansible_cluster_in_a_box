@@ -1,10 +1,3 @@
 --- 
-- 
-  copy: "src={{ item }} dest=/etc/easy-rsa/2.0/vars mode=0644 owner=root"
-  name: "Copy the configuration file (userConfig): else defaultConfig"
-  with_first_found: 
-    - files:
-      - userConfig
-      - defaultConfig
-    - paths:
-      - /mnt/nectar-nfs/root/ansible-config-root/ansible_cluster_in_a_box/roles/easy-rsa-CA/files
+- name: "Copy the configuration file"
+  template: src=vars.j2 dest=/etc/easy-rsa/2.0/vars mode=0644 owner=root

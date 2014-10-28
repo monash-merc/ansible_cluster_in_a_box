@@ -1,17 +1,3 @@
 --- 
-- 
-  copy: "src={{ item }} dest=/etc/easy-rsa/2.0/vars mode=0644 owner=root"
-  name: "Copy the configuration file (userConfig): else defaultConfig"
-  with_first_found: 
-    - files:
-      - userConfig
-      - defaultConfig
-    - paths:
-      - /mnt/nectar-nfs/root/ansible-config-root/ansible_cluster_in_a_box/roles/easy-rsa-CA/files
--
-  name: "Editing key_email in config file"
-  replace: dest=/etc/easy-rsa/2.0/vars regexp="shahaan.ayyub@monash.edu" replace={{ key_email }}
--
-  name: "Editing key_ou in config file"
-  replace: dest=/etc/easy-rsa/2.0/vars regexp="MCC-R@CMON" replace={{ key_ou }}
-
+- name: "Copy the configuration file"
+  template: src=vars.j2 dest=/etc/easy-rsa/2.0/vars mode=0644 owner=root

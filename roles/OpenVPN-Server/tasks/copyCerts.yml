@@ -29,13 +29,7 @@
 - 
   file: "src=/etc/easy-rsa/2.0/keys/dh512.pem dest=/etc/openvpn/dh512.pem state=link"
   name: "Create symlink for Diffie Hellman"
-- 
-  copy: "src=server.conf dest=/etc/openvpn/server.conf owner=root group=root mode=644"
-  name: "Copying server.conf to the OpenVPN server"
-- 
-  name: "Editing server.conf"
-  replace: "dest=/etc/openvpn/server.conf regexp=vm-server replace={{ inventory_hostname }}"
-- 
-  name: "Starting openvpn"
-  service: "name=openvpn enabled=yes state=started"
+- name: "Copying server.conf to the OpenVPN server"
+  template: src=server.conf.j2 dest=/etc/openvpn/server.conf
+  notify: restart openvpn
 
