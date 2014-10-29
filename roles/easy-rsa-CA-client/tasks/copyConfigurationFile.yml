@@ -7,6 +7,6 @@
         - userConfig
         - defaultConfig
       paths:
-        - ../../easy-rsa-CA/templates/
-        - /mnt/nectar-nfs/root/ansible-config-root/ansible_cluster_in_a_box/roles/easy-rsa-CA/files/
+        - ../../../templates/easy-rsa/
+        - ../files/
 

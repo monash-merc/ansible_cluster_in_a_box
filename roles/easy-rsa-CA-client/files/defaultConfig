@@ -61,12 +61,12 @@ export KEY_EXPIRE=3650
 # These are the default values for fields
 # which will be placed in the certificate.
 # Don't leave any of these fields blank.
-export KEY_COUNTRY={{ countryName }}
-export KEY_PROVINCE={{ reginalName }} 
-export KEY_CITY={{ cityName }} 
-export KEY_ORG={{ organizationName }} 
-export KEY_EMAIL={{ emailAddress }} 
-export KEY_OU={{ organizationUnit }}
+export KEY_COUNTRY="AU"
+export KEY_PROVINCE="Victoria"
+export KEY_CITY="Melbourne"
+export KEY_ORG="Monash University"
+export KEY_EMAIL="shahaan.ayyub@monash.edu"
+export KEY_OU="MCC-R@CMON"
 
 # X509 Subject Field
 export KEY_NAME="EasyRSA"
