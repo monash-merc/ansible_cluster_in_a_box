@@ -10,7 +10,15 @@
   name: "Copying Client key"
 
 - name: "Copying client.conf to the OpenVPN client"
-  template: src=client.conf.j2 dest=/etc/openvpn/client.conf
+  template: src={{ item }} dest=/etc/openvpn/client.conf
+  with_first_found:
+    - files:
+      - client.conf.j2
+      - userConfig
+      - defaultConfig
+      paths:
+        - ../templates/
+        - ../files/
   notify: restart openvpn
 
 - name: "Removing Cert Directory"
