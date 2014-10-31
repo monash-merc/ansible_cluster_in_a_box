@@ -8,19 +8,19 @@
 - 
   copy: "src=/tmp/{{ inventory_hostname }}/{{ inventory_hostname }}.key dest=/etc/openvpn/{{ inventory_hostname }}.key  mode=600 owner=root group=root"
   name: "Copying Client key"
-- 
-  copy: "src=client.conf dest=/etc/openvpn/client.conf owner=root group=root mode=644"
-  name: "Copying client.conf to the OpenVPN client"
-- 
-  name: "Editing client.conf: Replacing Server Name"
-  replace: "dest=/etc/openvpn/client.conf regexp=vm-server replace={{ server | mandatory }}"
-- 
-  name: "Editing client.conf: Replacing Client Name"
-  replace: "dest=/etc/openvpn/client.conf regexp=vm-dummy replace={{ inventory_hostname }}"
-- 
-  name: "Starting openvpn"
-  service: "name=openvpn enabled=yes state=started"
-- 
+
+- name: "Copying client.conf to the OpenVPN client"
+  template: src={{ item }} dest=/etc/openvpn/client.conf
+  with_first_found:
+    - files:
+      - client.conf.j2
+      - userConfig
+      - defaultConfig
+      paths:
+        - ../templates/
+        - ../files/
+  notify: restart openvpn
+
+- name: "Removing Cert Directory"
   local_action: "command rm -rf /tmp/{{ inventory_hostname }}"
-  name: "Removing Cert Directory"
 
