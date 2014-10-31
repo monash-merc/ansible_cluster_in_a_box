@@ -1,24 +1,28 @@
 --- 
-- 
+- name: "Check if certificate exist"
   delegate_to: "{{ server }}"
-  name: "Check if certificate exist"
   register: cert
   stat: "path=/etc/easy-rsa/2.0/keys/{{ inventory_hostname }}.crt"
-- 
+  sudo: true
+
+- name: "Creating Client certificate"
   delegate_to: "{{ server }}"
-  name: "Creating Client certificate"
   shell: " cd /etc/easy-rsa/2.0; source ./vars; export EASY_RSA=\"${EASY_RSA:-.}\"; \"$EASY_RSA\"/pkitool --csr {{ inventory_hostname }} ;\"$EASY_RSA\"/pkitool --sign {{ inventory_hostname }}"
   when: "cert.stat.exists  == false"
-- 
+  sudo: true
+
+- name: "Copy the Client Certificate to the master node"
   delegate_to: "{{ server }}"
   fetch: "src=/etc/easy-rsa/2.0/keys/{{ inventory_hostname }}.crt dest=/tmp/{{ inventory_hostname }}/ fail_on_missing=yes validate_md5=yes flat=yes"
-  name: "Copy the Client Certificate to the master node"
-- 
+  sudo: true
+
+- name: "Copy the Client Certificate to the master node"
   delegate_to: "{{ server }}"
   fetch: "src=/etc/easy-rsa/2.0/keys/{{ inventory_hostname }}.key dest=/tmp/{{ inventory_hostname }}/ fail_on_missing=yes validate_md5=yes flat=yes"
-  name: "Copy the Client Certificate to the master node"
-- 
+  sudo: true
+
+- name: "Copy the CA Certificate to the master node"
   delegate_to: "{{ server }}"
   fetch: "src=/etc/easy-rsa/2.0/keys/ca.crt dest=/tmp/{{ inventory_hostname }}/ fail_on_missing=yes validate_md5=yes flat=yes"
-  name: "Copy the Client Certificate to the master node"
+  sudo: true
 
