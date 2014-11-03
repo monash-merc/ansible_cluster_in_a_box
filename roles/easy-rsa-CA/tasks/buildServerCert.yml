@@ -1,17 +1,12 @@
 --- 
-- 
-  name: "Check if certificate exist"
-  register: cert
-  stat: "path=/etc/easy-rsa/2.0/keys/{{ server }}.crt"
-- 
-  name: "Creating Server certificate"
+- name: "Creating Server certificate"
   shell: " cd /etc/easy-rsa/2.0; source ./vars; export EASY_RSA=\"${EASY_RSA:-.}\"; \"$EASY_RSA/pkitool\"  --server {{ server }}"
-  when: "cert.stat.exists == false"
-- 
-  name: "Check if Diffie Hellman parameters file exist"
-  register: dh
-  stat: path=/etc/easy-rsa/2.0/keys/dh512.pem
-- 
-  name: "Generating Diffie-Hellman Parameters"
+  args:
+    chdir: /etc/easy-rsa/2.0/keys/
+    creates: server.crt
+
+- name: "Generating Diffie-Hellman Parameters"
   shell: "cd /etc/easy-rsa/2.0; source ./vars; ./build-dh"
-  when: "dh.stat.exists == false"
+  args:
+    chdir: /etc/easy-rsa/2.0/keys/
+    creates: dh512.pem

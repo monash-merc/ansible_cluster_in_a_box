@@ -2,12 +2,15 @@
 - 
   copy: "src=/tmp/{{ inventory_hostname }}/ca.crt dest=/etc/openvpn/ca.crt  mode=644 owner=root group=root"
   name: "Copying CA certificate"
+  when: "client_rsa.stat.exists == false"
 - 
   copy: "src=/tmp/{{ inventory_hostname }}/{{ inventory_hostname }}.crt dest=/etc/openvpn/{{ inventory_hostname }}.crt mode=644 owner=root group=root"
   name: "Copying Client certificate"
+  when: "client_rsa.stat.exists == false"
 - 
   copy: "src=/tmp/{{ inventory_hostname }}/{{ inventory_hostname }}.key dest=/etc/openvpn/{{ inventory_hostname }}.key  mode=600 owner=root group=root"
   name: "Copying Client key"
+  when: "client_rsa.stat.exists == false"
 
 - name: "Copying client.conf to the OpenVPN client"
   template: src={{ item }} dest=/etc/openvpn/client.conf
@@ -20,7 +23,9 @@
         - ../templates/
         - ../files/
   notify: restart openvpn
+  when: "client_rsa.stat.exists == false"
 
 - name: "Removing Cert Directory"
   local_action: "command rm -rf /tmp/{{ inventory_hostname }}"
+  when: "client_rsa.stat.exists == false"
 

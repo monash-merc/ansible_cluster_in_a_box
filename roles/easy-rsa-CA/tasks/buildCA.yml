@@ -2,3 +2,5 @@
 - 
   name: "Building the CA Certificate"
   shell: ' cd /etc/easy-rsa/2.0; source ./vars; ./clean-all;  export EASY_RSA="${EASY_RSA:-.}"; "$EASY_RSA/pkitool" --initca $*'
+  args:
+    creates: /etc/easy-rsa/2.0/keys
