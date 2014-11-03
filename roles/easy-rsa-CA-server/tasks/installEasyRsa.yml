@@ -5,3 +5,6 @@
 - 
   name: "Moving easy-rsa to /etc"
   shell: "cp -rf /usr/share/easy-rsa /etc/"
+  args:
+    chdir: /etc/easy-rsa/2.0/
+    creates: build-ca
