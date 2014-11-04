@@ -1,7 +1,3 @@
 --- 
--
-  include: installEasyRsa.yml
--
-  include: copyConfigurationFile.yml 
 - 
   include: buildClientCert.yml
