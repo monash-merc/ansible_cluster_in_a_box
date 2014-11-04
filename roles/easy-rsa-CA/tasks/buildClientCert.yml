@@ -1,8 +1,0 @@
---- 
-- name: "Creating Client certificate"
-  delegate_to: "127.0.0.1"
-  shell: " cd /etc/easy-rsa/2.0; source ./vars; export EASY_RSA=\\\"${EASY_RSA:-.}\\\"; \"$EASY_RSA/pkitool\" --csr {{ client }} ;\"$E ASY_RSA/pkitool\" --sign {{ client }}"
-  args:
-    chdir: /etc/easy-rsa/2.0/keys/
-    creates: client.crt
-
