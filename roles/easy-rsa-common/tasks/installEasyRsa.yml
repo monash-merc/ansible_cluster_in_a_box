@@ -5,3 +5,5 @@
 - 
   name: "Moving easy-rsa to /etc"
   shell: "cp -rf /usr/share/easy-rsa /etc/"
+  args:
+    creates: /etc/easy-rsa

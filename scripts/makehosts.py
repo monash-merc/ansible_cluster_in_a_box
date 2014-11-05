@@ -19,9 +19,9 @@ for group in d['groups'].keys():
             hosts[h] = ['%s.%s'%(h,domain),'%s-%s.%s'%(group,i,domain),'%s'%h,'%s-%s'%(group,i)]
         i=i+1
 
-
 for h in hosts.keys():
-    string="%s"%(d['hostvars'][h]['ansible_eth0']['ipv4']['address'])
-    for name in hosts[h]:
-        string=string+" %s"%name
-    print string
+    if d['hostvars'].has_key(h):
+        string="%s"%(d['hostvars'][h]['ansible_eth0']['ipv4']['address'])
+        for name in hosts[h]:
+            string=string+" %s"%name
+        print string

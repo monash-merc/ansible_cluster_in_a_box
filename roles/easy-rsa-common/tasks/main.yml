@@ -1,0 +1,6 @@
+---
+-
+  include: installEasyRsa.yml
+-
+  include: copyConfigurationFile.yml
+

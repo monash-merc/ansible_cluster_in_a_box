@@ -1,0 +1,12 @@
+--- 
+- name: "Copy the configuration file"
+  template: src={{ item }} dest=/etc/easy-rsa/2.0/vars mode=0644 owner=root
+  with_first_found:
+    - files:
+        - vars.j2
+        - userConfig
+        - defaultConfig
+      paths:
+        - ../../../templates/easy-rsa/
+        - ../files/
+

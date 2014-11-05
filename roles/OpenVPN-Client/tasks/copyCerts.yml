@@ -1,26 +1,30 @@
 --- 
 - 
-  copy: "src={{ ansible_env['PWD'] }}/{{ inventory_hostname }}.cert/ca.crt dest=/etc/openvpn/ca.crt  mode=644 owner=root group=root"
+  copy: "src=/tmp/{{ inventory_hostname }}/ca.crt dest=/etc/openvpn/ca.crt  mode=644 owner=root group=root"
   name: "Copying CA certificate"
+  when: "client_ca_cert.stat.exists == false"
 - 
-  copy: "src={{ ansible_env['PWD'] }}/{{ inventory_hostname }}.cert/{{ inventory_hostname }}.crt dest=/etc/openvpn/{{ inventory_hostname }}.crt mode=644 owner=root group=root"
+  copy: "src=/tmp/{{ inventory_hostname }}/{{ inventory_hostname }}.crt dest=/etc/openvpn/{{ inventory_hostname }}.crt mode=644 owner=root group=root"
   name: "Copying Client certificate"
+  when: "client_sign_cert.stat.exists == false"
 - 
-  copy: "src={{ ansible_env['PWD'] }}/{{ inventory_hostname }}.cert/{{ inventory_hostname }}.key dest=/etc/openvpn/{{ inventory_hostname }}.key  mode=600 owner=root group=root"
+  copy: "src=/tmp/{{ inventory_hostname }}/{{ inventory_hostname }}.key dest=/etc/openvpn/{{ inventory_hostname }}.key  mode=600 owner=root group=root"
   name: "Copying Client key"
-- 
-  copy: "src=client.conf dest=/etc/openvpn/client.conf owner=root group=root mode=644"
-  name: "Copying client.conf to the OpenVPN client"
-- 
-  name: "Editing client.conf: Replacing Server Name"
-  replace: "dest=/etc/openvpn/client.conf regexp=vm-server replace={{ server | mandatory }}"
-- 
-  name: "Editing client.conf: Replacing Client Name"
-  replace: "dest=/etc/openvpn/client.conf regexp=vm-server replace={{ inventory_hostname }}"
-- 
-  name: "Starting openvpn"
-  service: "name=openvpn enabled=yes state=started"
-- 
-  local_action: "command rm -rf {{ ansible_env['PWD'] }}/{{ inventory_hostname }}.cert"
-  name: "Removing Cert Directory"
+  when: "client_key.stat.exists == false"
+
+- name: "Copying client.conf to the OpenVPN client"
+  template: src={{ item }} dest=/etc/openvpn/client.conf
+  with_first_found:
+    - files:
+      - client.conf.j2
+      - userConfig
+      - defaultConfig
+      paths:
+        - ../templates/
+        - ../files/
+  notify: restart openvpn
+
+- name: "Removing Cert Directory"
+  local_action: "command rm -rf /tmp/{{ inventory_hostname }}"
+  when: "client_ca_cert.stat.exists == false or client_key.stat.exists == false or client_sign_cert.stat.exists == false"
 
