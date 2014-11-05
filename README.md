@@ -24,3 +24,6 @@ Here is an example task (taken from setting up karaage):
 
 
 We aim to make these roles run on all common linux platforms (both RedHat and Debian derived) but at the very least they should work on a CentOS 6 install.
+
+Yaml syntax can be checked at http://www.yamllint.com/
+

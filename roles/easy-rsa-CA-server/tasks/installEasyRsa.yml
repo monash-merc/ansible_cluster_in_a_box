@@ -1,7 +1,0 @@
---- 
-- 
-  name: "Installing easy-rsa"
-  yum: "name=easy-rsa state=latest"
-- 
-  name: "Moving easy-rsa to /etc"
-  shell: "cp -rf /usr/share/easy-rsa /etc/"

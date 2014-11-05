@@ -1,0 +1,4 @@
+---
+domain: testdomain.massive.org.au
+get_groups: true
+edit_hosts: true
