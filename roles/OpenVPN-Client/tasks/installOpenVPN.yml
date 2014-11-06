@@ -1,4 +1,11 @@
 --- 
-- 
-  name: "Install OpenVPN"
+- name: "Install OpenVPN"
   yum: "name=openvpn state=present"
+  sudo: true
+  notify: restart openvpn
+
+- name: "Copying client.conf to the OpenVPN client"
+  template: "src=client.conf.j2 dest=/etc/openvpn/client.conf"
+  sudo: true
+  notify: restart openvpn
+

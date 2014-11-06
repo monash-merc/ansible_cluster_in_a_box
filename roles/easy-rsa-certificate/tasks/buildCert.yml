@@ -1,0 +1,96 @@
+--- 
+- name: "Check client ca certificate"
+  register: ca_cert
+  stat: "path={{ x509_cacert_file }}"
+
+- name: "Check certificate and key"
+  shell: (openssl x509 -noout -modulus -in {{ x509_cert_file }}  | openssl md5 ; openssl rsa -noout -modulus -in {{ x509_key_file }} | openssl md5) | uniq | wc -l
+  register: certcheck
+  sudo: true
+
+- name: "Check certificate"
+  register: cert
+  stat: "path={{ x509_cert_file }}"
+  sudo: true
+
+- name: "Check key"
+  register: key
+  stat: "path={{ x509_key_file }}"
+  sudo: true
+
+- name: "Default: we don't need a new certificate"
+  set_fact: needcert=False
+
+- name: "Set need cert if key is missing"
+  set_fact: needcert=True
+  when: key.stat.exists == false
+
+- name: "set needcert if cert is missing"
+  set_fact: needcert=True
+  when: cert.stat.exists == false
+
+- name: "set needcert if cert doesn't match key"
+  set_fact: needcert=True
+  when: certcheck.stdout == '2'
+
+
+- name: "Creating Keypair"
+  shell: "echo noop when using easy-rsa"
+  when: needcert
+
+- name: "Creating CSR"
+  shell: " cd /etc/easy-rsa/2.0; source ./vars; export EASY_RSA=\"${EASY_RSA:-.}\"; \"$EASY_RSA\"/pkitool --csr {{ x509_csr_args }} {{ x509_common_name }}"
+  args:
+    creates: "/etc/easy-rsa/2.0/keys/{{ x509_common_name }}.key"
+  when: needcert
+  sudo: true
+
+- name: "Copy CSR to ansible host"
+  fetch: "src=/etc/easy-rsa/2.0/keys/{{ x509_common_name }}.csr dest=/tmp/ fail_on_missing=yes validate_md5=yes flat=yes"
+  sudo: true
+  when: needcert
+
+- name: "Copy CSR to CA"
+  delegate_to: "{{ x509_ca_server }}"
+  copy: "src=/tmp/{{ x509_common_name }}.csr dest=/etc/easy-rsa/2.0/keys/{{ x509_common_name }}.csr force=yes"
+  when: needcert
+  sudo: true
+
+- name: "Sign Certificate"
+  delegate_to: "{{ x509_ca_server }}"
+  shell:    "source ./vars; export EASY_RSA=\"${EASY_RSA:-.}\" ;\"$EASY_RSA\"/pkitool --sign {{ x509_sign_args }} {{ x509_common_name }}"
+  args:
+    chdir: "/etc/easy-rsa/2.0"
+    creates: "/etc/easy-rsa/2.0/keys/{{ x509_common_name }}.crt"
+  sudo: true
+
+- name: "Copy the Certificate to ansible host"
+  delegate_to: "{{ x509_ca_server }}"
+  fetch: "src=/etc/easy-rsa/2.0/keys/{{ x509_common_name }}.crt dest=/tmp/ fail_on_missing=yes validate_md5=yes flat=yes"
+  sudo: true
+  when: needcert
+
+- name: "Copy the CA Certificate to the ansible host"
+  delegate_to: "{{ x509_ca_server }}"
+  fetch: "src=/etc/easy-rsa/2.0/keys/ca.crt dest=/tmp/ca.crt fail_on_missing=yes validate_md5=yes flat=yes"
+  sudo: true
+  when: "ca_cert.stat.exists == false"
+
+- name: "Make sure the path to the certificate exists"
+  shell: "mkdir -p `dirname {{ x509_cert_file }}` ; chmod 755  `dirname {{ x509_cert_file }}`"
+  sudo: true
+
+- name: "Copy the certificate to the node"
+  copy: "src=/tmp/{{ x509_common_name }}.crt dest={{ x509_cert_file }} force=yes"
+  sudo: true
+  when: needcert
+
+- name: "Copy the CA certificate to the node"
+  copy: "src=/tmp/ca.crt dest={{ x509_cacert_file }}"
+  sudo: true
+  when: "ca_cert.stat.exists == false"
+
+- name: "Copy the key to the correct location"
+  shell: "mkdir -p `dirname {{ x509_key_file }}` ; chmod 700 `dirname {{ x509_key_file }}` ; cp /etc/easy-rsa/2.0/keys/{{ x509_common_name }}.key {{ x509_key_file }}"
+  sudo: true
+  when: needcert

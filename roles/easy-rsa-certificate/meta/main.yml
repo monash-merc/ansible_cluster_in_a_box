@@ -1,4 +1,4 @@
 ---
-depdenencies:
+dependencies:
   - {role: easy-rsa-common }
 
