@@ -1,0 +1,42 @@
+---
+
+- hosts: '*'
+  roles:
+  - etcHosts
+
+- hosts: 'x509_ca'
+  vars:
+  roles:
+  - { role: easy-rsa-CA }
+
+- hosts: 'OpenVPN-Server'
+  vars:
+    x509_ca_server: "{{ groups['x509_ca'][0] }}"
+  roles:
+  - { role: OpenVPN-Server }
+
+- hosts: 'OpenVPN-Client'
+  vars:
+    x509_ca_server: "{{ groups['x509_ca'][0] }}"
+    openvpn_servers: "{{ groups['OpenVPN-Server'] }}"
+  roles:
+  - { role: OpenVPN-Client }
+
+
+- hosts: 'SubmitHost'
+  roles:
+      - { role: slurm-build, slurm_version: 14.11.0, munge_version: 0.5.11 }
+
+- hosts: '*'
+  vars:
+    slurm_version: 14.11.0
+    munge_version: 0.5.11
+    slurmqueues: 
+      - {name: DEFAULT, group: ComputeNode}
+      - {name: batch, group: ComputeNode}
+      - {name: gpu, group: ComputeNode}
+    slurmctrl: "{{ groups['SubmitHost'][0] }}"
+  roles:
+      - { role: slurm }
+      - { role: test_user }
+
