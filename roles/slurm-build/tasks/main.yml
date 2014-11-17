@@ -1,0 +1,55 @@
+---
+- name: install deps
+  yum: name={{ item }} state=installed
+  sudo: true
+  with_items:
+    - gcc
+    - rpm-build
+    - wget
+    - openssl-devel
+    - readline-devel
+    - pam-devel
+    - perl-ExtUtils-MakeMaker
+    - bzip2-devel
+
+- name: get munge
+  shell: wget https://munge.googlecode.com/files/munge-{{ munge_version }}.tar.bz2
+  args:
+    chdir: /tmp
+    creates: /tmp/munge-{{ munge_version }}.tar.bz2
+
+- name: make munge rpms
+  shell: rpmbuild -ta --clean munge-{{ munge_version }}.tar.bz2
+  sudo: true
+  args:
+    chdir: /tmp
+    creates: /root/rpmbuild/RPMS/x86_64/munge-{{ munge_version }}-1.el6.x86_64.rpm
+
+- name: get slurm
+  shell: wget http://www.schedmd.com/download/latest/slurm-{{ slurm_version }}.tar.bz2
+  args:
+    chdir: /tmp
+    creates: /tmp/slurm-{{ slurm_version }}.tar.bz2
+
+- name: install munge deps
+  shell: rpm -i /root/rpmbuild/RPMS/x86_64/munge-libs-{{ munge_version }}-1.el6.x86_64.rpm /root/rpmbuild/RPMS/x86_64/munge-{{ munge_version }}-1.el6.x86_64.rpm /root/rpmbuild/RPMS/x86_64/munge-devel-{{ munge_version }}-1.el6.x86_64.rpm
+  sudo: true
+  ignore_errors: true
+
+- name: make slurm rpms
+  shell: rpmbuild -ta --clean slurm-{{ slurm_version }}.tar.bz2
+  sudo: true
+  args:
+    chdir: /tmp
+    creates: /root/rpmbuild/RPMS/x86_64/slurm-{{ slurm_version }}-1.el6.x86_64.rpm
+
+- name: copy rpms
+  shell: cp -r /root/rpmbuild /tmp
+  sudo: true
+  args:
+    creates: /tmp/rpmbuild/RPMS/x86_64/slurm-{{ slurm_version }}-1.el6.x86_64.rpm
+
+- name: retrieve rpms
+  shell: scp -r {{ hostvars[ansible_hostname]['ansible_user_id'] }}@{{ ansible_ssh_host }}:/tmp/rpmbuild/ /tmp
+  delegate_to: 127.0.0.1
+
