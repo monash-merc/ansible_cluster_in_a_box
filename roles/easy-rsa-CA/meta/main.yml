@@ -1,4 +1,5 @@
 ---
-depdenencies:
-  - {role: easy-rsa-common }
+allow_duplicates: yes
+dependencies:
+  - { role: easy-rsa-common }
 
