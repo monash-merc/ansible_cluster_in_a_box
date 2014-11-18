@@ -4,7 +4,6 @@
   roles:
   - etcHosts
 
-<<<<<<< HEAD
 #- hosts: 'x509_ca'
 #  vars:
 #  roles:
@@ -36,6 +35,8 @@
 
 - hosts: 'x509_ca'
   vars:
+    openmpi_version: 1.8.3
+    build_node: aciab-comp-0
   roles:
   - { role: easy-rsa-CA }
 
@@ -69,4 +70,18 @@
       - { role: slurm }
       - { role: test_user }
       - { role: openmpi-build }
+      - { role: openmpi-build }
 
+#- hosts: '*'
+#  vars:
+#    slurm_version: 14.11.0
+#    munge_version: 0.5.11
+#    slurmqueues: 
+#      - {name: DEFAULT, group: ComputeNode}
+#      - {name: batch, group: ComputeNode}
+#      - {name: gpu, group: ComputeNode}
+#    slurmctrl: "{{ groups['SubmitHost'][0] }}"
+#  roles:
+#      - { role: slurm }
+#      - { role: test_user }
+#
