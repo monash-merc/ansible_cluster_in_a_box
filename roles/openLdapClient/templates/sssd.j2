@@ -1,0 +1,56 @@
+[sssd]
+config_file_version = 2
+domains = {{ ldapDomain }}
+services = nss, pam, autofs
+# SSSD will not start if you do not configure any domains.
+# Add new domain configurations as [domain/<NAME>] sections, and
+# then add the list of domains (in the order you want them to be
+# queried) to the "domains" attribute below and uncomment it.
+; domains = LDAP
+
+[nss]
+filter_users = root
+
+[pam]
+
+[domain/{{ ldapDomain}}]
+ldap_referrals = false
+cache_credentials = false
+entry_cache_timeout=3600
+entry_cache_nowait_percentage=50
+enumerate = true
+
+id_provider = ldap
+auth_provider = ldap
+chpass_provider = ldap
+access_provider = ldap
+
+ldap_uri = {{ ldapUri }} 
+ldap_id_use_start_tls = True
+ldap_tls_reqcert = demand 
+ldap_default_bind_dn = {{ ldapDn }} 
+ldap_default_authtok_type = password
+ldap_default_authtok = {{ ldapPassword }} 
+
+ldap_schema = rfc2307
+
+ldap_search_base = {{ ldapBase }}
+
+ldap_user_search_base = {{ ldapBase }} 
+ldap_user_object_class = {{ ldapUserClass }} 
+ldap_user_home_directory = {{ ldapUserHomeDirectory }} 
+ldap_user_principal = {{ ldapUserPricipal }} 
+
+ldap_user_name = uid
+
+ldap_group_search_base = {{ ldapGroupBase }} 
+ldap_group_object_class = group
+
+ldap_access_order = expire
+
+[ssh]
+
+[pac]
+
+[sudo]
+
