@@ -53,26 +53,20 @@
   roles:
   - { role: OpenVPN-Client }
 
-<<<<<<< HEAD
 - hosts: ComputeNode
   vars:
     openmpi_version: 1.8.3
     build_node: aciab-comp-0
-=======
 
 - hosts: 'SubmitHost'
->>>>>>> a new slurm role. Slurm communicates on the default interface currently, need to alter slurm.conf.j2 to use the VPN interface
   roles:
       - { role: slurm-build, slurm_version: 14.11.0, munge_version: 0.5.11 }
 
 - hosts: '*'
-<<<<<<< HEAD
   roles:
   - etcHosts
 
 - hosts: ComputeNodes|ManagmentNodes|LoginNodes
-=======
->>>>>>> a new slurm role. Slurm communicates on the default interface currently, need to alter slurm.conf.j2 to use the VPN interface
   vars:
     slurm_version: 14.11.0
     munge_version: 0.5.11
@@ -84,6 +78,7 @@
   roles:
       - { role: slurm }
       - { role: test_user }
+      - { role: openmpi-build }
       - { role: openmpi-build }
       - { role: openmpi-build }
 
