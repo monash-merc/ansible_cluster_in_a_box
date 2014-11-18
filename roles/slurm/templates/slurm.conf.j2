@@ -91,12 +91,19 @@ JobCompType=jobcomp/none
 #AccountingStoragePass=
 #AccountingStorageUser=
 #
+MpiParams=ports=12000-12999
 # COMPUTE NODES
+{% set nodelist = [] %}
 {% for queue in slurmqueues %}
 {% for node in groups[queue.group] %}
+{% if nodelist.append(node) %}
+{% endif %}
+{% endfor %}
+{% endfor %}
+{% for node in nodelist|unique %}
 NodeName={{ node }} Procs={{ hostvars[node]['ansible_processor_cores'] }} State=UNKNOWN
 {% endfor %}
-{% endfor %}
+
 {% for queue in slurmqueues %}
 PartitionName={{ queue.name }} Nodes={{ groups[queue.group]|join(',') }}
 {% endfor %}
