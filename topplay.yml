@@ -4,9 +4,35 @@
   roles:
   - etcHosts
 
-- hosts: 'x509_ca'
+#- hosts: 'x509_ca'
+#  vars:
+#  roles:
+#  - { role: easy-rsa-CA }
+#
+#- hosts: 'OpenVPN-Server'
+#  vars:
+#    x509_ca_server: "{{ groups['x509_ca'][0] }}"
+#  roles:
+#  - { role: OpenVPN-Server }
+#
+#- hosts: 'OpenVPN-Client'
+#  vars:
+#    x509_ca_server: "{{ groups['x509_ca'][0] }}"
+#    openvpn_servers: "{{ groups['OpenVPN-Server'] }}"
+#  roles:
+#  - { role: OpenVPN-Client }
+#
+#
+#- hosts: 'SubmitHost'
+#  roles:
+#      - { role: slurm-build, slurm_version: 14.11.0, munge_version: 0.5.11 }
+
+- hosts: ComputeNode
   vars:
+    openmpi_version: 1.8.3
+    build_node: aciab-comp-0
   roles:
+<<<<<<< HEAD
   - { role: easy-rsa-CA }
 
 - hosts: 'OpenVPN-Server'
@@ -38,4 +64,5 @@
   roles:
       - { role: slurm }
       - { role: test_user }
+      - { role: openmpi-build }
 
