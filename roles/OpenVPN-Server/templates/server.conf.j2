@@ -32,8 +32,8 @@ local {{ inventory_hostname }}
 port 1194
 
 # TCP or UDP server?
-proto tcp
-;proto udp
+;proto tcp
+proto udp
 
 # "dev tun" will create a routed IP tunnel,
 # "dev tap" will create an ethernet tunnel.
@@ -75,16 +75,16 @@ dev tun
 # Any X509 key management system can be used.
 # OpenVPN can also use a PKCS #12 formatted key file
 # (see "pkcs12" directive in man page).
-ca ca.crt
-cert {{ inventory_hostname }}.crt
-key {{ inventory_hostname }}.key  
+ca {{ x509_cacert_file }}
+cert {{ x509_cert_file }}
+key {{ x509_key_file }}
 
 # Diffie hellman parameters.
 # Generate your own with:
 #   openssl dhparam -out dh1024.pem 1024
 # Substitute 2048 for 1024 if you are using
 # 2048 bit keys. 
-dh dh512.pem
+dh {{ dhparms_file }}
 
 # Configure server mode and supply a VPN subnet
 # for OpenVPN to draw client addresses from.
@@ -201,7 +201,7 @@ ifconfig-pool-persist ipp.txt
 # To force clients to only see the server, you
 # will also need to appropriately firewall the
 # server's TUN/TAP interface.
-;client-to-client
+client-to-client
 
 # Uncomment this directive if multiple clients
 # might connect with the same certificate/key

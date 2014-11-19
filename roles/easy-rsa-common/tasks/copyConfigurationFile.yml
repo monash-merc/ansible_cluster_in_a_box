@@ -10,3 +10,11 @@
         - ../../../templates/easy-rsa/
         - ../files/
 
+  sudo: True
+
+- name: "Initialise easy-rsa"
+  shell: " source ./vars ; ./clean-all"
+  args:
+    chdir: "/etc/easy-rsa/2.0"
+    creates: "/etc/easy-rsa/2.0/keys"
+  sudo: true

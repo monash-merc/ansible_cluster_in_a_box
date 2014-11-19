@@ -1,0 +1,23 @@
+---
+
+- hosts: '*'
+  roles:
+  - etcHosts
+
+- hosts: 'x509_ca'
+  vars:
+  roles:
+  - { role: easy-rsa-CA }
+
+- hosts: 'OpenVPN-Server'
+  vars:
+    x509_ca_server: "{{ groups['x509_ca'][0] }}"
+  roles:
+  - { role: OpenVPN-Server }
+
+- hosts: 'OpenVPN-Client'
+  vars:
+    x509_ca_server: "{{ groups['x509_ca'][0] }}"
+    openvpn_servers: "{{ groups['OpenVPN-Server'] }}"
+  roles:
+  - { role: OpenVPN-Client }
