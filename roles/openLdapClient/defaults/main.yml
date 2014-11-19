@@ -8,5 +8,7 @@ ldapUserHomeDirectory: "unixHomeDirectory"
 ldapUserPricipal: "userPrincipalName"
 ldapGroupBase: "ou=groups,dc=monash,dc=edu,dc=au"
 tlsCaCertDirectory: "/etc/openldap/certs"
-tlsCaCertFile: "ca.pem"
+tlsCaCertFile: "/etc/openldap/certs/ca.pem"
 ldapCaCertFileSource: "/etc/openldap"
+cacertFile: "ca.pem"
+
