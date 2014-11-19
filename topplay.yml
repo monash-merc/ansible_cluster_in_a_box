@@ -53,9 +53,16 @@
   roles:
   - { role: OpenVPN-Client }
 
-- hosts: 'SubmitHost'
+- hosts: ComputeNode
+  vars:
+    openmpi_version: 1.8.3
+    build_node: aciab-comp-0
   roles:
       - { role: slurm-build, slurm_version: 14.11.0, munge_version: 0.5.11 }
+
+- hosts: '*'
+  roles:
+  - etcHosts
 
 - hosts: '*'
   vars:
