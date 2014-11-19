@@ -1,5 +1,8 @@
 ---
 -
  include: installOpenVPN.yml
--
- include: copyCerts.yml
+
+- name: "Start OpenVPN"
+  service: name=openvpn state=started
+  sudo: true
+

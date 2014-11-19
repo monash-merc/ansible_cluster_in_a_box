@@ -1,4 +1,16 @@
 --- 
-- 
-  name: "Install OpenVPN"
+- name: "Install OpenVPN"
   yum: "name=openvpn state=present"
+  notify: "restart openvpn"
+  sudo: true
+
+- name: "Generate DH parameters"
+  shell: openssl dhparam -out {{ dhparms_file }} 512
+  args:
+    creates: "{{ dhparms_file }}"
+  sudo: true
+
+- name: "Configure OpenVPN Server"
+  template: "src=server.conf.j2 dest=/etc/openvpn/server.conf"
+  notify: "restart openvpn"
+  sudo: true
