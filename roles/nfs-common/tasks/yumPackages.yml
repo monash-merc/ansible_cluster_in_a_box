@@ -1,7 +1,0 @@
---- 
-- 
-  name: "Install nfs-utils"
-  with_items: 
-    - bind-utils
-    - nfs-utils
-  yum: "name={{ item }} state=latest"
