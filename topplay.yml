@@ -22,12 +22,17 @@
     openvpn_servers: "{{ groups['OpenVPN-Server'] }}"
   roles:
   - { role: OpenVPN-Client }
+
 - hosts: ComputeNode
   vars:
     openmpi_version: 1.8.3
     build_node: aciab-comp-0
   roles:
     - { role: openmpi-build }
+
+- hosts: '*'
+  roles:
+  - etcHosts
 
 - hosts: '*'
   vars:
