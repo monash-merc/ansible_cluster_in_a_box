@@ -27,7 +27,9 @@ access_provider = ldap
 
 ldap_uri = {{ ldapUri }} 
 ldap_id_use_start_tls = True
-ldap_tls_reqcert = demand 
+ldap_tls_reqcert = allow 
+ldap_tls_cacertdir = {{ tlsCaCertDirectory }} 
+ldap_tls_cacert = {{ cacertFile }}
 ldap_default_bind_dn = {{ ldapDn }} 
 ldap_default_authtok_type = password
 ldap_default_authtok = {{ ldapPassword }} 
