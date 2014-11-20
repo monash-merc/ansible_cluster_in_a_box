@@ -39,7 +39,7 @@
   when: needcert
 
 - name: "Creating CSR"
-  shell: " cd /etc/easy-rsa/2.0; source ./vars; export EASY_RSA=\"${EASY_RSA:-.}\"; \"$EASY_RSA\"/pkitool --csr {{ x509_csr_args }} {{ x509_common_name }}"
+  shell: " cd /etc/easy-rsa/2.0; . ./vars; export EASY_RSA=\"${EASY_RSA:-.}\"; \"$EASY_RSA\"/pkitool --csr {{ x509_csr_args }} {{ x509_common_name }}"
   args:
     creates: "/etc/easy-rsa/2.0/keys/{{ x509_common_name }}.key"
   when: needcert
@@ -58,7 +58,7 @@
 
 - name: "Sign Certificate"
   delegate_to: "{{ x509_ca_server }}"
-  shell:    "source ./vars; export EASY_RSA=\"${EASY_RSA:-.}\" ;\"$EASY_RSA\"/pkitool --sign {{ x509_sign_args }} {{ x509_common_name }}"
+  shell:    ". ./vars; export EASY_RSA=\"${EASY_RSA:-.}\" ;\"$EASY_RSA\"/pkitool --sign {{ x509_sign_args }} {{ x509_common_name }}"
   args:
     chdir: "/etc/easy-rsa/2.0"
     creates: "/etc/easy-rsa/2.0/keys/{{ x509_common_name }}.crt"
