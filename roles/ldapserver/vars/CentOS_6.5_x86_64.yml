@@ -1,0 +1,5 @@
+---
+ system_packages:
+  - openldap-servers
+  - openldap-clients
+  - openssl

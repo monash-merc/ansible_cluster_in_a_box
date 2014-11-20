@@ -1,0 +1,4 @@
+---
+ ldapDomain: dc=imbl,dc=massive,dc=org,dc=au
+ ldapuser:  ldap
+ ldapgroup: ldap
