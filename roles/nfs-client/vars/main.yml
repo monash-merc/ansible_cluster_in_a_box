@@ -1,0 +1,3 @@
+---
+srcDir: ['/mnt']
+destDir: ['/mnt/test-nfs']
