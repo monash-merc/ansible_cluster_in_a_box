@@ -21,3 +21,19 @@
     openvpn_servers: "{{ groups['OpenVPN-Server'] }}"
   roles:
   - { role: OpenVPN-Client }
+
+- hosts: 'karaage'
+  vars:
+    x509_ca_server: "{{ groups['x509_ca'][0] }}"
+    smtp_smarthost: "does_not_exist.massive.org.au"
+    ldapDomain: "dc=test,dc=massive,dc=org,dc=au"
+    ldapURL: "ldaps://{{ hostvars[groups['ldapserver'][0]]['ansible_fqdn'] }}"
+  roles:
+  - { role: karaage2.7 }
+
+- hosts: 'ldapserver'
+  vars:
+    x509_ca_server: "{{ groups['x509_ca'][0] }}"
+    ldapDomain: "dc=test,dc=massive,dc=org,dc=au"
+  roles:
+  - { role: ldapserver }
