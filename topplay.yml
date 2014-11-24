@@ -56,7 +56,7 @@
 # Slurm and openmpi tasks assume copies of the software in /tmp under a very specific directory strucutre (created by the build tasks above) Modifiy 
 # the roles if you have a different way of installing the software
 
-- hosts: '*'
+- hosts: ComputeNodes|ManagmentNodes|LoginNodes
   vars:
     slurm_version: 14.11.0
     munge_version: 0.5.11
