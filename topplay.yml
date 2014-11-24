@@ -64,7 +64,7 @@
   roles:
   - etcHosts
 
-- hosts: '*'
+- hosts: ComputeNodes|ManagmentNodes|LoginNodes
   vars:
     slurm_version: 14.11.0
     munge_version: 0.5.11
