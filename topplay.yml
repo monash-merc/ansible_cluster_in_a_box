@@ -4,6 +4,7 @@
   roles:
   - etcHosts
 
+<<<<<<< HEAD
 #- hosts: 'x509_ca'
 #  vars:
 #  roles:
@@ -32,7 +33,10 @@
     openmpi_version: 1.8.3
     build_node: aciab-comp-0
   roles:
-<<<<<<< HEAD
+
+- hosts: 'x509_ca'
+  vars:
+  roles:
   - { role: easy-rsa-CA }
 
 - hosts: 'OpenVPN-Server'
