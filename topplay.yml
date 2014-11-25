@@ -8,34 +8,7 @@
 
 # Create an x509 CA. Certificates are used for the VPN, the ldap server and the web server (karaage)
 
-<<<<<<< HEAD
 - hosts: ManagmentNodes[0]
-=======
-#- hosts: 'x509_ca'
-#  vars:
-#  roles:
-#  - { role: easy-rsa-CA }
-#
-#- hosts: 'OpenVPN-Server'
-#  vars:
-#    x509_ca_server: "{{ groups['x509_ca'][0] }}"
-#  roles:
-#  - { role: OpenVPN-Server }
-#
-#- hosts: 'OpenVPN-Client'
-#  vars:
-#    x509_ca_server: "{{ groups['x509_ca'][0] }}"
-#    openvpn_servers: "{{ groups['OpenVPN-Server'] }}"
-#  roles:
-#  - { role: OpenVPN-Client }
-#
-#
-#- hosts: 'SubmitHost'
-#  roles:
-#      - { role: slurm-build, slurm_version: 14.11.0, munge_version: 0.5.11 }
-
-- hosts: 'x509_ca'
->>>>>>> slurm_vpn
   vars:
   roles:
   - { role: easy-rsa-CA }
@@ -83,7 +56,7 @@
 # Slurm and openmpi tasks assume copies of the software in /tmp under a very specific directory strucutre (created by the build tasks above) Modifiy 
 # the roles if you have a different way of installing the software
 
-- hosts: ComputeNodes|ManagmentNodes|LoginNodes
+- hosts: ComputeNodes:ManagmentNodes:LoginNodes
   vars:
     slurm_version: 14.11.0
     munge_version: 0.5.11
@@ -106,47 +79,9 @@
 # Slurm and openmpi tasks assume copies of the software in /tmp under a very specific directory strucutre (created by the build tasks above) Modifiy 
 # the roles if you have a different way of installing the software
 
-- hosts: ComputeNodes|ManagmentNodes|LoginNodes
+- hosts: ComputeNodes:ManagmentNodes:LoginNodes
   vars:
     openmpi_version: 1.8.3
   roles:
       - { role: openmpi }
-      - { role: OpenVPN-Client }
-
-- hosts: ComputeNode
-  vars:
-    openmpi_version: 1.8.3
-    build_node: aciab-comp-0
-  roles:
-    - { role: openmpi-build }
-
-#- hosts: '*'
-#  vars:
-#    slurm_version: 14.11.0
-#    munge_version: 0.5.11
-#    slurmqueues: 
-#      - {name: DEFAULT, group: ComputeNode}
-#      - {name: batch, group: ComputeNode}
-#      - {name: gpu, group: ComputeNode}
-#    slurmctrl: "{{ groups['SubmitHost'][0] }}"
-#  roles:
-#      - { role: slurm }
-#      - { role: test_user }
-#
-- hosts: '*'
-  roles:
-  - etcHosts
-
-- hosts: '*'
-  vars:
-    slurm_version: 14.11.0
-    munge_version: 0.5.11
-    slurmqueues: 
-      - {name: DEFAULT, group: ComputeNode}
-      - {name: batch, group: ComputeNode}
-      - {name: gpu, group: ComputeNode}
-    slurmctrl: "{{ groups['SubmitHost'][0] }}"
-  roles:
-      - { role: slurm }
-      - { role: test_user }
 
