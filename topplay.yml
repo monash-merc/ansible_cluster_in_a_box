@@ -27,7 +27,7 @@
 #  roles:
 #      - { role: slurm-build, slurm_version: 14.11.0, munge_version: 0.5.11 }
 
-- hosts: 'x509_ca'
+- hosts: ManagmentNodes[0]
   vars:
   roles:
   - { role: easy-rsa-CA }
@@ -64,7 +64,7 @@
   roles:
   - { role: OpenVPN-Server }
 
-- hosts: 'OpenVPN-Client'
+- hosts: ComputeNodes:ManagmentNodes:LoginNodes
   vars:
     x509_ca_server: "{{ groups['x509_ca'][0] }}"
     openvpn_servers: "{{ groups['OpenVPN-Server'] }}"
@@ -146,3 +146,8 @@
       - { role: slurm }
       - { role: test_user }
 
+- hosts: ComputeNodes:ManagmentNodes:LoginNodes
+  vars:
+    openmpi_version: 1.8.3
+  roles:
+      - { role: openmpi }
