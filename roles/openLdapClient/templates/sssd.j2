@@ -34,21 +34,7 @@ ldap_default_bind_dn = {{ ldapDn }}
 ldap_default_authtok_type = password
 ldap_default_authtok = {{ ldapPassword }} 
 
-ldap_schema = rfc2307
-
-ldap_search_base = {{ ldapBase }}
-
-ldap_user_search_base = {{ ldapBase }} 
-ldap_user_object_class = {{ ldapUserClass }} 
-ldap_user_home_directory = {{ ldapUserHomeDirectory }} 
-ldap_user_principal = {{ ldapUserPricipal }} 
-
-ldap_user_name = uid
-
-ldap_group_search_base = {{ ldapGroupBase }} 
-ldap_group_object_class = group
-
-ldap_access_order = expire
+{{ ldapRfc2307 }}
 
 [ssh]
 
