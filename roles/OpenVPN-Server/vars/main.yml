@@ -6,4 +6,4 @@ x509_cert_file: "/etc/ssl/certs/server.pem"
 x509_common_name: "{{ ansible_fqdn }}_OpenVPN_Server"
 dhparms_file: "/etc/ssl/private/dh.pem
 server_network: "10.8.0.0"
-server netmask: "255.255.255.0"
+server_netmask: "255.255.255.0"
