@@ -17,3 +17,6 @@
         - ../files/
   notify: restart openvpn
 
+- name: "Start OpenVPN"
+  service: name=openvpn state=started
+  sudo: true

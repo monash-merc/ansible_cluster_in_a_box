@@ -2,8 +2,10 @@
 - 
   name: "Installing easy-rsa"
   yum: "name=easy-rsa state=latest"
+  sudo: True
 - 
   name: "Moving easy-rsa to /etc"
   shell: "cp -rf /usr/share/easy-rsa /etc/"
   args:
     creates: /etc/easy-rsa
+  sudo: True

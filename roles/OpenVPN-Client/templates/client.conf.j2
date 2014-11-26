@@ -33,13 +33,15 @@ dev tun
 # Are we connecting to a TCP or
 # UDP server?  Use the same setting as
 # on the server.
-proto tcp
-;proto udp
+;proto tcp
+proto udp
 
 # The hostname/IP and port of the server.
 # You can have multiple remote entries
 # to load balance between the servers.
-remote {{ server }} 1194
+{% for item in openvpn_servers %}
+remote {{ item }} 1194
+{% endfor %}
 
 # Choose a random host from the remote
 # list for load-balancing.  Otherwise
@@ -84,9 +86,9 @@ persist-tun
 # a separate .crt/.key file pair
 # for each client.  A single ca
 # file can be used for all clients.
-ca ca.crt
-cert {{ inventory_hostname }}.crt
-key {{ inventory_hostname }}.key
+ca {{ x509_cacert_file }}
+cert {{ x509_cert_file }}
+key {{ x509_key_file }}
 
 # Verify server certificate by checking
 # that the certicate has the nsCertType
