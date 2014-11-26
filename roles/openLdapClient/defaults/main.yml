@@ -1,9 +1,6 @@
 ---
 ldapDomain: "monash.edu.au" 
-<<<<<<< HEAD
-=======
 ldapUri: "ldaps://ldapserver.com/"
->>>>>>> e4c36d0b99d57b2af234bdb1bb3ae982dde0663c
 ldapDn: "cn=ldapbind,cn=users,dc=monash,dc=edu,dc=au" 
 ldapPassword: "secret"
 ldapBase: "cn=users,dc=monash,dc=edu,dc=au"
@@ -13,14 +10,8 @@ ldapUserPricipal: "userPrincipalName"
 ldapGroupBase: "ou=groups,dc=monash,dc=edu,dc=au"
 tlsCaCertDirectory: "/etc/openldap/certs"
 tlsCaCertFile: "/etc/openldap/certs/ca.pem"
-<<<<<<< HEAD
-ldapCaCertFileSource: "/etc/openldap"
-cacertFile: "ca.pem"
-=======
 ldapCaCertFileSource: "/etc/openldap/certs"
 cacertFile: "ca.pem"
 ldapRfc2307: ""
 ldapRfc2307Pam: ""
-
->>>>>>> e4c36d0b99d57b2af234bdb1bb3ae982dde0663c
 
