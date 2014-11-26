@@ -1,0 +1,12 @@
+TLS_CACERTDIR {{ tlsCaCertDirectory }} 
+TLS_CACERT {{ tlsCaCertFile }}
+URI {{ ldapUri }}
+BASE {{ ldapBase }} 
+
+timelimit 120
+bind_timelimit 120
+idle_timelimit 3600
+
+nss_initgroups_ignoreusers root,ldap,named,avahi,haldaemon,dbus,radvd,tomcat,radiusd,news,mailman,nscd,gdm
+
+{{ ldapRfc2307Pam }}
