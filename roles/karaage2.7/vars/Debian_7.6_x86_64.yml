@@ -1,0 +1,11 @@
+---
+  system_packages:
+    - python-django
+    - mysql-server
+    - python-mysqldb
+    - ldap-utils
+    - apache2
+    - libapache2-mod-wsgi
+    - postfix
+  wwwuser: www-data
+  wwwgroup: www-data

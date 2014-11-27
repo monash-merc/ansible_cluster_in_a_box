@@ -1,0 +1,29 @@
+---
+- name: check repo config
+  shell: ls -l /etc/apt/sources.list.d/vpac.list
+  ignore_errors: true
+  register: repoConfigured
+
+- name: add repo key
+  shell: wget http://code.vpac.org/debian/vpac-debian-key.gpg -O - | apt-key add -
+  sudo: true
+  when: repoConfigured|failed
+
+- name: template vpac.list
+  template: src=vpac_list.j2 dest=/etc/apt/sources.list.d/vpac.list
+  sudo: true
+  when: repoConfigured|failed
+
+- name: update cache
+  apt: update_cache=true
+  sudo: true
+  when: repoConfigured|failed
+  
+
+- name: install karaage
+  apt: name={{ item }} state=installed
+  sudo: true
+  with_items:
+    - karaage-admin
+    - karaage-registration
+

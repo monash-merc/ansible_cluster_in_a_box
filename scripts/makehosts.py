@@ -20,3 +20,10 @@ for h in hosts.keys():
         for name in hosts[h]:
             string=string+" %s"%(name)
         print string
+
+for h in hosts.keys():
+    if d['hostvars'].has_key(h):
+        if d['hostvars'][h].has_key('ansible_tun0'):
+            string="%s"%(d['hostvars'][h]['ansible_tun0']['ipv4']['address'])
+            string=string+" %s-vpn"%h
+            print string

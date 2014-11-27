@@ -10,7 +10,7 @@
 #
 ClusterName=CIAB
 ControlMachine={{ slurmctrl }}
-#ControlAddr=
+ControlAddr={{ slurmctrl }}-vpn
 #BackupController=
 #BackupAddr=
 #
@@ -101,7 +101,7 @@ MpiParams=ports=12000-12999
 {% endfor %}
 {% endfor %}
 {% for node in nodelist|unique %}
-NodeName={{ node }} Procs={{ hostvars[node]['ansible_processor_cores'] }} State=UNKNOWN
+NodeName={{ node }} NodeAddr={{ node }}-vpn Procs={{ hostvars[node]['ansible_processor_cores'] }} State=UNKNOWN
 {% endfor %}
 
 {% for queue in slurmqueues %}
