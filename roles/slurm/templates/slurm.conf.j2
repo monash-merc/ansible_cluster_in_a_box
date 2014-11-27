@@ -103,6 +103,7 @@ MpiParams=ports=12000-12999
 {% for node in nodelist|unique %}
 NodeName={{ node }} Procs={{ hostvars[node]['ansible_processor_cores'] }} State=UNKNOWN
 {% endfor %}
+
 {% for queue in slurmqueues %}
 PartitionName={{ queue.name }} Nodes={{ groups[queue.group]|join(',') }}
 {% endfor %}
