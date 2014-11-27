@@ -1,0 +1,49 @@
+---
+- name: copy rpms
+  copy: src=/tmp/rpmbuild dest=/tmp/
+
+- name: install munge rpms
+  shell: "rpm --install /tmp/rpmbuild/RPMS/x86_64/munge*{{ munge_version }}*rpm"
+  sudo: true
+  ignore_errors: true
+
+- name: install perl
+  yum: name={{ item }} state=latest
+  with_items:
+    - perl
+    - perl-DBI
+  sudo: true
+
+- name: create slurm group
+  group: name=slurm
+  sudo: true
+
+- name: create slurm user
+  user: name=slurm group=slurm
+  sudo: true
+
+- name: install slurm rpms
+  shell: "rpm --install /tmp/rpmbuild/RPMS/x86_64/slurm*{{ slurm_version }}*rpm"
+  sudo: true
+  ignore_errors: true
+
+- name: load munge key
+  include_vars: passwords.yml
+
+- name: install munge key
+  template: src=munge_key.j2 dest=/etc/munge/munge.key
+  sudo: true
+  notify: restart munge
+
+- name: start munge
+  service: name=munge state=started
+  sudo: true
+
+- name: install slurm.conf
+  template: src=slurm.conf.j2 dest=/etc/slurm/slurm.conf
+  sudo: true
+  notify: restart slurm
+
+- name: start slurm
+  service: name=slurm state=started
+  sudo: true
