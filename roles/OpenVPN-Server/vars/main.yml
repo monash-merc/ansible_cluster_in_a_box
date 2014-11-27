@@ -1,7 +1,7 @@
 ---
 x509_csr_args: "--server"
 x509_cacert_file: "/etc/ssl/certs/ca.crt"
-x509_key_file: "/etc/ssl/private/server.key"
-x509_cert_file: "/etc/ssl/certs/server.crt"
+x509_key_file: "/etc/openvpn/private/server.key"
+x509_cert_file: "/etc/openvpn/certs/server.crt"
 x509_common_name: "{{ ansible_fqdn }}_OpenVPN_Server"
-dhparms_file: "/etc/ssl/private/dh.pem"
+dhparms_file: "/etc/openvpn/private/dh.pem"
