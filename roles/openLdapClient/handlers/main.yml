@@ -1,3 +1,8 @@
 ---
-  - name: restart sssd 
-    service: name=sssd state=restarted
+- name: auth config
+  shell: authconfig --updateall
+  sudo: true
+
+- name: restart sssd 
+  service: name=sssd state=restarted
+  sudo: true
