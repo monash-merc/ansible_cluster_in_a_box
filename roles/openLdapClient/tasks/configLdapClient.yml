@@ -3,7 +3,6 @@
   template: src={{ item }}.j2 dest=/etc/{{ item }}
   with_items:
     - pam_ldap.conf
-    - idmapd.conf
     - nsswitch.conf
   sudo: true
 
@@ -15,16 +14,8 @@
   template: src=authconfig.j2 dest=/etc/sysconfig/authconfig
   sudo: true
 
-- name: "Insert LDAP IP address LDAP to /etc/hosts"
-  lineinfile: dest=/etc/hosts line="{{ ldapServerHost }}" state=present insertafter=EOF
-  sudo: true
-
 - name: "Copy ldap.conf file "
   template: src=ldap.conf.j2 dest=/etc/openldap/ldap.conf
-  sudo: true
-
-- name: "Copy ldap cacert file"
-  copy: src={{ ldapCaCertFileSource }} dest={{ tlsCaCertFile }} owner=root group=root mode=0644
   sudo: true
 
 - name: "Copy sssd.conf to ldap client"

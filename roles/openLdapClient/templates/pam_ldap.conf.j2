@@ -27,7 +27,7 @@ base {{ ldapBase }}
 #uri ldapi://%2fvar%2frun%2fldapi_sock/
 # Note: %2f encodes the '/' used as directory separator
 # [aulmc used to be 11/10/2013 # uri ldap://m2-w.massive.org.au/ 
-uri {{ ldapDomain }} 
+uri {{ ldapURI }} 
 
 # The LDAP version to use (defaults to 3
 # if supported by client library)
@@ -35,11 +35,11 @@ uri {{ ldapDomain }}
 
 # The distinguished name to bind to the server with.
 # Optional: default is to bind anonymously.
-binddn {{ ldapDn }}
+binddn {{ ldapBindDN }}
 
 # The credentials to bind with. 
 # Optional: default is no credential.
-bindpw {{ ldapPassword }} 
+bindpw {{ ldapBindDNPassword }} 
 
 # The distinguished name to bind to the server with
 # if the effective user ID is root. Password is
@@ -220,19 +220,6 @@ nss_initgroups_ignoreusers root,ldap,named,avahi,haldaemon,dbus,radvd,tomcat,rad
 #pam_filter objectclass=User
 #pam_password ad
 
-# RFC 2307 (AD) mappings
-nss_base_group         ou=Groups,dc=massive,dc=org,dc=au?one
-nss_map_objectclass posixAccount user
-nss_map_objectclass shadowAccount user
-nss_map_attribute uid sAMAccountName
-nss_map_attribute homeDirectory unixHomeDirectory
-nss_map_attribute shadowLastChange pwdLastSet
-nss_map_objectclass posixGroup group
-nss_map_attribute uniqueMember member
-pam_login_attribute sAMAccountName
-pam_filter objectclass=User
-pam_password md5
-
 # configure --enable-authpassword is no longer supported
 # AuthPassword mappings
 #nss_map_attribute userPassword authPassword
@@ -300,7 +287,7 @@ pam_password md5
 ssl no
 #tls_cacertdir /etc/openldap/cacerts
 #pam_password md5
-tls_cacertdir {{ tlsCaCertDirectory }} 
-tls_cacertfile {{ tlsCaCertFile }}
+tls_cacertfile {{ ldapCaCertFile }}
 
+# RFC 2307 (AD) mappings
 {{ ldapRfc2307Pam }}

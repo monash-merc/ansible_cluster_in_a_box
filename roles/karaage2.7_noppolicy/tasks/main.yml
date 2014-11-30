@@ -1,0 +1,37 @@
+---
+- name: install defaultUnlocked mixin
+  copy: dest=/usr/share/pyshared/placard/schemas/defaultUnlocked.py src=defaultUnlocked.py owner=root mode=644
+  sudo: true
+
+- name: link defaultUnlocked mixin
+  shell: ln -s /usr/share/pyshared/placard/schemas/defaultUnlocked.py /usr/lib/python2.7/dist-packages/placard/schemas/defaultUnlocked.py ;  ln -s /usr/share/pyshared/placard/schemas/defaultUnlocked.py /usr/lib/python2.6/dist-packages/placard/schemas/defaultUnlocked.py 
+  args:
+    creates: /usr/lib/python2.6/dist-packages/placard/schemas/defaultUnlocked.py
+  sudo: true
+
+- name: configure ldap mixins 1
+  lineinfile:  
+  args:
+    dest: /etc/karaage/ldap_schemas.py 
+    regexp: "from placard.schemas.pwdpolicy import pwdPolicyMixin" 
+    line: "from placard.schemas.defaultUnlocked import defaultUnlockedMixin" 
+    backrefs: yes
+  sudo: true
+
+- name: configure ldap mixins 2
+  lineinfile:  
+  args:
+    dest: /etc/karaage/ldap_schemas.py 
+    regexp: "    mixin_list = [ common.personMixin, pwdPolicyMixin, kPersonMixin ]"
+    line: "    mixin_list = [ common.personMixin, defaultUnlockedMixin, kPersonMixin ]"
+    backrefs: yes
+  sudo: true
+
+- name: configure ldap mixins 3
+  lineinfile:  
+  args:
+    dest: /etc/karaage/ldap_schemas.py 
+    regexp: "class person(rfc.person, rfc.organizationalPerson, rfc.inetOrgPerson, rfc.pwdPolicy, common.baseMixin):"
+    line: class person(rfc.person, rfc.organizationalPerson, rfc.inetOrgPerson, common.baseMixin):"
+    backrefs: yes
+  sudo: true
