@@ -1,6 +1,19 @@
 dn: cn=default,ou=pwpolicies,{{ ldapDomain }}
+cn: default
+objectClass: pwdPolicy
 objectClass: top
 objectClass: device
-objectClass: pwdPolicy
+pwdAllowUserChange: TRUE
 pwdAttribute: 2.5.4.35
-cn: default
+pwdExpireWarning: 604800
+pwdFailureCountInterval: 30
+pwdGraceAuthNLimit: 0
+pwdInHistory: 10
+pwdLockout: TRUE
+pwdLockoutDuration: 3600
+pwdMaxAge: 7776000
+pwdMaxFailure: 5
+pwdMinAge: 3600
+pwdMinLength: 12
+pwdMustChange: FALSE
+pwdSafeModify: FALSE

@@ -28,9 +28,6 @@
   sudo: true
   ignore_errors: true
 
-- name: load munge key
-  include_vars: passwords.yml
-
 - name: install munge key
   template: src=munge_key.j2 dest=/etc/munge/munge.key
   sudo: true
