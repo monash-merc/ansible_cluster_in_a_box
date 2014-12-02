@@ -1,6 +1,12 @@
 --- 
+-
+ name: "Get the NFS Network"
+ setup: filter="ansible_tun0"
+ register: nfsServer
+ run_once: true
+ delegate_to: "{{ nfs_server }}"
 - 
-  mount: "name={{ item.0 }} src={{ nfs_server }}:{{ item.1 }} fstype=nfs opts=vers=3,noatime,rsize=16384,wsize=16384,hard,intr,tcp,nolock state=mounted"
+  mount: "name={{ item.0 }} src={{ nfsServer['ansible_facts']['ansible_tun0']['ipv4']['address'] }}:{{ item.1 }} fstype=nfs opts=noatime,rsize=16384,wsize=16384,hard,intr,nolock state=mounted"
   name: "Mounting NFS mounts"
   with_together: 
     - destDir
