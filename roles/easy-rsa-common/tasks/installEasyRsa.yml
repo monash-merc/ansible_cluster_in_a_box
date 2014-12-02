@@ -3,9 +3,31 @@
   name: "Installing easy-rsa"
   yum: "name=easy-rsa state=latest"
   sudo: True
+  when: ansible_os_family == 'RedHat'
+- 
+  name: "Installing easy-rsa"
+  apt: "name=openvpn state=present"
+  sudo: True
+  when: ansible_os_family == 'Debian'
 - 
   name: "Moving easy-rsa to /etc"
   shell: "cp -rf /usr/share/easy-rsa /etc/"
   args:
     creates: /etc/easy-rsa
   sudo: True
+  when: ansible_os_family == 'RedHat'
+- 
+  name: "Moving easy-rsa to /etc"
+  shell: "cp -rf /usr/share/doc/openvpn/examples/easy-rsa /etc/"
+  args:
+    creates: /etc/easy-rsa
+  sudo: True
+  when: ansible_os_family == 'Debian'
+  register: installed
+
+- name: "Clean all"
+  shell: " cd /etc/easy-rsa/2.0; . ./vars; export EASY_RSA=\"${EASY_RSA:-.}\"; \"$EASY_RSA\"/clean-all"
+  args:
+    creates: "/etc/easy-rsa/2.0/keys/"
+  when: installed|changed
+  sudo: true

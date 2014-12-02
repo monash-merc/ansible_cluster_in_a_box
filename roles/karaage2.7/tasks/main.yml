@@ -1,0 +1,308 @@
+---
+- include_vars: "{{ hostvars[ansible_hostname]['ansible_distribution'] }}_{{ hostvars[ansible_hostname]['ansible_distribution_version'] }}_{{ ansible_architecture }}.yml"
+- include_vars: passwords.yml
+
+
+
+- name: install system packages apt
+  apt: name={{ item }} state=installed update_cache=true
+  sudo: true
+  with_items: system_packages
+  when: ansible_os_family == 'Debian'
+
+- name: install system packages yum
+  yum: name={{ item }} state=installed
+  sudo: true
+  with_items: system_packages
+  when: ansible_os_family == 'RedHat'
+
+- include: set_mysql_root_password.yml
+
+- include: install_via_apt.yml
+  when: ansible_os_family == 'Debian'
+
+- name: check kg secret key
+  shell: cat /etc/karaage/global_settings.py | grep "SECRET_KEY = '.*'"
+  sudo: true
+  ignore_errors: true
+  register: kg_secret_key_set
+
+- name: set kg secret key
+  shell: kg_set_secret_key
+  sudo: true
+  when: kg_secret_key_set|failed
+
+- name: mysql db
+  mysql_db: name=karaage login_user=root login_password={{ sqlrootPasswd }}
+
+- name: mysql user
+  mysql_user: name='karaage' password={{ karaageSqlPassword }} priv=karaage.*:ALL state=present login_user=root login_password={{ sqlrootPasswd }}
+
+- name: allow public karaage registrations
+  lineinfile: 
+  args:
+    dest: /etc/karaage/registration_settings.py 
+    regexp: "#ALLOW_REGISTRATIONS" 
+    line: "ALLOW_REGISTRATIONS = True" 
+    backrefs: yes
+  sudo: true
+
+# Why not template the whole of global_settings.py? 
+# Because I don't know what kg_set_secret_key does so I can't easily template my own secret key
+
+- name: chmod global_settings.py
+  file: 
+  args: 
+    path: /etc/karaage/global_settings.py
+    owner: root
+    group: "{{ wwwgroup }}"
+    mode: 0640
+  sudo: true
+
+- name: karaage settings db type
+  lineinfile: 
+  args:
+    dest: /etc/karaage/global_settings.py 
+    regexp: "        'ENGINE': 'django.db.backends.'," 
+    line: "        'ENGINE': 'django.db.backends.mysql'," 
+    backrefs: yes
+  sudo: true
+
+- name: karaage settings db db
+  lineinfile: 
+  args:
+    dest: /etc/karaage/global_settings.py 
+    regexp: "       'NAME': ''," 
+    line: "        'NAME': 'karaage'," 
+    backrefs: yes
+  sudo: true
+
+- name: karaage settings db user
+  lineinfile: 
+  args:
+    dest: /etc/karaage/global_settings.py 
+    regexp: "       'USER': ''," 
+    line: "        'USER': 'karaage'," 
+    backrefs: yes
+  sudo: true
+
+- name: karaage settings db password
+  lineinfile: 
+  args:
+    dest: /etc/karaage/global_settings.py 
+    regexp: "       'PASSWORD': ''," 
+    line: "        'PASSWORD': '{{ karaageSqlPassword }}'," 
+    backrefs: yes
+  sudo: true
+
+- name: ldap url
+  lineinfile:
+  args:
+    dest: /etc/karaage/global_settings.py
+    regexp: "LDAP_URL ="
+    line: "LDAP_URL = '{{ ldapURL }}'"
+    backrefs: yes
+  sudo: true
+
+- include_vars: "roles/ldapserver/vars/main.yml"
+
+- name: ldap base
+  lineinfile:
+  args:
+    dest: /etc/karaage/global_settings.py
+    regexp: "LDAP_BASE ="
+    line: "LDAP_BASE = '{{ ldapDomain }}'"
+    backrefs: yes
+  sudo: true
+
+- name: ldap user base
+  lineinfile:
+  args:
+    dest: /etc/karaage/global_settings.py
+    regexp: "LDAP_USER_BASE="
+    line: "LDAP_USER_BASE = 'ou=Accounts,{{ ldapDomain }}'"
+    backrefs: yes
+  sudo: true
+
+- name: ldap group base
+  lineinfile:
+  args:
+    dest: /etc/karaage/global_settings.py
+    regexp: "LDAP_GROUP_BASE="
+    line: "LDAP_GROUP_BASE = 'ou=Groups,{{ ldapDomain }}'"
+    backrefs: yes
+  sudo: true
+
+- name: ldap admin user
+  lineinfile:
+  args:
+    dest: /etc/karaage/global_settings.py
+    regexp: "LDAP_ADMIN_USER ="
+    line: "LDAP_ADMIN_USER = 'cn=Manager,{{ ldapDomain }}'"
+    backrefs: yes
+  sudo: true
+  
+
+- name: ldap admin passwd
+  lineinfile:
+  args:
+    dest: /etc/karaage/global_settings.py
+    regexp: "LDAP_ADMIN_PASSWORD ="
+    line: "LDAP_ADMIN_PASSWORD = '{{ ldapManagerPassword }}'"
+    backrefs: yes
+  sudo: true
+
+- name: ldap use TLS CA
+  lineinfile:
+  args:
+    dest: /etc/karaage/global_settings.py
+    regexp: "LDAP_USE_TLS ="
+    line: "LDAP_USE_TLS = True"
+    backrefs: yes
+  sudo: true
+
+- name: ldap TLS CA
+  lineinfile:
+  args:
+    dest: /etc/karaage/global_settings.py
+    insertafter: "LDAP_USE_TLS ="
+    line: "LDAP_TLS_CA = '/etc/ssl/certs/ca.crt'"
+    state: present
+  sudo: true
+
+- name: check karaage tables exist
+  shell: echo 'describe auth_user' | mysql -u karaage --password={{ karaageSqlPassword }} karaage
+  ignore_errors: true
+  register: karaageTablesCreated
+  
+- name: template ldap.conf
+  template: src=ldap_conf.j2 dest=/etc/ldap/ldap.conf
+  sudo: true
+
+#- name: karaage sql db setup
+#  shell: kg-manage syncdb --noinput
+#  sudo: true
+#  when: karaageTablesCreated|failed
+#
+#- name: karaage sql db migrate
+#  shell: yes n | kg-manage migrate --all
+#  sudo: true
+#
+# I had to use syncdb --all --noinput migrate --fake then
+      #  sudo vi ./dist-packages/tldap/transaction.py
+      #  add import tldap.django which causes the connection to be setup. Continue from here trying to setup apache
+      #
+      #
+
+- name: karaage sql syncdb
+  shell: kg-manage syncdb --all --noinput
+  sudo: true
+  when: karaageTablesCreated|failed
+
+- name: karaage sql db migrate
+  shell: kg-manage migrate --fake
+  sudo: true
+  when: karaageTablesCreated|failed
+
+- name: fix up karaage transactions.py
+  lineinfile: 
+  args:
+    line: import tldap.django
+    insertafter: import tldap
+    state: present
+    dest: /usr/lib/python2.7/dist-packages/tldap/transaction.py
+  sudo: true
+
+- name: fix up karaage tldap/manager.py
+  lineinfile: 
+  args:
+    line: import tldap.django
+    insertafter: import tldap
+    state: present
+    dest: /usr/lib/python2.7/dist-packages/tldap/manager.py
+  sudo: true
+
+- name: enable ssl
+  shell: a2enmod ssl
+  sudo: true
+
+- name: enable wsgi
+  shell: a2enmod wsgi
+  sudo: true
+
+
+
+- name: enable karaage admin
+  command: ln -s /etc/karaage/kgadmin-apache.conf /etc/apache2/conf.d/karaage-admin.conf
+  args:
+    creates: /etc/apache2/conf.d/karaage-admin.conf
+  sudo: true
+  notify: restart apache
+
+- name: enable karaage registration
+  command: ln -s /etc/karaage/kgreg-apache.conf /etc/apache2/conf.d/karaage-registration.conf
+  args:
+    creates: /etc/apache2/conf.d/karaage-registration.conf
+  sudo: true
+  notify: restart apache
+
+- name: make ssl directory
+  file: name=/etc/apache2/ssl state=directory
+  sudo: true
+
+- name: copy ssl key
+  command: cp /etc/ssl/private/server.key /etc/apache2/ssl/server.key
+  args:
+    creates: /etc/apache2/ssl/server.key
+  sudo: true
+
+- name: chmod ssl key
+  file: path=/etc/apache2/ssl/server.key mode=600 owner={{ wwwuser }}
+  sudo: true
+
+- name: copy cert
+  command: cp /etc/ssl/certs/server.crt /etc/apache2/ssl/server.pem
+  sudo: true
+
+- name: enable ssl
+  command: ln -s /etc/apache2/sites-available/default-ssl /etc/apache2/sites-enabled/default-ssl
+  args:
+    creates: /etc/apache2/sites-enabled/default-ssl
+  sudo: true
+  notify: restart apache
+
+
+- name: configure postfix
+  template: src=main_cf.j2 dest=/etc/postfix/main.cf
+  sudo: true
+  notify: restart postfix
+
+- name: SSL Cert Chain
+  lineinfile:
+  args:
+    dest: /etc/apache2/sites-enabled/default-ssl
+    regexp: ".*#SSLCertificateChainFile.*"
+    line: "        SSLCertificateChainFile    /etc/ssl/certs/ca.crt"
+    backrefs: yes
+  sudo: true
+  notify: restart apache
+
+- name: SSL Cert
+  lineinfile:
+  args:
+    dest: /etc/apache2/sites-enabled/default-ssl
+    regexp: ".*SSLCertificateFile    /etc/ssl/certs/ssl-cert-snakeoil.pem"
+    line: "        SSLCertificateFile    /etc/apache2/ssl/server.pem"
+    backrefs: yes
+  sudo: true
+  notify: restart apache
+
+- name: SSL Key
+  lineinfile:
+  args:
+    dest: /etc/apache2/sites-enabled/default-ssl
+    regexp: ".*SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key"
+    line: "        SSLCertificateKeyFile /etc/apache2/ssl/server.key"
+    backrefs: yes
+  sudo: true
+  notify: restart apache

@@ -6,9 +6,13 @@
  run_once: true
  delegate_to: "{{ nfs_server }}"
 - 
-  mount: "name={{ item.0 }} src={{ nfsServer['ansible_facts']['ansible_tun0']['ipv4']['address'] }}:{{ item.1 }} fstype=nfs opts=noatime,rsize=16384,wsize=16384,hard,intr,nolock state=mounted"
+  mount: "name={{ item.0 }} src={{ nfsServer['ansible_facts']['ansible_tun0']['ipv4']['address'] }}:{{ item.1 }} fstype={{ nfs_type }} opts={{ nfs_options }} state=mounted"
   name: "Mounting NFS mounts"
   with_together: 
     - destDir
     - srcDir
+  notify: "restart authentication"
+  notify: "restart idmap"
+  sudo: true 
 
+  

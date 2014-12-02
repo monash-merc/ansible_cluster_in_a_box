@@ -5,3 +5,4 @@
     - bind-utils
     - nfs-utils
   yum: "name={{ item }} state=latest"
+  sudo: true

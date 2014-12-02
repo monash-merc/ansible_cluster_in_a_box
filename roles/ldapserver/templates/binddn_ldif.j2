@@ -1,0 +1,5 @@
+dn: cn=binddn,ou=Accounts,{{ ldapDomain }}
+objectClass: inetOrgPerson
+cn: binddn
+sn: binddn
+userPassword: {{ ldapBindDNHash.stdout }}

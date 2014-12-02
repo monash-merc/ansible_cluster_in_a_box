@@ -1,0 +1,22 @@
+- name: "Installing ntp packages yum"
+  action: yum pkg={{ item }} state=installed
+  with_items:
+    - ntp
+    - ntpdate
+  sudo: true
+  when: ansible_os_family == 'RedHat'
+
+- name: "Installing ntp packages apt"
+  action: apt pkg={{ item }} state=installed
+  with_items:
+    - ntp
+    - ntpdate
+  sudo: true
+  when: ansible_os_family == 'Debian'
+
+- name: "ntp time sync"
+  shell: ntpdate -u {{ ntp_server }}
+  args:
+    creates: /etc/ntp.conf
+  sudo: true
+  notify: restart ntpd
