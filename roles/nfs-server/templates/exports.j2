@@ -1,1 +1,3 @@
-{{ srcDir }}	{{ nfs_network }}(rw,sync,root_squash)
+{{ % for server in groups['OpenVPN-Servers'] % }}
+	{{ srcDir }}	server['server_network']/network['server_netmask'](rw,sync,root_squash)
+{{ % endfor % }}
