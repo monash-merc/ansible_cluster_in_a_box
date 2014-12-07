@@ -17,7 +17,7 @@
 #host 127.0.0.1
 
 # The distinguished name of the search base.
-base {{ ldapBase }} 
+base {{ ldapBase }}
 
 # Another way to specify your LDAP server is to provide an
 # uri with the server name. This allows to use
@@ -27,7 +27,7 @@ base {{ ldapBase }}
 #uri ldapi://%2fvar%2frun%2fldapi_sock/
 # Note: %2f encodes the '/' used as directory separator
 # [aulmc used to be 11/10/2013 # uri ldap://m2-w.massive.org.au/ 
-uri {{ ldapDomain }} 
+uri {{ ldapDomain }}
 
 # The LDAP version to use (defaults to 3
 # if supported by client library)
@@ -39,7 +39,7 @@ binddn {{ ldapDn }}
 
 # The credentials to bind with. 
 # Optional: default is no credential.
-bindpw {{ ldapPassword }} 
+bindpw {{ ldapPassword }}
 
 # The distinguished name to bind to the server with
 # if the effective user ID is root. Password is
@@ -300,7 +300,7 @@ pam_password md5
 ssl no
 #tls_cacertdir /etc/openldap/cacerts
 #pam_password md5
-tls_cacertdir {{ tlsCaCertDirectory }} 
+tls_cacertdir {{ tlsCaCertDirectory }}
 tls_cacertfile {{ tlsCaCertFile }}
 
 {{ ldapRfc2307Pam }}

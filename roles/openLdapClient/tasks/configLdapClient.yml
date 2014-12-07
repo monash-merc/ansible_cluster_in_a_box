@@ -19,7 +19,7 @@
   lineinfile: dest=/etc/hosts line="{{ ldapServerHost }}" state=present insertafter=EOF
   sudo: true
 
-- name: "Copy ldap.conf file "
+- name: "Copy ldap.conf file"
   template: src=ldap.conf.j2 dest=/etc/openldap/ldap.conf
   sudo: true
 
@@ -30,6 +30,6 @@
 - name: "Copy sssd.conf to ldap client"
   template: src=sssd.j2 dest=/etc/sssd/sssd.conf owner=root group=root mode=600
   sudo: true
-  notify: auth config 
+  notify: restart sssd
 
 
