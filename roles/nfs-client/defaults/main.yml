@@ -1,4 +1,6 @@
 ---
-nfs_server: "nfsserver.edu" 
-nfs_type: "nfs"
-nfs_options: "vers=3,noatime,rsize=16384,wsize=16384,hard,intr,tcp,nolock"
+nfsClientSrcDir: '/mnt'
+nfsClientDestDir: '/mnt/test-nfs'
+nfs_server: 'nfsserver.edu' 
+nfs_type: 'nfs'
+nfs_options: 'vers=3,noatime,rsize=16384,wsize=16384,hard,intr,tcp,nolock'

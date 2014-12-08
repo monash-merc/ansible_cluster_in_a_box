@@ -1,7 +1,10 @@
 --- 
-- 
-  name: "Starting rpcbind"
-  service: "name=rpcbind state=started"
-- 
-  name: "Start the Server"
-  service: "name=nfs state=started"
+- name: "Copying /etc/exports template"
+  template: "src=exports.j2 dest=/etc/exports mode=0644 owner=root"
+  sudo: true
+- name: "Starting rpcbind"
+  service: "name=rpcbind state=restarted"
+  sudo: true
+- name: "Start the Server"
+  service: "name=nfs state=restarted"
+  sudo: true
