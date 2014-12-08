@@ -4,7 +4,7 @@ replace: olcSuffix
 olcSuffix: {{ ldapDomain }}
 -
 replace: olcRootDN
-olcRootDN: cn=Manager,{{ ldapDomain }}
+olcRootDN: {{ ldapManager }}
 -
 add: olcRootPW
 olcRootPW: {{ ldapManagerHash.stdout }}

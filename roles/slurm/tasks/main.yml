@@ -1,6 +1,7 @@
 ---
 - name: copy rpms
   copy: src=/tmp/rpmbuild dest=/tmp/
+  sudo: true
 
 - name: install munge rpms
   shell: "rpm --install /tmp/rpmbuild/RPMS/x86_64/munge*{{ munge_version }}*rpm"
@@ -26,9 +27,6 @@
   shell: "rpm --install /tmp/rpmbuild/RPMS/x86_64/slurm*{{ slurm_version }}*rpm"
   sudo: true
   ignore_errors: true
-
-- name: load munge key
-  include_vars: passwords.yml
 
 - name: install munge key
   template: src=munge_key.j2 dest=/etc/munge/munge.key
