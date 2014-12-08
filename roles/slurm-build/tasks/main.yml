@@ -31,10 +31,15 @@
     chdir: /tmp
     creates: /tmp/slurm-{{ slurm_version }}.tar.bz2
 
+- name: check munge installation
+  shell: rpm -qa munge
+  register: munge_installed
+
 - name: install munge deps
   shell: rpm -i /root/rpmbuild/RPMS/x86_64/munge-libs-{{ munge_version }}-1.el6.x86_64.rpm /root/rpmbuild/RPMS/x86_64/munge-{{ munge_version }}-1.el6.x86_64.rpm /root/rpmbuild/RPMS/x86_64/munge-devel-{{ munge_version }}-1.el6.x86_64.rpm
   sudo: true
-  ignore_errors: true
+#  ignore_errors: true
+  when: munge_installed | failed 
 
 - name: make slurm rpms
   shell: rpmbuild -ta --clean slurm-{{ slurm_version }}.tar.bz2
@@ -49,7 +54,15 @@
   args:
     creates: /tmp/rpmbuild/RPMS/x86_64/slurm-{{ slurm_version }}-1.el6.x86_64.rpm
 
+#- name: retrieve rpms
+#  shell: scp -r {{ hostvars[ansible_hostname]['ansible_user_id'] }}@{{ ansible_ssh_host }}:/tmp/rpmbuild/ /tmp
+#  delegate_to: 127.0.0.1
+#  when: ansible_ssh_host | defined
+#  when: ansible_ssh_host | defined
+#  sudo: true
+
 - name: retrieve rpms
-  shell: scp -r {{ hostvars[ansible_hostname]['ansible_user_id'] }}@{{ ansible_ssh_host }}:/tmp/rpmbuild/ /tmp
+  shell: scp -r {{ hostvars[ansible_hostname]['ansible_user_id'] }}@{{ ansible_hostname }}:/tmp/rpmbuild/ /tmp
   delegate_to: 127.0.0.1
+#  when: ansible_ssh_host | not defined
 

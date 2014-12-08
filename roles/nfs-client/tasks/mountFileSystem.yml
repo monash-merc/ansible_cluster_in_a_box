@@ -1,16 +1,6 @@
 --- 
--
- name: "Get the NFS Network"
- setup: filter="ansible_tun0"
- register: nfsServer
- run_once: true
- delegate_to: "{{ nfs_server }}"
-- 
-  mount: "name={{ item.0 }} src={{ nfsServer['ansible_facts']['ansible_tun0']['ipv4']['address'] }}:{{ item.1 }} fstype={{ nfs_type }} opts={{ nfs_options }} state=mounted"
-  name: "Mounting NFS mounts"
-  with_together: 
-    - destDir
-    - srcDir
+- name: "Mounting NFS mounts"
+  mount: "name={{ nfsClientDestDir }} src={{ nfs_server }}:{{ nfsClientSrcDir }} fstype={{ nfs_type }} opts={{ nfs_options }} state=mounted"
   notify: "restart authentication"
   notify: "restart idmap"
   sudo: true 
