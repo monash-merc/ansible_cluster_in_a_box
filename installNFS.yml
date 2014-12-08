@@ -11,9 +11,6 @@
     - nfs-server
   sudo: true
   vars: 
-    ansible_ssh_private_key_file: "/home/sgeadmin/.ssh/shahaan.pem"
-    ansible_ssh_user: "ec2-user"
-    nfs_network: "10.8.0.0/16"
     x509_ca_server: vm-118-138-240-224.erc.monash.edu.au
 - 
   hosts: openvpn-clients
@@ -23,12 +20,10 @@
     - easy-rsa-certificate 
     - OpenVPN-Client
     - nfs-common
+    - syncExports
     - nfs-client
   sudo: true
   vars: 
-    ansible_ssh_private_key_file: "/home/sgeadmin/.ssh/shahaan.pem"
-    ansible_ssh_user: "ec2-user"
     x509_ca_server: vm-118-138-240-224.erc.monash.edu.au
     openvpn_servers: ['vm-118-138-240-224.erc.monash.edu.au']
-    server: vm-118-138-240-224.erc.monash.edu.au
-    nfs_server: "10.8.0.1"
+    nfs_server: "vm-118-138-240-224.erc.monash.edu.au"

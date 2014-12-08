@@ -3,8 +3,5 @@
   name: "Starting rpcbind"
   service: "name=rpcbind state=started"
 - 
-  name: "Copying /etc/exports template"
-  template: "src=exports.j2 dest=/etc/exports mode=0644 owner=root"
-- 
   name: "Start the Server"
   service: "name=nfs state=started"
