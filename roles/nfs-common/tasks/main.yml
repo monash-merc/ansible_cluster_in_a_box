@@ -2,5 +2,5 @@
 - include: yumPackages.yml
 
 - name: setup idmap.conf
-  template: src=idmap.conf.j2 dest=/etc/idmap.conf
+  template: src=idmapd.conf.j2 dest=/etc/idmapd.conf
   sudo: true
