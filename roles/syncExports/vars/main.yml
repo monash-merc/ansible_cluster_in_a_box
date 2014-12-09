@@ -1,3 +1,3 @@
 ---
 groupList:
- - { name : 'openvpn-clients', interfaces : ['tun0'] }
+ - { name : 'openvpn-clients', interface : 'tun0' }
