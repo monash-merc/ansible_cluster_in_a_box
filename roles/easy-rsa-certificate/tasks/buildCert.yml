@@ -25,9 +25,9 @@
   set_fact: needcert=True
   when: key.stat.exists == false
 
-- name: "set needcert if cert is missing"
+- name: "set needcert if cert is missing or of zero size"
   set_fact: needcert=True
-  when: cert.stat.exists == false and cert.stat.size == 0
+  when: cert.stat.exists == false or cert.stat.size == 0
 
 - name: "Delete Zero Sized Ceritificates"
   remote_user: "{{ hostvars[x509_ca_server]['ansible_ssh_user'] }}"
