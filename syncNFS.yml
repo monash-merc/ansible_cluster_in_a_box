@@ -3,7 +3,7 @@
   hosts: openvpn-clients
   remote_user: ec2-user
   roles:
-    - { role: syncExports, group_list:['openvpn-clients'], interface_list: ['eth0','tun0'] }
+    - syncExports
     - nfs-client
   sudo: true
   vars: 
