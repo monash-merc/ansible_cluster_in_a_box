@@ -18,7 +18,7 @@
     - easy-rsa-common
     - easy-rsa-certificate 
     - OpenVPN-Client
-    - { role: syncExports, group_list:['openvpn-clients'], interface_list: ['eth0','tun0'] }
+    - syncExports
     - nfs-client
   sudo: true
   vars: 
