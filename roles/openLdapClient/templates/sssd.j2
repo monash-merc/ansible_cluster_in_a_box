@@ -1,19 +1,14 @@
 [sssd]
 config_file_version = 2
-domains = {{ ldapDomain }}
+domains = {{ ansible_domain }}
 services = nss, pam, autofs
-# SSSD will not start if you do not configure any domains.
-# Add new domain configurations as [domain/<NAME>] sections, and
-# then add the list of domains (in the order you want them to be
-# queried) to the "domains" attribute below and uncomment it.
-; domains = LDAP
 
 [nss]
 filter_users = root
 
 [pam]
 
-[domain/{{ ldapDomain}}]
+[domain/{{ ansible_domain }}]
 ldap_referrals = false
 cache_credentials = false
 entry_cache_timeout=3600
@@ -25,14 +20,13 @@ auth_provider = ldap
 chpass_provider = ldap
 access_provider = ldap
 
-ldap_uri = {{ ldapUri }} 
+ldap_uri = {{ ldapURI }} 
 ldap_id_use_start_tls = True
 ldap_tls_reqcert = allow 
-ldap_tls_cacertdir = {{ tlsCaCertDirectory }} 
-ldap_tls_cacert = {{ cacertFile }}
-ldap_default_bind_dn = {{ ldapDn }} 
+ldap_tls_cacert = {{ ldapCaCertFile }}
+ldap_default_bind_dn = {{ ldapBindDN }} 
 ldap_default_authtok_type = password
-ldap_default_authtok = {{ ldapPassword }} 
+ldap_default_authtok = {{ ldapBindDNPassword }} 
 
 {{ ldapRfc2307 }}
 

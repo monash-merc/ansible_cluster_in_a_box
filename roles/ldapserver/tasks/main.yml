@@ -1,7 +1,6 @@
 ---
 
 - include_vars: "{{ hostvars[ansible_hostname]['ansible_distribution'] }}_{{ hostvars[ansible_hostname]['ansible_distribution_version'] }}_{{ ansible_architecture }}.yml"
-- include_vars: passwords.yml
 
 - name: install system packages apt
   apt: name={{ item }} state=installed update_cache=true
@@ -91,11 +90,12 @@
   register: tlsConfigured
 
 - name: check Manager config
-  shell: "slapcat -b cn=config | grep 'olcRootDN: cn=Manager,{{ ldapDomain }}'"
+  shell: "slapcat -b cn=config | grep 'olcRootDN: {{ ldapManager }}'"
   ignore_errors: true
   sudo: true
   register: managerConfigured
 
+# slapcat does a line wrap at character 78. Don't attempt to match on {{ ldapManager }} as it will cross two lines
 - name: check ACL config
   shell: "slapcat -b cn=config | grep 'olcAccess:' | grep 'cn=Manager'"
   ignore_errors: true
@@ -104,22 +104,22 @@
 
 
 - name: check DIT config
-  shell: "ldapsearch -D cn=Manager,{{ ldapDomain }} -w {{ ldapManagerPassword }} -b {{ ldapDomain }} objectClass=dcObject"
+  shell: "ldapsearch -D {{ ldapManager }} -w {{ ldapManagerPassword }} -b {{ ldapBase }} -x -H ldap://localhost objectClass=dcObject"
   ignore_errors: true
   register: ditConfigured
 
 - name: check Accounts config
-  shell: "ldapsearch -D cn=Manager,{{ ldapDomain }} -w {{ ldapManagerPassword }} -b ou=Accounts,{{ ldapDomain }} objectClass=*"
+  shell: "ldapsearch -D {{ ldapManager }} -w {{ ldapManagerPassword }} -b {{ ldapUserBase }} -x -H ldap://localhost objectClass=*"
   ignore_errors: true
   register: accountsConfigured
 
 - name: check Groups config
-  shell: "ldapsearch -D cn=Manager,{{ ldapDomain }} -w {{ ldapManagerPassword }} -b ou=Groups,{{ ldapDomain }} objectClass=*"
+  shell: "ldapsearch -D {{ ldapManager }} -w {{ ldapManagerPassword }} -b {{ ldapGroupBase }} -x -H ldap://localhost objectClass=*"
   ignore_errors: true
   register: groupsConfigured
 
 - name: check binddn config
-  shell: "ldapsearch -D cn=binddn,ou=Accounts,{{ ldapDomain }} -w {{ ldapBindDNPassword }} -b {{ ldapDomain }} objectClass=dcObject"
+  shell: "ldapsearch -D {{ ldapBindDN }} -w {{ ldapBindDNPassword }} -b {{ ldapDomain }} -x -H ldap://localhost objectClass=dcObject"
   ignore_errors: true
   register: binddnConfigured
 
@@ -140,58 +140,18 @@
   when: aclConfigured|failed
 
 - name: add DIT root
-  shell: ldapadd -x -D cn=Manager,{{ ldapDomain }} -w {{ ldapManagerPassword }} -f /tmp/root.ldif
+  shell: ldapadd -x -D {{ ldapManager }} -w {{ ldapManagerPassword }} -x -H ldap://localhost -f /tmp/root.ldif
   when: ditConfigured|failed
 
 - name: add Accounts OU
-  shell: ldapadd -x -D cn=Manager,{{ ldapDomain }} -w {{ ldapManagerPassword }} -f /tmp/accounts.ldif
+  shell: ldapadd -x -D {{ ldapManager }} -w {{ ldapManagerPassword }} -x -H ldap://localhost -f /tmp/accounts.ldif
   when: accountsConfigured|failed
 
 - name: add Groups OU
-  shell: ldapadd -x -D cn=Manager,{{ ldapDomain }} -w {{ ldapManagerPassword }} -f /tmp/groups.ldif
+  shell: ldapadd -x -D {{ ldapManager }} -w {{ ldapManagerPassword }} -x -H ldap://localhost -f /tmp/groups.ldif
   when: groupsConfigured|failed
 
 - name: add binddn
-  shell: ldapadd -x -D cn=Manager,{{ ldapDomain }} -w {{ ldapManagerPassword }} -f /tmp/binddn.ldif
+  shell: ldapadd -x -D {{ ldapManager }} -w {{ ldapManagerPassword }} -x -H ldap://localhost -f /tmp/binddn.ldif
   sudo: true
   when: binddnConfigured|failed
-
-- name: check ppolicy module loaded
-  shell: slapcat -b cn=config | grep "olcModuleLoad. {.*}ppolicy"
-  sudo: true
-  ignore_errors: true
-  register: ppolicyModuleLoaded
-
-- name: load ppolicy module
-  shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /tmp/ppolicy_moduleload.ldif -D cn=config 
-  sudo: true
-  when: ppolicyModuleLoaded|failed
-
-- name: check ppolicy overlay config
-  shell: "slapcat -b cn=config | grep 'dn: olcOverlay=ppolicy,olcDatabase={.*}bdb,cn=config'"
-  ignore_errors: true
-  sudo: true
-  register: ppolicyOverlayConfigured
-
-- name: add ppolicy overlay
-  shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /tmp/ppolicy_overlay.ldif -D cn=config 
-  sudo: true
-  when: ppolicyOverlayConfigured|failed
-
-- name: check pwpolicies config
-  shell: ldapsearch -D cn=binddn,ou=Accounts,{{ ldapDomain }} -w {{ ldapBindDNPassword }} -b ou=pwpolicies,{{ ldapDomain }} objectClass=*
-  ignore_errors: true
-  register: pwpoliciesConfigured
-
-- name: add pwpolicies
-  shell: ldapadd -x -D cn=Manager,{{ ldapDomain }} -w {{ ldapManagerPassword }} -f /tmp/pwpolicies.ldif
-  when: pwpoliciesConfigured|failed
-
-- name: check defaultPwpolicy config
-  shell: ldapsearch -D cn=binddn,ou=Accounts,{{ ldapDomain }} -w {{ ldapBindDNPassword }} -b cn=default,ou=pwpolicies,{{ ldapDomain }} objectClass=*
-  ignore_errors: true
-  register: defaultPpolicyConfigured
-
-- name: add defaultPwpolicy
-  shell: ldapadd -x -D cn=Manager,{{ ldapDomain }} -w {{ ldapManagerPassword }} -f /tmp/default_ppolicy.ldif
-  when: defaultPpolicyConfigured|failed

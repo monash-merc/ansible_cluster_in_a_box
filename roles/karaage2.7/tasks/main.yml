@@ -1,8 +1,5 @@
 ---
 - include_vars: "{{ hostvars[ansible_hostname]['ansible_distribution'] }}_{{ hostvars[ansible_hostname]['ansible_distribution_version'] }}_{{ ansible_architecture }}.yml"
-- include_vars: passwords.yml
-
-
 
 - name: install system packages apt
   apt: name={{ item }} state=installed update_cache=true
@@ -99,8 +96,8 @@
   lineinfile:
   args:
     dest: /etc/karaage/global_settings.py
-    regexp: "LDAP_URL ="
-    line: "LDAP_URL = '{{ ldapURL }}'"
+    regexp: "LDAP_URL = "
+    line: "LDAP_URL = '{{ ldapURI }}'"
     backrefs: yes
   sudo: true
 
@@ -111,7 +108,7 @@
   args:
     dest: /etc/karaage/global_settings.py
     regexp: "LDAP_BASE ="
-    line: "LDAP_BASE = '{{ ldapDomain }}'"
+    line: "LDAP_BASE = '{{ ldapBase }}'"
     backrefs: yes
   sudo: true
 
@@ -120,7 +117,7 @@
   args:
     dest: /etc/karaage/global_settings.py
     regexp: "LDAP_USER_BASE="
-    line: "LDAP_USER_BASE = 'ou=Accounts,{{ ldapDomain }}'"
+    line: "LDAP_USER_BASE = '{{ ldapUserBase }}'"
     backrefs: yes
   sudo: true
 
@@ -129,7 +126,7 @@
   args:
     dest: /etc/karaage/global_settings.py
     regexp: "LDAP_GROUP_BASE="
-    line: "LDAP_GROUP_BASE = 'ou=Groups,{{ ldapDomain }}'"
+    line: "LDAP_GROUP_BASE = '{{ ldapGroupBase }}'"
     backrefs: yes
   sudo: true
 
@@ -138,7 +135,7 @@
   args:
     dest: /etc/karaage/global_settings.py
     regexp: "LDAP_ADMIN_USER ="
-    line: "LDAP_ADMIN_USER = 'cn=Manager,{{ ldapDomain }}'"
+    line: "LDAP_ADMIN_USER = '{{ ldapManager }}'"
     backrefs: yes
   sudo: true
   

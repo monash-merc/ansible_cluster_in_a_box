@@ -1,10 +1,10 @@
 --- 
 -
- name: "Get the NFS Network"
- setup: filter="ansible_tun0"
- register: nfsServer
- run_once: true
- delegate_to: "{{ nfs_server }}"
+  name: "Get the NFS Network"
+  setup: filter="ansible_tun0"
+  register: nfsServer
+  run_once: true
+  delegate_to: "{{ nfs_server }}"
 - 
   mount: "name={{ item.name }} src={{ nfsServer['ansible_facts']['ansible_tun0']['ipv4']['address'] }}:{{ item.src }} fstype={{ item.fstype }} opts={{ item.opts }} state=mounted"
   name: "Mounting NFS mounts"
