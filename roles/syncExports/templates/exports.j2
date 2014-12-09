@@ -1,4 +1,4 @@
-{% for src in srcDir %}
-{{ src }} {% for node in  groups['openvpn-clients'] %}{% for ip in hostvars[node]['ansible_all_ipv4_addresses'] %}{{ ip }}(rw,sync,root_squash) {% endfor %}{% endfor %}
+{% for export in exportList %}
+{{ export.src }} {% for group in groupList %}{% for node in  groups[group.name] %}{{ hostvars[node]['ansible_'+group.interface]['ipv4']['address'] }}(rw,sync,root_squash) {% endfor %}{% endfor %}
 
 {% endfor %}

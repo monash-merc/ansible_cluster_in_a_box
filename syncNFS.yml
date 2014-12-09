@@ -2,7 +2,7 @@
 - 
   hosts: openvpn-clients
   remote_user: ec2-user
-  roles: 
+  roles:
     - syncExports
     - nfs-client
   sudo: true
