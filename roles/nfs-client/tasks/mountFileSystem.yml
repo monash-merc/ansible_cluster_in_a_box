@@ -1,7 +1,7 @@
 --- 
 -
   name: "Get the NFS Network"
-  setup: filter="ansible_tun0"
+  setup: 
   register: nfsServer
   run_once: true
   delegate_to: "{{ nfs_server }}"
