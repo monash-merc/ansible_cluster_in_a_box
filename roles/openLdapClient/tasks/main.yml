@@ -1,5 +1,5 @@
 ---
 -
- include: installOpenLdap.yml 
+  include: installOpenLdap.yml 
 -
- include: configLdapClient.yml 
+  include: configLdapClient.yml 

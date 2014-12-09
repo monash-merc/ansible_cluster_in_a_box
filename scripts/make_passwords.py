@@ -25,12 +25,9 @@ try:
     f=open(pwpath,'r')
     data=yaml.load(f.read())
     f.close()
+    print data
 except Exception as e:
-    pass
-if data==None:
     data={}
-
-print data
 
 for pw in required_passwords.keys():
     if data.has_key(pw):

@@ -1,6 +1,6 @@
 dn: olcDatabase={2}bdb,cn=config
 changetype: modify
 add: olcAccess
-olcAccess: {0}to attrs=userPassword by dn="cn=Manager,{{ ldapDomain }}" write by self write by * auth
-olcAccess: {1}to attrs=shadowLastChange by dn="cn=Manager,{{ ldapDomain }}" write by self write by * read
+olcAccess: {0}to attrs=userPassword by dn="{{ ldapManager }}" write by self write by * auth
+olcAccess: {1}to attrs=shadowLastChange by dn="{{ ldapManager }}" write by self write by * read
 olcAccess: {2}to * by users read by anonymous auth

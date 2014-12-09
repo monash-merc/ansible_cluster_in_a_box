@@ -12,7 +12,7 @@ hosts={}
 for group in d['groups'].keys():
     i=0
     for h in d['groups'][group]:
-        hosts[h] = ['%s %s.%s'%(h, h, domain)]
+        hosts[h] = ['%s.%s %s'%(h, domain, h)]
 
 for h in hosts.keys():
     if d['hostvars'].has_key(h):
