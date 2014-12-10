@@ -13,7 +13,7 @@
   lineinfile:  
   args:
     dest: /etc/karaage/ldap_schemas.py 
-    regexp: "from placard.schemas.pwdpolicy import pwdPolicyMixin" 
+    regexp: 'from placard.schemas.pwdpolicy import pwdPolicyMixin'
     line: "from placard.schemas.defaultUnlocked import defaultUnlockedMixin" 
     backrefs: yes
   sudo: true
@@ -22,7 +22,7 @@
   lineinfile:  
   args:
     dest: /etc/karaage/ldap_schemas.py 
-    regexp: "    mixin_list = [ common.personMixin, pwdPolicyMixin, kPersonMixin ]"
+    regexp: '    mixin_list = \[ common.personMixin, pwdPolicyMixin, kPersonMixin \]'
     line: "    mixin_list = [ common.personMixin, defaultUnlockedMixin, kPersonMixin ]"
     backrefs: yes
   sudo: true
@@ -31,7 +31,7 @@
   lineinfile:  
   args:
     dest: /etc/karaage/ldap_schemas.py 
-    regexp: "class person(rfc.person, rfc.organizationalPerson, rfc.inetOrgPerson, rfc.pwdPolicy, common.baseMixin):"
-    line: class person(rfc.person, rfc.organizationalPerson, rfc.inetOrgPerson, common.baseMixin):"
+    regexp: 'class person\(rfc.person, rfc.organizationalPerson, rfc.inetOrgPerson, rfc.pwdPolicy, common.baseMixin\):'
+    line: "class person(rfc.person, rfc.organizationalPerson, rfc.inetOrgPerson, common.baseMixin):"
     backrefs: yes
   sudo: true

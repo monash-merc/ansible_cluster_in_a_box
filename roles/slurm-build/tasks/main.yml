@@ -54,15 +54,12 @@
   args:
     creates: /tmp/rpmbuild/RPMS/x86_64/slurm-{{ slurm_version }}-1.el6.x86_64.rpm
 
-#- name: retrieve rpms
-#  shell: scp -r {{ hostvars[ansible_hostname]['ansible_user_id'] }}@{{ ansible_ssh_host }}:/tmp/rpmbuild/ /tmp
-#  delegate_to: 127.0.0.1
-#  when: ansible_ssh_host | defined
-#  when: ansible_ssh_host | defined
-#  sudo: true
+- name: retrieve rpms 1
+  shell: scp -r {{ hostvars[ansible_hostname]['ansible_user_id'] }}@{{ ansible_ssh_host }}:/tmp/rpmbuild/ /tmp
+  delegate_to: 127.0.0.1
+  when: ansible_ssh_host is defined
 
-- name: retrieve rpms
+- name: retrieve rpms 2
   shell: scp -r {{ hostvars[ansible_hostname]['ansible_user_id'] }}@{{ ansible_hostname }}:/tmp/rpmbuild/ /tmp
   delegate_to: 127.0.0.1
-#  when: ansible_ssh_host | not defined
-
+  when: ansible_ssh_host is not defined

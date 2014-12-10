@@ -6,6 +6,11 @@
     - nsswitch.conf
   sudo: true
 
+- name: "Copy the CA cert"
+  copy: src={{ ldapCaCertSrc }} dest={{ ldapCaCertFile }} owner=root mode=644
+  sudo: true
+  when: ldapCaCertSrc is defined
+
 - name: "Copy pam config to ldap client"
   template: src=system-auth-ac.j2 dest=/etc/pam.d/system-auth-ac
   sudo: true
