@@ -1,9 +1,4 @@
 ---
-- name: restart authentication
-  shell: authconfig --updateall
-  when: nfs_type == "nfs4"
-  sudo: true
-
 - name: restart idmap 
   service: name={{ item }} state=restarted
   with_items:
