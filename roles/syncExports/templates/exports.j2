@@ -1,4 +1,4 @@
 {% for export in exportList %}
-{{ export.src }} {% for group in groupList %}{% for node in  groups[group.name] %}{{ hostvars[node]['ansible_'+group.interface]['ipv4']['address'] }}(rw,sync,root_squash) {% endfor %}{% endfor %}
+{{ export.src }} {% for group in groupList %}{% for node in  groups[group.name] %}{{ hostvars[node]['ansible_'+group.interface]['ipv4']['address'] }}({{ export.option }}) {% endfor %}{% endfor %}
 
 {% endfor %}

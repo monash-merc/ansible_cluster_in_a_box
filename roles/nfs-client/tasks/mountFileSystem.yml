@@ -1,13 +1,21 @@
 --- 
--
-  name: "Get the NFS Network"
+- name: "Get the NFS Network"
   setup: 
   register: nfsServer
   run_once: true
   delegate_to: "{{ nfs_server }}"
-- 
+  when: nfsServer is defined
+
+- name: "Set nfsServer facts when it is not defined"
+  set_fact:
+    - {{ nfsServer }}
+      - ansible_{{ nfsServerInterface }}:
+        - ipv4:
+          - address: {{ nfsServerIpAddress }}
+  when: nfsServer is defined
+
+- name: "Mounting NFS mounts"
   mount: "name={{ item.name }} src={{ nfsServer['ansible_facts']['ansible_'+item.interface]['ipv4']['address'] }}:{{ item.src }} fstype={{ item.fstype }} opts={{ item.opts }} state=mounted"
-  name: "Mounting NFS mounts"
   with_items: exportList 
   notify: "restart authentication"
   notify: "restart idmap"

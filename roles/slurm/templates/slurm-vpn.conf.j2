@@ -105,5 +105,5 @@ NodeName={{ node }} NodeAddr={{ node }}-vpn Procs={{ hostvars[node]['ansible_pro
 {% endfor %}
 
 {% for queue in slurmqueues %}
-PartitionName={{ queue.name }} Default=yes Nodes={{ groups[queue.group]|join(',') }}
+PartitionName={{ queue.name }} {% if queue.default %}Default=yes{% endif %} Nodes={{ groups[queue.group]|join(',') }}
 {% endfor %}

@@ -1,4 +1,4 @@
 ---
-domain: testdomain.massive.org.au
+domain: testdomain.dummy.invalid
 get_groups: true
 edit_hosts: true
