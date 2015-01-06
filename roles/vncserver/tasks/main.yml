@@ -1,0 +1,20 @@
+---
+- include_vars: "{{ hostvars[ansible_hostname]['ansible_distribution'] }}_{{ ansible_architecture }}.yml"
+
+- name: add repos apt
+  shell: "add-apt-repository -y 'deb {{ item }} {{ ansible_distribution_release }} main' "
+  sudo: true
+  with_items: apt_repos
+  when: ansible_os_family == 'Debian'
+
+- name: install system packages apt
+  apt: name={{ item }} state=installed update_cache=true  force=yes
+  sudo: true
+  with_items: system_packages
+  when: ansible_os_family == 'Debian'
+
+- name: install system packages yum
+  yum: name={{ item }} state=installed
+  sudo: true
+  with_items: system_packages
+  when: ansible_os_family == 'RedHat'
