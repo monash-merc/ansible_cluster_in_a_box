@@ -33,8 +33,12 @@
   remote_user: "{{ hostvars[x509_ca_server]['ansible_ssh_user'] }}"
   delegate_to: "{{ x509_ca_server }}"
   shell: rm -rf /etc/easy-rsa/2.0/keys/{{ x509_common_name }}.*
+<<<<<<< HEAD
   when: cert is defined and cert.stat.size == 0
   sudo: true
+=======
+  when: cert.stat.exists == true and cert.stat.size == 0
+>>>>>>> fa3117e79a9bbcf686a4172081fa582f5d04d0d8
 
 - name: "set needcert if cert doesn't match key"
   set_fact: needcert=True
