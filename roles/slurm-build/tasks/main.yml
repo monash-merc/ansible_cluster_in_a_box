@@ -38,8 +38,8 @@
 - name: install munge deps
   shell: rpm -i /root/rpmbuild/RPMS/x86_64/munge-libs-{{ munge_version }}-1.el6.x86_64.rpm /root/rpmbuild/RPMS/x86_64/munge-{{ munge_version }}-1.el6.x86_64.rpm /root/rpmbuild/RPMS/x86_64/munge-devel-{{ munge_version }}-1.el6.x86_64.rpm
   sudo: true
-#  ignore_errors: true
-  when: munge_installed | failed 
+  when: munge_installed.stdout.find("munge") == -1 
+#  when: munge_installed is failed or munge_installed.stdout.find("munge") == -1 
 
 - name: make slurm rpms
   shell: rpmbuild -ta --clean slurm-{{ slurm_version }}.tar.bz2

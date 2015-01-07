@@ -33,7 +33,12 @@
   remote_user: "{{ hostvars[x509_ca_server]['ansible_ssh_user'] }}"
   delegate_to: "{{ x509_ca_server }}"
   shell: rm -rf /etc/easy-rsa/2.0/keys/{{ x509_common_name }}.*
+<<<<<<< HEAD
+  when: cert is defined and cert.stat.size == 0
+  sudo: true
+=======
   when: cert.stat.exists == true and cert.stat.size == 0
+>>>>>>> fa3117e79a9bbcf686a4172081fa582f5d04d0d8
 
 - name: "set needcert if cert doesn't match key"
   set_fact: needcert=True
@@ -46,43 +51,54 @@
 
 - name: "Creating CSR"
   shell: " cd /etc/easy-rsa/2.0; . ./vars; export EASY_RSA=\"${EASY_RSA:-.}\"; \"$EASY_RSA\"/pkitool --csr {{ x509_csr_args }} {{ x509_common_name }}"
-  args:
-    creates: "/etc/easy-rsa/2.0/keys/{{ x509_common_name }}.key"
+#  args:
+#    creates: "/etc/easy-rsa/2.0/keys/{{ x509_common_name }}.key"
   when: needcert
   sudo: true
 
 - name: "Copy CSR to ansible host"
-  fetch: "src=/etc/easy-rsa/2.0/keys/{{ x509_common_name }}.csr dest=/tmp/ fail_on_missing=yes validate_md5=yes flat=yes"
+  fetch: "src=/etc/easy-rsa/2.0/keys/{{ x509_common_name }}.csr dest=/tmp/{{ inventory_hostname }}/{{ inventory_hostname }}.csr fail_on_missing=yes validate_md5=yes flat=yes"
   sudo: true
   when: needcert
+
+- name: "Create node tmp directory"
+  delegate_to: 127.0.0.1
+  shell: "mkdir -p /tmp/{{ inventory_hostname }} ; chmod 755 /tmp/{{ inventory_hostname }}"
 
 - name: "Copy CSR to CA"
   remote_user: "{{ hostvars[x509_ca_server]['ansible_ssh_user'] }}"
   delegate_to: "{{ x509_ca_server }}"
-  copy: "src=/tmp/{{ x509_common_name }}.csr dest=/etc/easy-rsa/2.0/keys/{{ x509_common_name }}.csr force=yes"
+#  copy: "src=/tmp/{{ inventory_hostname }}/{{ inventory_hostname }}.csr dest=/tmp/{{ inventory_hostname }}.csr force=yes"
+  copy: "src=/tmp/{{ inventory_hostname }}/{{ inventory_hostname }}.csr dest=/etc/easy-rsa/2.0/keys/{{ x509_common_name }}.csr force=yes"
   when: needcert
   sudo: true
+
+#- name: "Place CSR to a right place"
+#  local_action: "command cp -f /tmp/{{ inventory_hostname }}.csr /etc/easy-rsa/2.0/keys/{{ x509_common_name }}.csr"
+#  when: needcert
+#  sudo: true
 
 - name: "Sign Certificate"
   remote_user: "{{ hostvars[x509_ca_server]['ansible_ssh_user'] }}"
   delegate_to: "{{ x509_ca_server }}"
-  shell:    ". ./vars; export EASY_RSA=\"${EASY_RSA:-.}\" ;\"$EASY_RSA\"/pkitool --sign {{ x509_sign_args }} {{ x509_common_name }}"
-  args:
-    chdir: "/etc/easy-rsa/2.0"
-    creates: "/etc/easy-rsa/2.0/keys/{{ x509_common_name }}.crt"
+  shell:    "cd /etc/easy-rsa/2.0; . ./vars; export EASY_RSA=\"${EASY_RSA:-.}\" ;\"$EASY_RSA\"/pkitool --sign {{ x509_sign_args }} {{ x509_common_name }}"
+#  args:
+#    chdir: "/etc/easy-rsa/2.0"
+#    creates: "/etc/easy-rsa/2.0/keys/{{ x509_common_name }}.crt"
+  when: needcert
   sudo: true
 
 - name: "Copy the Certificate to ansible host"
   remote_user: "{{ hostvars[x509_ca_server]['ansible_ssh_user'] }}"
   delegate_to: "{{ x509_ca_server }}"
-  fetch: "src=/etc/easy-rsa/2.0/keys/{{ x509_common_name }}.crt dest=/tmp/ fail_on_missing=yes validate_md5=yes flat=yes"
+  fetch: "src=/etc/easy-rsa/2.0/keys/{{ x509_common_name }}.crt dest=/tmp/{{ inventory_hostname }}/{{ x509_common_name }}.crt fail_on_missing=yes validate_md5=yes flat=yes"
   sudo: true
   when: needcert
 
 - name: "Copy the CA Certificate to the ansible host"
   remote_user: "{{ hostvars[x509_ca_server]['ansible_ssh_user'] }}"
   delegate_to: "{{ x509_ca_server }}"
-  fetch: "src=/etc/easy-rsa/2.0/keys/ca.crt dest=/tmp/ca.crt fail_on_missing=yes validate_md5=yes flat=yes"
+  fetch: "src=/etc/easy-rsa/2.0/keys/ca.crt dest=/tmp/{{ inventory_hostname }}/ca.crt fail_on_missing=yes validate_md5=yes flat=yes"
   sudo: true
   when: "ca_cert.stat.exists == false"
 
@@ -91,12 +107,18 @@
   sudo: true
 
 - name: "Copy the certificate to the node"
-  copy: "src=/tmp/{{ x509_common_name }}.crt dest={{ x509_cert_file }} force=yes"
+#  copy: "src=/tmp/{{ x509_common_name }}.crt dest={{ x509_cert_file }} force=yes"
+  copy: "src=/tmp/{{ inventory_hostname }}/{{ x509_common_name }}.crt dest=/tmp/{{ x509_common_name }}.crt force=yes"
+  sudo: true
+  when: needcert
+
+- name: "Copy the certificate to the right location"
+  shell: "cp -f /tmp/{{ x509_common_name }}.crt {{ x509_cert_file }}"
   sudo: true
   when: needcert
 
 - name: "Copy the CA certificate to the node"
-  copy: "src=/tmp/ca.crt dest={{ x509_cacert_file }}"
+  copy: "src=/tmp/{{ inventory_hostname }}/ca.crt dest={{ x509_cacert_file }}"
   sudo: true
   when: "ca_cert.stat.exists == false"
 
