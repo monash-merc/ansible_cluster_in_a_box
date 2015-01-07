@@ -6,6 +6,12 @@
   delegate_to: "{{ nfs_server }}"
   when: nfsServer is not defined
 
+- name: "Debug ansible_facts dictinary"
+  debug:  msg="debug nfsHomeServer {{ nfsHomeServer['ansible_facts']['ansible_eth0']['ipv4']['address'] }}"
+
+- name: "Debug ansible_facts dictinary 2"
+  debug:  msg="debug nfsServer {{ nfsServer['ansible_facts']['ansible_eth0']['ipv4']['address'] }}"
+
 - name: "Mounting NFS mounts"
   mount: "name={{ item.name }} src={{ nfsServer['ansible_facts']['ansible_'+item.interface]['ipv4']['address'] }}:{{ item.src }} fstype={{ item.fstype }} opts={{ item.opts }} state=mounted"
   with_items: exportList 

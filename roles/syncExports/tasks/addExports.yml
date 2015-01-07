@@ -5,9 +5,4 @@
   delegate_to: "{{ nfs_server }}"
   run_once: true
   sudo: true
-#-
-#  name : Restart the NFS Server
-#  service: name=nfs state=restarted
-#  delegate_to: "{{ nfs_server }}"
-#  run_once: true
-#  sudo: true
+  notify: "Reload exports"
