@@ -20,4 +20,3 @@
   sudo: true
   with_items: hosts_data.stdout_lines
   when: edit_hosts
-
