@@ -8,7 +8,6 @@
 {% endif %}
 {% endfor %}
 {% endfor %}
-
-{{ export.src }} {% for ip in iplist|unique %}{{ ip }}(rw,sync,root_squash) {% endfor %}
+{{ export.src }} {% for ip in iplist|unique %}{{ ip }}({{ export.srvopts }}) {% endfor %}
 
 {% endfor %}
