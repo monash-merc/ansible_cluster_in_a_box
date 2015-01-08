@@ -1,6 +1,5 @@
 ---
-- name: Reload exports 
+- name: "Reload exports" 
   command: exportfs -ra
   delegate_to: "{{ nfs_server }}"
-  run_once: true
   sudo: true

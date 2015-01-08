@@ -4,7 +4,7 @@
   register: nfsServer
   run_once: true
   delegate_to: "{{ nfs_server }}"
-  when: nfsServer is not defined
+  when: naNfsServer is not defined
 
 - name: "Mounting NFS mounts"
   mount: "name={{ item.name }} src={{ nfsServer['ansible_facts']['ansible_'+item.interface]['ipv4']['address'] }}:{{ item.src }} fstype={{ item.fstype }} opts={{ item.opts }} state=mounted"
@@ -12,3 +12,13 @@
   notify: "restart authentication"
   notify: "restart idmap"
   sudo: true 
+  when: naNfsServer is not defined
+
+- name: "Mounting non-ansible NFS server"
+  mount: "name={{ item.name }} src={{ naNfsServer['ansible_facts']['ansible_'+item.interface]['ipv4']['address'] }}:{{ item.src }} fstype={{ item.fstype }} opts={{ item.opts }} state=mounted"
+  with_items: exportList
+  notify: "restart authentication"
+  notify: "restart idmap"
+  sudo: true
+  when: naNfsServer is defined
+
