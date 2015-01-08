@@ -47,8 +47,6 @@
 
 - name: "Creating CSR"
   shell: " cd /etc/easy-rsa/2.0; . ./vars; export EASY_RSA=\"${EASY_RSA:-.}\"; \"$EASY_RSA\"/pkitool --csr {{ x509_csr_args }} {{ x509_common_name }}"
-#  args:
-#    creates: "/etc/easy-rsa/2.0/keys/{{ x509_common_name }}.key"
   when: needcert
   sudo: true
 
@@ -64,23 +62,14 @@
 - name: "Copy CSR to CA"
   remote_user: "{{ hostvars[x509_ca_server]['ansible_ssh_user'] }}"
   delegate_to: "{{ x509_ca_server }}"
-#  copy: "src=/tmp/{{ inventory_hostname }}/{{ inventory_hostname }}.csr dest=/tmp/{{ inventory_hostname }}.csr force=yes"
   copy: "src=/tmp/{{ inventory_hostname }}/{{ inventory_hostname }}.csr dest=/etc/easy-rsa/2.0/keys/{{ x509_common_name }}.csr force=yes"
   when: needcert
   sudo: true
-
-#- name: "Place CSR to a right place"
-#  local_action: "command cp -f /tmp/{{ inventory_hostname }}.csr /etc/easy-rsa/2.0/keys/{{ x509_common_name }}.csr"
-#  when: needcert
-#  sudo: true
 
 - name: "Sign Certificate"
   remote_user: "{{ hostvars[x509_ca_server]['ansible_ssh_user'] }}"
   delegate_to: "{{ x509_ca_server }}"
   shell:    "cd /etc/easy-rsa/2.0; . ./vars; export EASY_RSA=\"${EASY_RSA:-.}\" ;\"$EASY_RSA\"/pkitool --sign {{ x509_sign_args }} {{ x509_common_name }}"
-#  args:
-#    chdir: "/etc/easy-rsa/2.0"
-#    creates: "/etc/easy-rsa/2.0/keys/{{ x509_common_name }}.crt"
   when: needcert
   sudo: true
 
@@ -103,7 +92,6 @@
   sudo: true
 
 - name: "Copy the certificate to the node"
-#  copy: "src=/tmp/{{ x509_common_name }}.crt dest={{ x509_cert_file }} force=yes"
   copy: "src=/tmp/{{ inventory_hostname }}/{{ x509_common_name }}.crt dest=/tmp/{{ x509_common_name }}.crt force=yes"
   sudo: true
   when: needcert
