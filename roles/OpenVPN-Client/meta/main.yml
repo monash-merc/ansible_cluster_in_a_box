@@ -1,3 +1,4 @@
 ---
 dependencies:
+#  - { role: easy-rsa-CA }
   - { role: easy-rsa-certificate, x509_csr_args: "" }

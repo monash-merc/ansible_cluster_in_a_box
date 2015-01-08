@@ -2,14 +2,12 @@
   template: dest=/tmp/groups src=groups.j2
   run_once: True
   delegate_to: 127.0.0.1
-  when: get_groups
 
 - name: make hosts data
   command: ./scripts/makehosts.py /tmp/groups {{ domain }}
   delegate_to: 127.0.0.1
   run_once: True
   register: hosts_data
-  when: edit_hosts
                
 - name: write hosts file
   lineinfile:
@@ -19,5 +17,3 @@
     state: present
   sudo: true
   with_items: hosts_data.stdout_lines
-  when: edit_hosts
-
