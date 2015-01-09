@@ -1,0 +1,91 @@
+---
+- hosts: all 
+  vars_files:
+    - massive_var/main.yml
+  vars:
+    x509_ca_server: "{{ groups['OpenvpnServer'][0] }}"
+    openvpn_servers: "{{ groups['OpenvpnServer'] }}"
+    slurmctrl: "{{ groups['OpenvpnServer'][0] }}"
+    slurmqueues:
+      - {name: batch, group: ComputeNodes, default: true}
+      - {name: vis, group: ComputeNodes, default: false}
+  roles:
+    - { role: etcHosts,  domain: 'cvl.massive.org.au' }
+
+- hosts: 'OpenvpnServer'
+  vars_files:
+    - massive_var/main.yml
+    - massive_var/package.yml
+    - massive_var/passwords.yml
+  vars:
+    x509_ca_server: "{{ groups['OpenvpnServer'][0] }}"
+    openvpn_servers: "{{ groups['OpenvpnServer'] }}"
+    slurmctrl: "{{ groups['OpenvpnServer'][0] }}"
+    slurmqueues:
+      - {name: batch, group: ComputeNodes, default: true}
+      - {name: vis, group: ComputeNodes, default: false}
+  roles:
+    - { role: easy-rsa-CA }
+    - { role: OpenVPN-Server }
+    - { role: ntp }
+    - { role: openLdapClient }
+    - { role: slurm-build }
+    - { role: nfs-server, configDiskDevice: false }
+    - { role: slurm, slurm_use_vpn: true}
+    - { role: installPackage }
+  tasks:
+    setup:
+
+- hosts: all 
+  roles:
+    - { role: etcHosts, domain: 'cvl.massive.org.au' }
+
+- hosts: 'ComputeNodes'
+  vars_files:
+    - massive_var/main.yml
+    - massive_var/passwords.yml
+    - massive_var/package.yml
+  vars:
+    x509_ca_server: "{{ groups['OpenvpnServer'][0] }}"
+    openvpn_servers: "{{ groups['OpenvpnServer'] }}"
+    slurmctrl: "{{ groups['OpenvpnServer'][0] }}"
+    slurmqueues:
+      - {name: batch, group: ComputeNodes, default: true}
+      - {name: vis, group: ComputeNodes, default: false}
+    groupList:
+      - { name : 'ComputeNodes', interface : 'tun0' }
+    nfs_server: "{{ groups['OpenvpnServer'][0] }}"
+  roles:
+    - { role: OpenVPN-Client }
+    - { role: ntp }
+    - { role: openLdapClient }
+    - { role: syncExports, nfs_server: 'cvl23server', exportList: [{ name: '/', src: '/usr/local', fstype: 'nfs4', opts: 'defaults,ro,nofail', nfsServerIp: "{{ hostvars[nfs_server]['ansible_tun0']['ipv4']['address'] }}", srvopts: 'ro,fsid=0,sync' }] }
+    - { role: nfs-client, exportList: [{ name: '/home', src: '/', fstype: 'nfs4', opts: 'defaults,nofail', nfsServerIp: '{{ nfsServerIpAddress }}', srvopts: 'rw,root_squash,fsid=0,sync' }] }
+    - { role: nfs-client, exportList: [ { name: '/usr/local', src: '/', fstype: 'nfs4', opts: 'defaults,ro,nofail', nfsServerIp: "{{ hostvars[nfs_server]['ansible_tun0']['ipv4']['address'] }}", srvopts: 'ro,fsid=0,sync' }] }
+    - { role: slurm, slurm_use_vpn: true}
+    - { role: installPackage, preInstallation: "umount /usr/local", postInstallation: "mount /usr/local", yumGroupPackageList: ["CVL Pre-installation", "CVL Base Packages", "CVL System", "CVL System Extension"] }
+
+- hosts: all 
+  roles:
+    - { role: etcHosts, domain: 'cvl.massive.org.au' }
+
+- hosts: 'LoginNode'
+  vars_files:
+    - massive_var/main.yml
+    - massive_var/passwords.yml
+  vars:
+    groupList:
+      - { name : 'ComputeNodes', interface : 'tun0' }
+    x509_ca_server: "{{ groups['OpenvpnServer'][0] }}"
+    openvpn_servers: "{{ groups['OpenvpnServer'] }}"
+    slurmctrl: "{{ groups['OpenvpnServer'][0] }}"
+    slurmqueues:
+      - {name: batch, group: ComputeNodes, default: true}
+      - {name: vis, group: ComputeNodes, default: false}
+  roles:
+    - { role: OpenVPN-Client }
+    - { role: ntp }
+    - { role: openLdapClient }
+    - { role: nfs-client, exportList: [{ name: '/home', src: '/', fstype: 'nfs4', opts: 'defaults,nofail', nfsServerIp: '{{ nfsServerIpAddress }}', srvopts: 'rw,root_squash,fsid=0,sync' }] }
+    - { role: slurm, slurm_use_vpn: true}
+
