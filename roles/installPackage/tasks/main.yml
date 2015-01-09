@@ -5,7 +5,7 @@
   when: ansible_distribution == 'CentOS' and preInstallation is defined
   
 - name: Add new repo file 
-  shell: "{{ importRepo.command }}" "{{ importRepo.destination }}"" 
+  shell: "'{{ importRepo.command }}' '{{ importRepo.destination }}'" 
   sudo: true
   run_once: true
   args:
