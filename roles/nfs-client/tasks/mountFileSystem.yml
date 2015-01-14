@@ -1,8 +1,13 @@
 --- 
+- name: "Check mount"
+  shell: mount | grep "{{ item.name }}"
+  with_items: exportList
+  register: result 
+  
 - name: "Mounting NFS mounts"
   mount: "name={{ item.name }} src={{ item.nfsServerIp }}:{{ item.src }} fstype={{ item.fstype }} opts={{ item.opts }} state=mounted"
   with_items: exportList 
   notify: "restart authentication"
   notify: "restart idmap"
   sudo: true 
-  when: exportList is defined
+  when: exportList is defined and result | failed 

@@ -10,7 +10,7 @@
       - {name: batch, group: ComputeNodes, default: true}
       - {name: vis, group: ComputeNodes, default: false}
   roles:
-    - { role: etcHosts,  domain: 'cvl.massive.org.au' }
+    - { role: etcHosts,  domain: "{{ ldapDomain }}" }
 
 - hosts: 'OpenvpnServer'
   vars_files:
@@ -23,7 +23,6 @@
     slurmctrl: "{{ groups['OpenvpnServer'][0] }}"
     slurmqueues:
       - {name: batch, group: ComputeNodes, default: true}
-      - {name: vis, group: ComputeNodes, default: false}
   roles:
     - { role: easy-rsa-CA }
     - { role: OpenVPN-Server }
@@ -32,13 +31,15 @@
     - { role: slurm-build }
     - { role: nfs-server, configDiskDevice: false }
     - { role: slurm, slurm_use_vpn: true}
-    - { role: installPackage }
+    - { role: installPackage, cliAction: "{'command': 'cp -r /usr/local/Modules/modulefiles/cvl /usr/local/Modules/modulefiles/massive', 'check': '/usr/local/Modules/modulefiles/massive' }"
   tasks:
     setup:
 
 - hosts: all 
+  vars_files:
+    - massive_var/main.yml
   roles:
-    - { role: etcHosts, domain: 'cvl.massive.org.au' }
+    - { role: etcHosts, domain: "{{ ldapDomain }}" }
 
 - hosts: 'ComputeNodes'
   vars_files:
@@ -51,23 +52,22 @@
     slurmctrl: "{{ groups['OpenvpnServer'][0] }}"
     slurmqueues:
       - {name: batch, group: ComputeNodes, default: true}
-      - {name: vis, group: ComputeNodes, default: false}
-    groupList:
-      - { name : 'ComputeNodes', interface : 'tun0' }
     nfs_server: "{{ groups['OpenvpnServer'][0] }}"
   roles:
-    - { role: OpenVPN-Client }
+    - { role: OpenVPN-Client, x509_ca_server: "cvl23server" }
     - { role: ntp }
     - { role: openLdapClient }
-    - { role: syncExports, nfs_server: 'cvl23server', exportList: [{ name: '/', src: '/usr/local', fstype: 'nfs4', opts: 'defaults,ro,nofail', nfsServerIp: "{{ hostvars[nfs_server]['ansible_tun0']['ipv4']['address'] }}", srvopts: 'ro,fsid=0,sync' }] }
-    - { role: nfs-client, exportList: [{ name: '/home', src: '/', fstype: 'nfs4', opts: 'defaults,nofail', nfsServerIp: '{{ nfsServerIpAddress }}', srvopts: 'rw,root_squash,fsid=0,sync' }] }
-    - { role: nfs-client, exportList: [ { name: '/usr/local', src: '/', fstype: 'nfs4', opts: 'defaults,ro,nofail', nfsServerIp: "{{ hostvars[nfs_server]['ansible_tun0']['ipv4']['address'] }}", srvopts: 'ro,fsid=0,sync' }] }
+    - { role: syncExports, nfs_server: "cvl23server", nfsExportFile: "/etc/exports", nfsClientIp: "{{ ansible_tun0.ipv4.address }}", nfsServerOption: "ro,fsid=0,sync" }
+    - { role: nfs-client, exportList: "[{ 'name': '/home', 'src': '/', 'fstype': 'nfs4', 'opts': 'defaults,nofail', 'nfsServerIp': '{{ nfsServerIpAddress }}', 'nfsClientIp': '{{ ansible_tun0.ipv4.address }}', 'srvopts': 'rw,root_squash,fsid=0,sync' }]" }
+    - { role: nfs-client, exportList: "[ { 'name': '/usr/local', 'src': '/', 'fstype': 'nfs4', 'opts': 'defaults,ro,nofail', 'nfsServerIp': '{{ hostvars[nfs_server]['ansible_tun0']['ipv4']['address'] }}', 'srvopts': 'ro,fsid=0,sync' }]" }
     - { role: slurm, slurm_use_vpn: true}
     - { role: installPackage, preInstallation: "umount /usr/local", postInstallation: "mount /usr/local", yumGroupPackageList: ["CVL Pre-installation", "CVL Base Packages", "CVL System", "CVL System Extension"] }
 
 - hosts: all 
+  vars_files:
+    - massive_var/main.yml
   roles:
-    - { role: etcHosts, domain: 'cvl.massive.org.au' }
+    - { role: etcHosts, domain: "{{ ldapDomain }}" }
 
 - hosts: 'LoginNode'
   vars_files:
@@ -81,11 +81,12 @@
     slurmctrl: "{{ groups['OpenvpnServer'][0] }}"
     slurmqueues:
       - {name: batch, group: ComputeNodes, default: true}
-      - {name: vis, group: ComputeNodes, default: false}
+#      - {name: vis, group: ComputeNodes, default: false}
   roles:
     - { role: OpenVPN-Client }
     - { role: ntp }
     - { role: openLdapClient }
-    - { role: nfs-client, exportList: [{ name: '/home', src: '/', fstype: 'nfs4', opts: 'defaults,nofail', nfsServerIp: '{{ nfsServerIpAddress }}', srvopts: 'rw,root_squash,fsid=0,sync' }] }
+    - { role: nfs-client, exportList: "[{ 'name': '/home', 'src': '/', 'fstype': 'nfs4', 'opts': 'defaults,nofail', 'nfsServerIp': '{{ nfsServerIpAddress }}', 'nfsClientIp': '{{ ansible_tun0.ipv4.address }}', 'srvopts': 'rw,root_squash,fsid=0,sync' }]" }
     - { role: slurm, slurm_use_vpn: true}
+    - { role: installPackage, importRepo: { command: "wget http://cvlrepo.massive.org.au/repo/cvl.repo -O", destination: "/etc/yum.repos.d/cvl.repo" }, yumGroupPackageList: ['CVL Pre-installation', 'CVL Base Packages', 'CVL System', 'CVL System Extension'], cliAction: {'run': 'cp -r /usr/local/Modules/modulefiles/cvl /usr/local/Modules/modulefiles/massive', 'check': '/usr/local/Modules/modulefiles/massive'} }
 

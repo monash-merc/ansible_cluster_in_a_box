@@ -5,7 +5,7 @@
   when: ansible_distribution == 'CentOS' and preInstallation is defined
   
 - name: Add new repo file 
-  shell: "'{{ importRepo.command }}' '{{ importRepo.destination }}'" 
+  shell: "{{ importRepo.command }} {{ importRepo.destination }}"
   sudo: true
   run_once: true
   args:
@@ -28,5 +28,13 @@
   shell: "{{ postInstallation }}" 
   sudo: true
   when: ansible_distribution == 'CentOS' and postInstallation is defined
-  
+ 
+- name: conditional shell copy command 
+  shell: "{{ cliAction.run }}"
+  sudo: true
+  run_once: true
+  args:
+    creates: "{{ cliAction.check }}"
+  when: ansible_distribution == 'CentOS' and cliAction is defined
+
 
