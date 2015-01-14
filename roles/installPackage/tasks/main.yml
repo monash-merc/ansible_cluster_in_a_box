@@ -1,0 +1,40 @@
+---
+- name: Pre installation
+  shell: "{{ preInstallation }}" 
+  sudo: true
+  when: ansible_distribution == 'CentOS' and preInstallation is defined
+  
+- name: Add new repo file 
+  shell: "{{ importRepo.command }} {{ importRepo.destination }}"
+  sudo: true
+  run_once: true
+  args:
+    creates: "{{ importRepo.destination }}"
+  when: ansible_distribution == 'CentOS' and importRepo is defined
+
+- name: Install yum packages 
+  yum: name={{ item }} state=latest
+  with_items: yumPackageList
+  sudo: true
+  when: ansible_distribution == 'CentOS' and yumPackageList is defined
+
+- name: Install yum group packages 
+  shell: yum --setopt=protected_multilib=false -y groupinstall "{{ item }}"
+  with_items: yumGroupPackageList
+  sudo: true
+  when: ansible_distribution == 'CentOS' and yumGroupPackageList is defined
+
+- name: Post installation
+  shell: "{{ postInstallation }}" 
+  sudo: true
+  when: ansible_distribution == 'CentOS' and postInstallation is defined
+ 
+- name: conditional shell copy command 
+  shell: "{{ cliAction.run }}"
+  sudo: true
+  run_once: true
+  args:
+    creates: "{{ cliAction.check }}"
+  when: ansible_distribution == 'CentOS' and cliAction is defined
+
+
