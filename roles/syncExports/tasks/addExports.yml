@@ -1,6 +1,7 @@
 ---
-- name: "Add hosts to /etc/exports"
-  script: ./scripts/makeexports.py "{{ nfsExportFile }}" "{{ nfsClientIp }}" "{{ nfsServerOption }}" "/usr/local" 
+- name: "Templating /etc/exports"
+  template: src=exports.j2 dest=/etc/exports owner=root group=root mode=644
   delegate_to: "{{ nfs_server }}"
+  run_once: true
   sudo: true
   notify: "Reload exports"

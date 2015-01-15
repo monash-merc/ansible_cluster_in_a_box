@@ -30,11 +30,11 @@
   when: ansible_distribution == 'CentOS' and postInstallation is defined
  
 - name: conditional shell copy command 
-  shell: "{{ cliAction.run }}"
+  shell: "{{ cliCopy.run }}"
   sudo: true
   run_once: true
   args:
-    creates: "{{ cliAction.check }}"
+    creates: "{{ cliCopy.check }}"
   when: ansible_distribution == 'CentOS' and cliAction is defined
 
 
