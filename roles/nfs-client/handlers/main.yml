@@ -4,5 +4,4 @@
   with_items:
     - rpcbind
     - rpcidmapd
-  when: nfs_type == "nfs4"
   sudo: true
