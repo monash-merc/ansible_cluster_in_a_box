@@ -1,0 +1,41 @@
+--- 
+description: " A simple template to boot a 3 node cluster"
+heat_template_version: 2013-05-23
+parameters:
+ image_id:
+  type: string
+  label: Image ID
+  description: Image to be used for compute instance
+  default: a5e74703-f343-415a-aa23-bd0f0aacfc9e
+ key_name:
+  type: string
+  label: Key Name
+  description: Name of key-pair to be used for compute instance
+  default: shahaan
+ availability_z:
+  type: string
+  label: Availability Zone
+  description: Availability Zone to be used for launching compute instance
+  default: monash-01
+resources:
+  computeNodes:
+   type: "OS::Heat::ResourceGroup"
+   properties:
+    count: 2
+    resource_def:
+     type: "OS::Nova::Server"
+     properties:
+      availability_zone: { get_param: availability_z }
+      flavor: m1.small
+      image: { get_param: image_id }
+      key_name: { get_param: key_name }
+      metadata:
+       ansible_host_group: computeNodes
+       ansible_ssh_user: ec2-user
+       ansible_ssh_private_key_file: /home/sgeadmin/.ssh/shahaan.pem
+  headNodes:
+    type: "OS::Heat::ResourceGroup"
+    properties:
+      count: 1
+      resource_def: 
+       type: headNode.yaml
