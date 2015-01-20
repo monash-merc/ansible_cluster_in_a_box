@@ -1,3 +1,4 @@
 ---
 - include: mkFilesystem.yml 
+- include: fileSymbolicLink.yml
 - include: startServer.yml

@@ -4,6 +4,12 @@
   notify: "restart openvpn"
   sudo: true
 
+- name: Create path
+  shell: mkdir -p {{ dhparms_file | dirname }}
+  args:
+    creates: "{{ dhparms_file | dirname }}"
+  sudo: true
+
 - name: "Generate DH parameters"
   shell: openssl dhparam -out {{ dhparms_file }} 512
   args:
