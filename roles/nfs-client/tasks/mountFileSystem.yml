@@ -1,13 +1,14 @@
 --- 
-- name: "Check mount"
-  shell: mount | grep "{{ item.name }}"
-  with_items: exportList
-  register: result 
-  
+- name: "Get the NFS Network"
+  setup: 
+  register: nfsServer
+  run_once: true
+  delegate_to: "{{ nfs_server }}"
+  when: nfsServer is not defined
+
 - name: "Mounting NFS mounts"
-  mount: "name={{ item.name }} src={{ item.nfsServerIp }}:{{ item.src }} fstype={{ item.fstype }} opts={{ item.opts }} state=mounted"
+  mount: "name={{ item.name }} src={{ nfsServer['ansible_facts']['ansible_'+item.interface]['ipv4']['address'] }}:{{ item.src }} fstype={{ item.fstype }} opts={{ item.opts }} state=mounted"
   with_items: exportList 
   notify: "restart authentication"
   notify: "restart idmap"
   sudo: true 
-  when: exportList is defined and result | failed 
