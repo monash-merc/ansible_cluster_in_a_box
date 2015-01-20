@@ -3,10 +3,7 @@
   hosts: openvpn-servers
   remote_user: ec2-user
   roles:
-    - easy-rsa-common
-    - easy-rsa-CA
-    - easy-rsa-certificate
-    - OpenVPN-Server 
+    #- OpenVPN-Server 
     - nfs-server
   sudo: true
   vars: 
@@ -15,9 +12,9 @@
   hosts: openvpn-clients
   remote_user: ec2-user
   roles:
-    - easy-rsa-common
-    - easy-rsa-certificate 
-    - OpenVPN-Client
+    #- easy-rsa-common
+    #- easy-rsa-certificate 
+    #- OpenVPN-Client
     - syncExports
     - nfs-client
   sudo: true
