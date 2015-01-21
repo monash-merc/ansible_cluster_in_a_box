@@ -3,11 +3,11 @@
   filesystem: fstype={{ item.fstype }} dev={{ item.dev }} opts={{ item.opts }}
   with_items: mkFileSystems
   sudo: true
-  when: configDiskDevice
+  when: configDiskDevice or mkFileSystems is defined
 
 - name: Mount device 
-  mount: name={{ item.name }} src={{ item.dev }} fstype={{ item.fstype }} opts={{ item.mntopts }} state=mounted
-  with_items: mkFileSystems
+  mount: name={{ item.name }} src={{ item.dev }} fstype={{ item.fstype }} opts={{ item.opts }} state=mounted
+  with_items: mountFileSystems
   sudo: true
-  when: configDiskDevice
+  when: configDiskDevice or mountFileSystems is defined
 
