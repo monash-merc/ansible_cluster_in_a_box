@@ -22,7 +22,7 @@
     slurmctrl: "{{ groups['ManagementNodes'][0] }}"
     slurmqueues:
       - {name: batch, group: ComputeNodes, default: true}
-      - {name: dev, group: ComputeNodesDebug, default: false}
+      - {name: dev, group: ComputeNodesDev, default: false}
       - {name: multicore, group: ComputeNodesLarge, default: false}
     mkFileSystems:
         - {fstype : 'ext4', dev: '/dev/vdc1', opts: ''}
@@ -110,7 +110,7 @@
     openvpn_servers: "{{ groups['ManagementNodes'] }}"
     slurmctrl: "{{ groups['ManagementNodes'][0] }}"
     slurmqueues:
-      - {name: dev, group: ComputeNodesDebug, default: false}
+      - {name: dev, group: ComputeNodesDev, default: false}
     nfs_server: "{{ groups['ManagementNodes'][0] }}"
     groupList:
       - { name : 'ComputeNodes', interface : 'tun0' }
