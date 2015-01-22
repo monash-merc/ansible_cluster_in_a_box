@@ -1,0 +1,8 @@
+---
+importRepo: { command: "wget http://cvlrepo.massive.org.au/repo/cvl.repo -O", destination: "/etc/yum.repos.d/cvl.repo" }
+#yumGroupPackageList:
+#  - CVL Pre-installation
+#  - CVL Base Packages
+#  - CVL System
+#  - CVL System Extension
+#  - CVL General Imaging Tools

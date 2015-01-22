@@ -1,0 +1,71 @@
+---
+ldapServerHostIpLine: "130.220.209.234 m2-w.massive.org.au"
+ldapCaCertSrc: "/tmp/m1-w-ca.pem" 
+countryName: "AU"
+reginalName: "Victoria"
+cityName: "Melbourne"
+organizationName: "Monash University"
+emailAddress: "help@massive.org.au"
+organizationUnit: "MASSIVE"
+nfsServerIpAddress: m2-login3.massive.org.au
+
+x509_cert_file: "/etc/openvpn/certs/{{ x509_ca_server }}.crt"
+x509_key_file: "/etc/openvpn/private/{{ x509_ca_server }}.key"
+x509_cacert_file: "/etc/ssl/certs/ca_{{ x509_ca_server }}.crt"
+###x509_common_name: "{{ x509_ca_server }}CommonName"
+x509_common_name: "{{ inventory_hostname }}"
+x509_csr_args: "--server"
+x509_sign_args: "{{ x509_csr_args }}"
+dhparms_file: "/etc/openvpn/private/dh.pem"
+server_network: "10.8.0.0"
+server_netmask: "255.255.255.0"
+
+slurm_version: 14.11.2
+munge_version: 0.5.11
+userRelocationName: "ec2-user"
+userNewHome: "/local_home"
+#nfs_type: "nfs4"
+#nfs_options: "defaults"
+#nfs_server: "m2-login3.massive.org.au"
+ldapServerHost: "130.220.209.234 m2-w.massive.org.au"
+ldapDomain: "massive.org.au"
+ldapURI: "ldaps://m2-w.massive.org.au:1637/"
+ldapBindDN: "cn=ldapbind,cn=users,dc=massive,dc=org,dc=au" 
+ldapBase: "cn=users,dc=massive,dc=org,dc=au"
+ldapUserClass: "user"
+ldapUserHomeDirectory: "unixHomeDirectory"
+ldapUserPricipal: "userPrincipalName"
+ldapGroupBase: "ou=groups,dc=massive,dc=org,dc=au"
+tlsCaCertDirectory: "/etc/openldap/certs"
+ldapCaCertFile: "/etc/openldap/certs/m1-w-ca.pem"
+ldapCaCertFileSource: "/tmp/cvl2server/m1-w-ca.pem"
+cacertFile: "cacert.pem"
+#domain: "cvl.massive.org.au"
+domain: "massive.org.au"
+ldapRfc2307: |
+  ldap_schema = rfc2307
+  ldap_search_base = cn=users,dc=massive,dc=org,dc=au
+  ldap_user_search_base = cn=users,dc=massive,dc=org,dc=au
+  ldap_user_object_class = user
+  ldap_user_home_directory = unixHomeDirectory
+  ldap_user_principal = userPrincipalName
+  ldap_user_name = uid
+  ldap_group_search_base = ou=groups,dc=massive,dc=org,dc=au
+  ldap_group_object_class = group
+  ldap_access_order = expire
+  ldap_account_expire_policy = ad
+
+ldapRfc2307Pam: |
+  scope sub
+  nss_base_passwd cn=users,dc=massive,dc=org,dc=au?sub
+  nss_base_shadow cn=users,dc=massive,dc=org,dc=au?sub
+  nss_base_group cn=users,dc=massive,dc=org,dc=au?sub
+  nss_map_objectclass posixAccount user
+  nss_map_objectclass shadowAccount user
+  nss_map_objectclass posixGroup group
+  nss_map_attribute homeDirectory unixHomeDirectory
+  nss_map_attribute uniqueMember member
+  nss_map_attribute shadowLastChange pwdLastSet
+  pam_login_attribute sAMAccountName
+  pam_filter objectClass=User
+  pam_password ad
