@@ -25,11 +25,11 @@
       - {name: dev, group: ComputeNodesDebug, default: false}
       - {name: multicore, group: ComputeNodesLarge, default: false}
     mkFileSystems:
-        - {fstype : 'ext4', dev: '/dev/vdc1', opts: '', name: '/scrach'}
-        - {fstype : 'ext4', dev: '/dev/vdc2', opts: '', name: '/cvl_home'}
-        - {fstype : 'ext4', dev: '/dev/vdc3', opts: '', name: '/usr/local'}
+        - {fstype : 'ext4', dev: '/dev/vdc1', opts: ''}
+        - {fstype : 'ext4', dev: '/dev/vdc2', opts: ''}
+        - {fstype : 'ext4', dev: '/dev/vdc3', opts: ''}
     mountFileSystems:
-        - {fstype : 'ext4', dev: '/dev/vdc1', opts: 'defaults,nofail', name: '/scrach'}
+        - {fstype : 'ext4', dev: '/dev/vdc1', opts: 'defaults,nofail', name: '/scratch'}
         - {fstype : 'ext4', dev: '/dev/vdc2', opts: 'defaults,nofail', name: '/cvl_home'}
         - {fstype : 'ext4', dev: '/dev/vdc3', opts: 'defaults,nofail', name: '/usr/local'}
   roles:
@@ -41,8 +41,6 @@
     - { role: nfs-server, configDiskDevice: true }
     - { role: slurm, slurm_use_vpn: true}
     - { role: installPackage, yumGroupPackageList: ['CVL Pre-installation', 'CVL Base Packages'], cliCopy: {'run': 'cp -r /usr/local/Modules/modulefiles/cvl /usr/local/Modules/modulefiles/massive', 'check': '/usr/local/Modules/modulefiles/massive'} }
-  tasks:
-    setup:
 
 - hosts: all 
   vars_files:
