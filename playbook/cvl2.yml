@@ -28,7 +28,7 @@
         - {fstype : 'ext4', dev: '/dev/vdc1', opts: '', name: '/scrach'}
         - {fstype : 'ext4', dev: '/dev/vdc2', opts: '', name: '/cvl_home'}
         - {fstype : 'ext4', dev: '/dev/vdc3', opts: '', name: '/usr/local'}
-    mntFileSystems:
+    mountFileSystems:
         - {fstype : 'ext4', dev: '/dev/vdc1', opts: 'defaults,nofail', name: '/scrach'}
         - {fstype : 'ext4', dev: '/dev/vdc2', opts: 'defaults,nofail', name: '/cvl_home'}
         - {fstype : 'ext4', dev: '/dev/vdc3', opts: 'defaults,nofail', name: '/usr/local'}
