@@ -22,13 +22,13 @@
     slurmctrl: "{{ groups['ManagementNodes'][0] }}"
     slurmqueues:
       - {name: batch, group: ComputeNodes, default: true}
-      - {name: debug, group: ComputeNodesDebug, default: false}
+      - {name: dev, group: ComputeNodesDebug, default: false}
       - {name: multicore, group: ComputeNodesLarge, default: false}
     mkFileSystems:
         - {fstype : 'ext4', dev: '/dev/vdc1', opts: '', name: '/scrach'}
         - {fstype : 'ext4', dev: '/dev/vdc2', opts: '', name: '/cvl_home'}
         - {fstype : 'ext4', dev: '/dev/vdc3', opts: '', name: '/usr/local'}
-    mountFileSystems:
+    mntFileSystems:
         - {fstype : 'ext4', dev: '/dev/vdc1', opts: 'defaults,nofail', name: '/scrach'}
         - {fstype : 'ext4', dev: '/dev/vdc2', opts: 'defaults,nofail', name: '/cvl_home'}
         - {fstype : 'ext4', dev: '/dev/vdc3', opts: 'defaults,nofail', name: '/usr/local'}
@@ -112,7 +112,7 @@
     openvpn_servers: "{{ groups['ManagementNodes'] }}"
     slurmctrl: "{{ groups['ManagementNodes'][0] }}"
     slurmqueues:
-      - {name: debug, group: ComputeNodesDebug, default: false}
+      - {name: dev, group: ComputeNodesDebug, default: false}
     nfs_server: "{{ groups['ManagementNodes'][0] }}"
     groupList:
       - { name : 'ComputeNodes', interface : 'tun0' }
