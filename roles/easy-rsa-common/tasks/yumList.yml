@@ -10,3 +10,4 @@
     - openssl-devel
     - nfs-utils
   yum: "name={{ item }} state=present"
+  sudo: true

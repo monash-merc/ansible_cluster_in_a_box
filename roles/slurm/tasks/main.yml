@@ -20,7 +20,7 @@
   sudo: true
 
 - name: create slurm user
-  user: name=slurm group=slurm
+  user: name=slurm group=slurm createhome=no 
   sudo: true
 
 - name: install slurm rpms
