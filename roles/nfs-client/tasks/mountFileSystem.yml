@@ -1,9 +1,4 @@
 --- 
-#- name: "Check mount"
-#  shell: mount | grep {{ item.name }}
-#  with_items: exportList
-#  register: result 
-  
 - name: "Mounting NFS mounts"
   mount: name={{ item.name }} src={{ hostvars[nfs_server]['ansible_'+item.interface]['ipv4']['address'] }}:{{ item.src }} fstype={{ item.fstype }} opts={{ item.opts }} state=mounted
   with_items: exportList 
