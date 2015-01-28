@@ -2,6 +2,7 @@
 - name: Pre installation
   shell: "{{ preInstallation }}" 
   sudo: true
+  ignore_errors: true
   when: ansible_distribution == 'CentOS' and preInstallation is defined
   
 - name: Add new repo file 
