@@ -1,9 +1,4 @@
 --- 
-#- name: "Check mount"
-#  shell: mount | grep {{ item.name }}
-#  with_items: exportList
-#  register: result 
-  
 - name: "stop fail2ban"
   service: name=fail2ban state=stopped
   sudo: true
