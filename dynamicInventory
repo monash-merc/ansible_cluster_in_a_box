@@ -175,7 +175,8 @@ class OpenStackConnection:
 		for server in nc.servers.list():
                         if server.id in instance_ids:
                             if server.metadata and 'ansible_host_group' in server.metadata:
-                                    hostname = socket.gethostbyaddr(server.networks.values()[0][0])[0]
+                                    #hostname = socket.gethostbyaddr(server.networks.values()[0][0])[0]
+                                    hostname = server.name
                                     # Set Ansible Host Group
                                     if server.metadata['ansible_host_group'] in inventory:
                                             inventory[server.metadata['ansible_host_group']].append(hostname)
@@ -183,6 +184,8 @@ class OpenStackConnection:
                                             inventory[server.metadata['ansible_host_group']] = [hostname]
                                     # Set the other host variables
                                     inventory['_meta']['hostvars'][hostname] = {}
+                                    inventory['_meta']['hostvars'][hostname]['ansible_ssh_host'] = server.networks.values()[0][0]
+                                    inventory['_meta']['hostvars'][hostname]['ansible_remote_tmp'] = '/tmp/ansible'
                                     for key in server.metadata.keys():
                                         if 'ansible_ssh' in key:
                                             inventory['_meta']['hostvars'][hostname][key] = server.metadata[key]

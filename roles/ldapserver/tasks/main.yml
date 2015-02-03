@@ -1,6 +1,6 @@
 ---
 
-- include_vars: "{{ hostvars[ansible_hostname]['ansible_distribution'] }}_{{ hostvars[ansible_hostname]['ansible_distribution_version'] }}_{{ ansible_architecture }}.yml"
+- include_vars: "{{ ansible_distribution }}_{{ ansible_distribution_version }}_{{ ansible_architecture }}.yml"
 
 - name: install system packages apt
   apt: name={{ item }} state=installed update_cache=true
