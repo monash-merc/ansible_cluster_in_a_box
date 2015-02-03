@@ -6,7 +6,7 @@
   when: ansible_os_family == 'RedHat'
 - 
   name: "Installing easy-rsa"
-  apt: "name=openvpn state=present"
+  apt: "name=openvpn state=present update_cache=yes"
   sudo: True
   when: ansible_os_family == 'Debian'
 - 

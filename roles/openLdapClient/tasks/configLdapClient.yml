@@ -6,22 +6,41 @@
     - nsswitch.conf
   sudo: true
 
+- name: "get cert dir"
+  shell: "dirname {{ ldapCaCertFile }}"
+  delegate_to: localhost
+  run_once: true
+  register: ldapCaCertDir
+
+- name: "make basedir"
+  file: path={{ ldapCaCertDir.stdout }} state=directory owner=root
+  sudo: true
+
 - name: "Copy the CA cert"
   copy: src={{ ldapCaCertSrc }} dest={{ ldapCaCertFile }} owner=root mode=644
   sudo: true
   when: ldapCaCertSrc is defined
 
+- name: "Template CA cert"
+  template: src=ldapCaCert.j2 dest={{ ldapCaCertFile }} owner=root mode=644
+  sudo: true
+  when: ldapCaCertContents is defined
+
 - name: "Copy pam config to ldap client"
-  template: src=system-auth-ac.j2 dest=/etc/pam.d/system-auth-ac
+  template: src=system-auth-ac.j2 dest=/etc/pam.d/system-auth
+  sudo: true
+
+- name: "Copy pam config to ldap client"
+  template: src=password-auth.j2 dest=/etc/pam.d/password-auth
   sudo: true
 
 - name: "Copy system auth to ldap client"
   template: src=authconfig.j2 dest=/etc/sysconfig/authconfig
   sudo: true
 
-- name: "Copy ldap.conf file "
-  template: src=ldap.conf.j2 dest=/etc/openldap/ldap.conf
-  sudo: true
+#- name: "Copy ldap.conf file "
+#  template: src=ldap.conf.j2 dest=/etc/openldap/ldap.conf
+#  sudo: true
 
 - name: "Add LDAP server IP address to /etc/hosts"
   lineinfile: dest=/etc/hosts line="{{ ldapServerHostIpLine }}" state=present insertafter=EOF
@@ -32,5 +51,9 @@
   template: src=sssd.j2 dest=/etc/sssd/sssd.conf owner=root group=root mode=600
   sudo: true
   notify: restart sssd
+
+- name: "start sssd"
+  service: name=sssd state=started
+  sudo: true
 
 

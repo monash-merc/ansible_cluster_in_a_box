@@ -4,4 +4,17 @@
   delegate_to: "{{ nfs_server }}"
   run_once: true
   sudo: true
-  notify: "Reload exports"
+
+# Do not do this as a handler, instead do this here as a task so that it happens imediatly after the exports file is created before any clients
+# attempt a mount
+- name : "Reload exports"
+  command: exportfs -ra
+  delegate_to: "{{ nfs_server }}"
+  run_once: true
+  sudo: true
+
+- name : "Pause ... clients sometimes have errors"
+  command: sleep 60
+  delegate_to: "{{ nfs_server }}"
+  run_once: true
+  sudo: true

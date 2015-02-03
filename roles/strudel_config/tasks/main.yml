@@ -1,0 +1,8 @@
+- name: "Set login node"
+  set_fact: 
+    loginNode: "{{ ansible_eth0.ipv4.address }}"
+
+- name: "Temlate Strudel config"
+  template: src=generic_slurm_config.json.j2 dest=/tmp/Strudel_Desktops.json
+  delegate_to: 127.0.0.1
+  run_once: True

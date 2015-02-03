@@ -1,0 +1,11 @@
+---
+- name: grab cacert
+  shell: cat /etc/openldap/certs/cacert.pem
+  register: ldapCaCertContents
+
+- name: dump vars
+  template: src=ldapConfig.j2 dest=/tmp/ldapConfig.out
+
+- name: fetch vars
+  fetch: src=/tmp/ldapConfig.out dest=/tmp/ldapConfig.out flat=yes
+

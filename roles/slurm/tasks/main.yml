@@ -16,11 +16,11 @@
   sudo: true
 
 - name: create slurm group
-  group: name=slurm
+  group: name=slurm system=yes
   sudo: true
 
 - name: create slurm user
-  user: name=slurm group=slurm createhome=no 
+  user: name=slurm group=slurm system=yes createhome=no
   sudo: true
 
 - name: install slurm rpms

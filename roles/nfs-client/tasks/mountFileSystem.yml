@@ -1,8 +1,39 @@
 --- 
+- name: "stop fail2ban"
+  service: name=fail2ban state=stopped
+  sudo: true
+
+- name: restart idmap 
+  service: name={{ item }} state=restarted
+  with_items:
+    - rpcbind
+    - rpcidmapd
+  sudo: true
+
 - name: "Mounting NFS mounts"
-  mount: name={{ item.name }} src={{ hostvars[nfs_server]['ansible_'+item.interface]['ipv4']['address'] }}:{{ item.src }} fstype={{ item.fstype }} opts={{ item.opts }} state=mounted
+  mount: name={{ item.src }} src={{ item.ipv4 }}:{{ item.name }} fstype={{ item.fstype }} opts={{ item.opts }} state=mounted
   with_items: exportList 
   notify: "restart authentication"
   notify: "restart idmap"
   sudo: true 
+  ignore_errors: true
+  register: firstMount
   when: exportList is defined 
+
+- name: "Wait for nfs to stabailse"
+  command: sleep 60
+  delegate_to: 127.0.0.1
+  when: firstMount | failed
+
+- name: "Mounting NFS mounts"
+  mount: name={{ item.src }} src={{ item.ipv4 }}:{{ item.name }} fstype={{ item.fstype }} opts={{ item.opts }} state=mounted
+  with_items: exportList 
+  notify: "restart authentication"
+  notify: "restart idmap"
+  sudo: true 
+  when: exportList is defined and firstMount | failed
+
+- name: "restart fail2ban"
+  service: name=fail2ban state=started
+  sudo: true
+

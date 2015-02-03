@@ -1,5 +1,6 @@
 ---
-- include_vars: "{{ hostvars[ansible_hostname]['ansible_distribution'] }}_{{ ansible_architecture }}.yml"
+#- include_vars: "{{ hostvars[ansible_hostname]['ansible_distribution'] }}_{{ ansible_architecture }}.yml"
+- include_vars: "{{ ansible_distribution }}_{{ ansible_architecture }}.yml"
 
 - name: add repos apt
   shell: "add-apt-repository -y 'deb {{ item }} {{ ansible_distribution_release }} main' "

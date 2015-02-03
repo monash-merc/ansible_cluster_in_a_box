@@ -1,0 +1,15 @@
+---
+ldapServerHostIpLine: "{{ ansible_eth0.ipv4.address }} {{ ansible_fqdn }}"
+ldapCaCertContents: |
+{% for l in  ldapCaCertContents.stdout_lines %}
+  {{ l }}
+{% endfor %}
+ldapCaCertFile: /etc/ssl/certs/cacert.crt
+ldapDomain: "{{ ldapDomain }}"
+ldapURI: "ldaps://{{ ansible_fqdn }}:636"
+ldapBindDN: "{{ ldapBindDN }}"
+ldapBindDNPassword: "{{ ldapBindDNPassword }}"
+ldapBase: "{{ ldapBase }}"
+ldapGroupBase: "{{ ldapGroupBase }}"
+ldapRfc2307Pam: ""
+ldap_access_filter: "(objectClass=posixAccount)"

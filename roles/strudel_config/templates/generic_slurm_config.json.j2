@@ -1,0 +1,452 @@
+[
+    [
+        "GenericDesktops"
+    ],
+    {
+        "GenericDesktops": {
+            "__class__": "siteConfig",
+            "__module__": "siteConfig",
+            "agent": {
+                "__class__": "cmdRegEx",
+                "__module__": "siteConfig",
+                "async": true,
+                "cmd": "{sshBinary} -A -c {cipher} -t -t -oStrictHostKeyChecking=no -l {username} {execHost} \"echo agent_hello; bash \"",
+                "failFatal": true,
+                "formatFatal": false,
+                "host": "local",
+                "loop": false,
+                "regex": [
+                    "agent_hello"
+                ],
+                "requireMatch": true
+            },
+            "authURL": null,
+            "authorizedKeysFile": null,
+            "dbusSessionBusAddress": {
+                "__class__": "cmdRegEx",
+                "__module__": "siteConfig",
+                "async": false,
+                "cmd": "\"/usr/bin/ssh {execHost} 'export DISPLAY={vncDisplay};timeout 15 /usr/local/bin/cat_dbus_session_file.sh'\"",
+                "failFatal": true,
+                "formatFatal": false,
+                "host": "login",
+                "loop": false,
+                "regex": [
+                    "^DBUS_SESSION_BUS_ADDRESS=(?P<dbusSessionBusAddress>.*)$"
+                ],
+                "requireMatch": true
+            },
+            "defaults": {
+                "jobParams_hours": 48,
+                "jobParams_mem": 4,
+                "jobParams_ppn": 1
+            },
+            "directConnect": true,
+            "displayStrings": {
+                "__class__": "sshKeyDistDisplayStrings",
+                "__module__": "siteConfig",
+                "createNewKeyDialogNewPassphraseEmptyForbidden": "Sorry, empty passphrases are forbidden.",
+                "createNewKeyDialogNewPassphraseMismatch": "Passphrases don't match!",
+                "createNewKeyDialogNewPassphraseTooShort": "Passphrase is too short.",
+                "helpEmailAddress": "help@massive.org.au",
+                "networkError": "It looks like a network error has occured. You may be able to resume your work by logging in again.",
+                "newPassphrase": "It looks like this is the first time you're using the CVL on this\ncomputer. To use the CVL, the launcher will generate a local\npassphrase protected key on your computer which is used to\nauthenticate you and set up your remote CVL environment.\n\nPlease enter a new passphrase (twice to avoid typos) to protect your local key. \nAfter you've done this, your passphrase will be the primary method of\nauthentication for the launcher.\n\nWHY?\n\nThis new method of authentication allows you to create file system\nmounts to remote computer systems, and in the future it will support\nlaunching remote HPC jobs.",
+                "newPassphraseEmptyForbidden": "Sorry, empty passphrases are forbidden.\nIt looks like this is the first time you're using the CVL on this\ncomputer. To use the CVL, the launcher will generate a local\npassphrase protected key on your computer which is used to\nauthenticate you and set up your remote CVL environment.\n\nPlease enter a new passphrase (twice to avoid typos) to protect your local key. \nAfter you've done this, your passphrase will be the primary method of\nauthentication for the launcher.\n\nWHY?\n\nThis new method of authentication allows you to create file system\nmounts to remote computer systems, and in the future it will support\nlaunching remote HPC jobs.",
+                "newPassphraseMismatch": "Sorry, the two passphrases you entered don't match.\nIt looks like this is the first time you're using the CVL on this\ncomputer. To use the CVL, the launcher will generate a local\npassphrase protected key on your computer which is used to\nauthenticate you and set up your remote CVL environment.\n\nPlease enter a new passphrase (twice to avoid typos) to protect your local key. \nAfter you've done this, your passphrase will be the primary method of\nauthentication for the launcher.\n\nWHY?\n\nThis new method of authentication allows you to create file system\nmounts to remote computer systems, and in the future it will support\nlaunching remote HPC jobs.",
+                "newPassphraseTitle": "Please enter a new passphrase",
+                "newPassphraseTooShort": "Sorry, the passphrase must be at least six characters.\nIt looks like this is the first time you're using the CVL on this\ncomputer. To use the CVL, the launcher will generate a local\npassphrase protected key on your computer which is used to\nauthenticate you and set up your remote CVL environment.\n\nPlease enter a new passphrase (twice to avoid typos) to protect your local key. \nAfter you've done this, your passphrase will be the primary method of\nauthentication for the launcher.\n\nWHY?\n\nThis new method of authentication allows you to create file system\nmounts to remote computer systems, and in the future it will support\nlaunching remote HPC jobs.",
+                "passphrasePrompt": "Please enter the passphrase for your SSH key",
+                "passphrasePromptIncorrect": "Sorry, that passphrase was incorrect.\nPlease enter the passphrase for you SSH Key\nIf you have forgoten the passphrase for you key, you may need to delete it and create a new key.\nYou can find this option under the Identity menu.\n",
+                "passphrasePromptIncorrectl": "Sorry, that passphrase was incorrect. Please enter the passphrase for your ssh key",
+                "passwdPrompt": "Please enter the password for your CVL account.\nThis is the password you entered when you requested an account\nat the website https://web.cvl.massive.org.au/users",
+                "passwdPromptIncorrect": "Sorry, that password was incorrect.\nPlease enter the password for your CVL account.\nThis is the password you entered when you requested an account\nat the website https://web.cvl.massive.org.au/users",
+                "persistentMessage": "Would you like to leave your current session running so that you can reconnect later?",
+                "persistentMessagePersist": "Leave it running",
+                "persistentMessageStop": "Stop the desktop",
+                "qdelQueuedJob": "It looks like you've been waiting for a job to start.\nDo you want me to delete the job or leave it in the queue so you can reconnect later?\n",
+                "qdelQueuedJobNOOP": "Leave it in the queue (I'll reconnect later)",
+                "qdelQueuedJobQdel": "Delete the job",
+                "reconnectMessage": "An Existing Desktop was found. Would you like to reconnect or kill it and start a new desktop?",
+                "reconnectMessageNo": "New desktop",
+                "reconnectMessageYes": "Reconnect",
+                "temporaryKey": "\nWould you like to use the launchers old behaviour (entering a password every time you start a new desktop) or try the new behaviour (creating an ssh key pair and entering a passphrase the first time you use the launcher after reboot.)\n\nPasswords are recomended if this is a shared user account.\n\nSSH Keys are recommended if you are the only person who uses this account.\n\nThis option can be changed from the Identity menu.\n",
+                "temporaryKeyNo": "Use my SSH Key",
+                "temporaryKeyYes": "Use my password every time"
+            },
+            "displayWebDavInfoDialogOnRemoteDesktop": {
+                "__class__": "cmdRegEx",
+                "__module__": "siteConfig",
+                "async": false,
+                "cmd": "\"/usr/bin/ssh {execHost} 'echo -e \\\"You can access your local home directory in Nautilus File Browser, using the location:\\n\\ndav://{localUsername}@localhost:{remoteWebDavPortNumber}/{homeDirectoryWebDavShareName}\\n\\nYour one-time password is {vncPasswd}\\\" > ~/.vnc/\\$(hostname){vncDisplay}-webdav.txt'\"",
+                "failFatal": true,
+                "formatFatal": false,
+                "host": "login",
+                "loop": false,
+                "regex": [
+                    null
+                ],
+                "requireMatch": false
+            },
+            "execHost": {
+                "__class__": "cmdRegEx",
+                "__module__": "siteConfig",
+                "async": false,
+                "cmd": "\"squeue -j {jobidNumber} -o \"%N\" | tail -n -1 | cut -f 1 -d ',' | xargs -iname getent hosts name | cut -f 1 -d ' ' \"",
+                "failFatal": true,
+                "formatFatal": false,
+                "host": "login",
+                "loop": false,
+                "regex": [
+                    "^(?P<execHost>.*)$"
+                ],
+                "requireMatch": true
+            },
+            "getProjects": {
+                "__class__": "cmdRegEx",
+                "__module__": "siteConfig",
+                "async": false,
+                "cmd": "\"groups | sed 's@ @\\n@g'\"",
+                "failFatal": true,
+                "formatFatal": false,
+                "host": "login",
+                "loop": false,
+                "regex": [
+                    "^\\s*(?P<group>\\S+)\\s*$"
+                ],
+                "requireMatch": true
+            },
+            "imageid": null,
+            "instanceFlavour": null,
+            "listAll": {
+                "__class__": "cmdRegEx",
+                "__module__": "siteConfig",
+                "async": false,
+                "cmd": "squeue -u {username} -o \\\"%i %L\\\" | tail -n -1",
+                "failFatal": true,
+                "formatFatal": false,
+                "host": "login",
+                "loop": false,
+                "regex": [
+                    "(?P<jobid>(?P<jobidNumber>[0-9]+)) (?P<remainingWalltime>.*)$"
+                ],
+                "requireMatch": false
+            },
+            "loginHost": "{{ loginNode }}",
+            "messageRegexs": [
+                {
+                    "__class__": "__regex__",
+                    "pattern": "^INFO:(?P<info>.*(?:\n|\r\n?))"
+                },
+                {
+                    "__class__": "__regex__",
+                    "pattern": "^WARN:(?P<warn>.*(?:\n|\r\n?))"
+                },
+                {
+                    "__class__": "__regex__",
+                    "pattern": "^ERROR:(?P<error>.*(?:\n|\r\n?))"
+                }
+            ],
+            "onConnectScript": {
+                "__class__": "cmdRegEx",
+                "__module__": "siteConfig",
+                "async": false,
+                "cmd": "\"/usr/bin/ssh {execHost} 'module load keyutility ; mountUtility.py'\"",
+                "failFatal": true,
+                "formatFatal": false,
+                "host": "login",
+                "loop": false,
+                "regex": [
+                    null
+                ],
+                "requireMatch": false
+            },
+            "openWebDavShareInRemoteFileBrowser": {
+                "__class__": "cmdRegEx",
+                "__module__": "siteConfig",
+                "async": false,
+                "cmd": "\"/usr/bin/ssh {execHost} \\\"export DBUS_SESSION_BUS_ADDRESS={dbusSessionBusAddress};/usr/bin/gconftool-2 --type=Boolean --set /apps/nautilus/preferences/always_use_location_entry true {ampersand}{ampersand} DISPLAY={vncDisplay} xdg-open dav://{localUsername}@localhost:{remoteWebDavPortNumber}/{homeDirectoryWebDavShareName}\\\"\"",
+                "failFatal": true,
+                "formatFatal": false,
+                "host": "login",
+                "loop": false,
+                "regex": [
+                    null
+                ],
+                "requireMatch": false
+            },
+            "otp": {
+                "__class__": "cmdRegEx",
+                "__module__": "siteConfig",
+                "async": false,
+                "cmd": "'cat ~/.vnc/clearpass'",
+                "failFatal": true,
+                "formatFatal": false,
+                "host": "login",
+                "loop": false,
+                "regex": [
+                    "^(?P<vncPasswd>\\S+)$"
+                ],
+                "requireMatch": true
+            },
+            "provision": null,
+            "relabel": {},
+            "runSanityCheck": {
+                "__class__": "cmdRegEx",
+                "__module__": "siteConfig",
+                "async": false,
+                "cmd": null,
+                "failFatal": false,
+                "formatFatal": false,
+                "host": "login",
+                "loop": false,
+                "regex": [
+                    null
+                ],
+                "requireMatch": false
+            },
+            "running": {
+                "__class__": "cmdRegEx",
+                "__module__": "siteConfig",
+                "async": false,
+                "cmd": "\"scontrol show job {jobidNumber}\"",
+                "failFatal": true,
+                "formatFatal": false,
+                "host": "login",
+                "loop": false,
+                "regex": [
+                    "JobState=RUNNING"
+                ],
+                "requireMatch": true
+            },
+            "setDisplayResolution": {
+                "__class__": "cmdRegEx",
+                "__module__": "siteConfig",
+                "async": false,
+                "cmd": null,
+                "failFatal": false,
+                "formatFatal": false,
+                "host": "login",
+                "loop": false,
+                "regex": [
+                    null
+                ],
+                "requireMatch": false
+            },
+            "showStart": {
+                "__class__": "cmdRegEx",
+                "__module__": "siteConfig",
+                "async": false,
+                "cmd": null,
+                "failFatal": false,
+                "formatFatal": false,
+                "host": "login",
+                "loop": false,
+                "regex": [
+                    null
+                ],
+                "requireMatch": false
+            },
+            "siteRanges": {
+                "jobParams_hours": [
+                    1,
+                    336
+                ],
+                "jobParams_mem": [
+                    1,
+                    1024
+                ],
+                "jobParams_nodes": [
+                    1,
+                    10
+                ],
+                "jobParams_ppn": [
+                    1,
+                    12
+                ]
+            },
+            "startServer": {
+                "__class__": "cmdRegEx",
+                "__module__": "siteConfig",
+                "async": false,
+                "cmd": "\"mkdir ~/.vnc ; rm -f ~/.vnc/clearpass ; touch ~/.vnc/clearpass ; chmod 600 ~/.vnc/clearpass ; passwd=\"'$'\"( dd if=/dev/urandom bs=1 count=8 2>/dev/null | md5sum | cut -b 1-8 ) ; echo \"'$'\"passwd > ~/.vnc/clearpass ; module load turbovnc ; cat ~/.vnc/clearpass | vncpasswd -f > ~/.vnc/passwd ; chmod 600 ~/.vnc/passwd ; echo -e '#!/bin/bash\\n/usr/local/bin/vncsession --vnc turbovnc --geometry {resolution} ; sleep 36000000 ' |  sbatch -p batch -N {nodes} -n {ppn} --time={hours}:00:00 -J desktop_{username} -o .vnc/slurm-%j.out \"",
+                "failFatal": true,
+                "formatFatal": false,
+                "host": "login",
+                "loop": false,
+                "regex": [
+                    "^Submitted batch job (?P<jobid>(?P<jobidNumber>[0-9]+))$"
+                ],
+                "requireMatch": true
+            },
+            "stop": {
+                "__class__": "cmdRegEx",
+                "__module__": "siteConfig",
+                "async": false,
+                "cmd": "\"scancel {jobidNumber}\"",
+                "failFatal": true,
+                "formatFatal": false,
+                "host": "login",
+                "loop": false,
+                "regex": [
+                    null
+                ],
+                "requireMatch": false
+            },
+            "stopForRestart": {
+                "__class__": "cmdRegEx",
+                "__module__": "siteConfig",
+                "async": false,
+                "cmd": "\"scancel {jobidNumber}\"",
+                "failFatal": true,
+                "formatFatal": false,
+                "host": "login",
+                "loop": false,
+                "regex": [
+                    null
+                ],
+                "requireMatch": false
+            },
+            "tunnel": {
+                "__class__": "cmdRegEx",
+                "__module__": "siteConfig",
+                "async": true,
+                "cmd": "{sshBinary} -A -c {cipher} -t -t -oStrictHostKeyChecking=no -L {localPortNumber}:localhost:{remotePortNumber} -l {username} {execHost} \"echo tunnel_hello; bash\"",
+                "failFatal": true,
+                "formatFatal": false,
+                "host": "local",
+                "loop": false,
+                "regex": [
+                    "tunnel_hello"
+                ],
+                "requireMatch": true
+            },
+            "username": null,
+            "visibility": {
+                "advancedCheckBoxPanel": true,
+                "cipherPanel": "Advanced",
+                "debugCheckBoxPanel": "Advanced",
+                "jobParams_hours": true,
+                "jobParams_nodes": true,
+                "jobParams_ppn": true,
+                "label_hours": true,
+                "label_nodes": true,
+                "label_ppn": true,
+                "resolutionPanel": "Advanced",
+                "resourcePanel": "Advanced",
+                "usernamePanel": true
+            },
+            "vncDisplay": {
+                "__class__": "cmdRegEx",
+                "__module__": "siteConfig",
+                "async": false,
+                "cmd": "\"cat .vnc/slurm-{jobidNumber}.out\"",
+                "failFatal": true,
+                "formatFatal": false,
+                "host": "exec",
+                "loop": false,
+                "regex": [
+                    "^.*?started on display \\S+(?P<vncDisplay>:[0-9]+)\\s*$"
+                ],
+                "requireMatch": true
+            },
+            "webDavCloseWindow": {
+                "__class__": "cmdRegEx",
+                "__module__": "siteConfig",
+                "async": false,
+                "cmd": "\"/usr/bin/ssh {execHost} 'export DBUS_SESSION_BUS_ADDRESS={dbusSessionBusAddress};export DISPLAY={vncDisplay}; wmctrl -F -i -c {webDavWindowID}'\"",
+                "failFatal": true,
+                "formatFatal": false,
+                "host": "login",
+                "loop": false,
+                "regex": [
+                    null
+                ],
+                "requireMatch": false
+            },
+            "webDavIntermediatePort": {
+                "__class__": "cmdRegEx",
+                "__module__": "siteConfig",
+                "async": false,
+                "cmd": "\"/usr/local/bin/get_ephemeral_port.py\"",
+                "failFatal": true,
+                "formatFatal": false,
+                "host": "exec",
+                "loop": false,
+                "regex": [
+                    "^(?P<intermediateWebDavPortNumber>[0-9]+)$"
+                ],
+                "requireMatch": true
+            },
+            "webDavMount": {
+                "__class__": "cmdRegEx",
+                "__module__": "siteConfig",
+                "async": false,
+                "cmd": "\"/usr/bin/ssh {execHost} \\\"export DBUS_SESSION_BUS_ADDRESS={dbusSessionBusAddress};echo \\\\\\\"import pexpect;child = pexpect.spawn('gvfs-mount dav://{localUsername}@localhost:{remoteWebDavPortNumber}/{homeDirectoryWebDavShareName}');child.expect('Password: ');child.sendline('{vncPasswd}');child.expect(pexpect.EOF);child.close();print 'gvfs-mount returned ' + str(child.exitstatus)\\\\\\\" {pipe} python\\\"\"",
+                "failFatal": true,
+                "formatFatal": false,
+                "host": "login",
+                "loop": false,
+                "regex": [
+                    "^gvfs-mount returned (?P<webDavMountingExitCode>.*)$"
+                ],
+                "requireMatch": true
+            },
+            "webDavRemotePort": {
+                "__class__": "cmdRegEx",
+                "__module__": "siteConfig",
+                "async": false,
+                "cmd": "\"/usr/local/bin/get_ephemeral_port.py\"",
+                "failFatal": true,
+                "formatFatal": false,
+                "host": "exec",
+                "loop": false,
+                "regex": [
+                    "^(?P<remoteWebDavPortNumber>[0-9]+)$"
+                ],
+                "requireMatch": true
+            },
+            "webDavTunnel": {
+                "__class__": "cmdRegEx",
+                "__module__": "siteConfig",
+                "async": true,
+                "cmd": "{sshBinary} -A -c {cipher} -t -t -oStrictHostKeyChecking=no -oExitOnForwardFailure=yes -R {remoteWebDavPortNumber}:localhost:{localWebDavPortNumber} -l {username} {execHost} \"echo tunnel_hello; bash\"",
+                "failFatal": true,
+                "formatFatal": false,
+                "host": "local",
+                "loop": false,
+                "regex": [
+                    "tunnel_hello"
+                ],
+                "requireMatch": true
+            },
+            "webDavUnmount": {
+                "__class__": "cmdRegEx",
+                "__module__": "siteConfig",
+                "async": false,
+                "cmd": "\"/usr/bin/ssh {execHost} 'export DBUS_SESSION_BUS_ADDRESS={dbusSessionBusAddress};export DISPLAY={vncDisplay};timeout 1 gvfs-mount --unmount-scheme dav'\"",
+                "failFatal": true,
+                "formatFatal": false,
+                "host": "login",
+                "loop": false,
+                "regex": [
+                    null
+                ],
+                "requireMatch": false
+            },
+            "webDavWindowID": {
+                "__class__": "cmdRegEx",
+                "__module__": "siteConfig",
+                "async": false,
+                "cmd": "\"/usr/bin/ssh {execHost} 'export DBUS_SESSION_BUS_ADDRESS={dbusSessionBusAddress}; DISPLAY={vncDisplay} xwininfo -root -tree'\"",
+                "failFatal": true,
+                "formatFatal": false,
+                "host": "login",
+                "loop": false,
+                "regex": [
+                    "^\\s+(?P<webDavWindowID>\\S+)\\s+\"{homeDirectoryWebDavShareName}.*Browser.*$"
+                ],
+                "requireMatch": true
+            }
+        }
+    }
+]
