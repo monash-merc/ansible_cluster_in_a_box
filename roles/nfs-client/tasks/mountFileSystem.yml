@@ -11,7 +11,7 @@
   sudo: true
 
 - name: "Mounting NFS mounts"
-  mount: name={{ item.src }} src={{ item.ipv4 }}:{{ item.name }} fstype={{ item.fstype }} opts={{ item.opts }} state=mounted
+  mount: name={{ item.name }} src={{ item.ipv4 }}:{{ item.src }} fstype={{ item.fstype }} opts={{ item.opts }} state=mounted
   with_items: exportList 
   notify: "restart authentication"
   notify: "restart idmap"
@@ -26,7 +26,7 @@
   when: firstMount | failed
 
 - name: "Mounting NFS mounts"
-  mount: name={{ item.src }} src={{ item.ipv4 }}:{{ item.name }} fstype={{ item.fstype }} opts={{ item.opts }} state=mounted
+  mount: name={{ item.name }} src={{ item.ipv4 }}:{{ item.src }} fstype={{ item.fstype }} opts={{ item.opts }} state=mounted
   with_items: exportList 
   notify: "restart authentication"
   notify: "restart idmap"

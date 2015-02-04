@@ -1,0 +1,12 @@
+---
+
+- name: "update cache"
+  shell: yum update -y
+  sudo: true
+
+- name: "Install extra packages"
+  yum: "name={{ item }} state=latest"
+  with_items:
+    pkgs
+  sudo: true
+
