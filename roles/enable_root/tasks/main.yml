@@ -1,0 +1,3 @@
+- name: add key to root ssh
+  template: dest=/root/.ssh/authorized_keys mode=600 owner=root group=root src=authorized_keys.j2
+  sudo: true
