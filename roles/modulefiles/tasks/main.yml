@@ -1,0 +1,7 @@
+---
+- name: add /usr/local/Modules to the module file path
+  lineinfile: 
+  args:
+    dest: /usr/share/Modules/init/.modulespath
+    line: /usr/local/Modules/modulefiles
+  sudo: true
