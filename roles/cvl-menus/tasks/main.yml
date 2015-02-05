@@ -1,0 +1,3 @@
+- name: configure the cvl menues
+  copy: src=cvl.menu dest=/etc/xdg/menus/applications-merged/cvl.menu mode=644 owner=root group=root
+  sudo: true
