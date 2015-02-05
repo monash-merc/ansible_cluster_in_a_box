@@ -1,0 +1,13 @@
+<!DOCTYPE Menu PUBLIC "-//freedesktop//DTD Menu 1.0//EN" "http://www.freedesktop.org/standards/menu-spec/1.0/menu.dtd">
+<Menu>
+    <Name>Applications</Name>
+    <Layout>
+        <Merge type="menus" />
+        <Menuname>Characterisation Virtual Laboratory</Menuname>
+    </Layout>
+    <Menu>
+        <Name>Characterisation Virtual Laboratory</Name>
+        <Directory>cvl.directory</Directory>
+        <MergeDir>/usr/local/share/xdg/menus/applications-merged/application</MergeDir>
+    </Menu>
+</Menu>
