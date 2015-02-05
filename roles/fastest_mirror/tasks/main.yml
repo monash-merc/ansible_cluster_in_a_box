@@ -1,0 +1,9 @@
+- name: "Clear yum cache"
+  command: yum clean all
+  sudo: true
+  when: ansible_os_family == 'RedHat'
+
+- name: "Make yum cache"
+  command: yum makecache
+  sudo: true
+  when: ansible_os_family == 'RedHat'
