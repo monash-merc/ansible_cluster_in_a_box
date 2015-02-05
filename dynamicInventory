@@ -197,7 +197,7 @@ class OpenStackConnection:
                             for key in server.metadata.keys():
                                 if 'ansible_ssh' in key:
                                     inventory['_meta']['hostvars'][hostname][key] = server.metadata[key]
-                            inventory['_meta']['hostvars'][hostname]['ansible_ssh_user'] = 'root'
+                            inventory['_meta']['hostvars'][hostname]['ansible_ssh_user'] = 'ec2-user'
 		print json.dumps(inventory)
 
 if __name__ == "__main__":
