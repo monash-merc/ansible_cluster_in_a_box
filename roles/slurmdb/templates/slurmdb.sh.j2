@@ -1,0 +1,4 @@
+#!/bin/sh
+
+grant all privileges on slurm_acct_db.* to 'slurmdb'@\'{{ slurmctrl }}.{{ domain }}\' identified by \'{{ slurmDbPassword }}' with grant option;
+
