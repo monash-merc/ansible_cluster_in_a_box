@@ -3,3 +3,6 @@ clustername: "CIAB"
 slurmctlddebug: {} 
 slurmddebug: {} 
 slurmschedlog: {} 
+slurmdbdlog: {}
+slurmfairshare: {def: false, val: 10000}
+
