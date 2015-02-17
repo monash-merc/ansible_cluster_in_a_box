@@ -1,6 +1,6 @@
 ---
 - name: copy rpms
-  copy: src=/tmp/rpmbuild dest=/tmp/
+  copy: src=/tmp/rpmbuild dest=/tmp
   sudo: true
 
 - name: install munge rpms
