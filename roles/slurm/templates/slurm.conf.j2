@@ -74,23 +74,23 @@ FastSchedule=1
 #PriorityMaxAge=1-0
 #
 # LOGGING
-{% if slurmctlddebug and slurmctldlogfile %}
-SlurmctldDebug={{ slurmctlddebug }}
-SlurmctldLogFile={{ slurmctldlogfile }}
+{% if slurmctlddebug %}
+SlurmctldDebug={{ slurmctlddebug.level }}
+SlurmctldLogFile={{ slurmctlddebug.log }}
 {% else %}
 #SlurmctldDebug=
 #SlurmctldLogFile=
 {% endif %}
-{% if slurmddebug and slurmdlogfile %}
-SlurmdDebug={{ slurmddebug }}
-SlurmdLogFile={{ slurmdlogfile }}
+{% if slurmddebug %}
+SlurmdDebug={{ slurmddebug.level }}
+SlurmdLogFile={{ slurmddebug.log }}
 {% else %}
 #SlurmdDebug=
 #SlurmdLogFile=
 {% endif %}
-{% if slurmschedlog and slurmschedlogfile %}
-SlurmSchedlogLevel={{ slurmschedlog }}
-SlurmSchedLogFile={{ slurmschedlogfile }}
+{% if slurmschedlog %}
+SlurmSchedlogLevel={{ slurmschedlog.level }}
+SlurmSchedLogFile={{ slurmschedlog.log }}
 {% else %}
 #SlurmSchedlogLevel=
 #SlurmSchedLogFile=
@@ -104,15 +104,15 @@ JobCompType=jobcomp/none
 #
 AccountingStorageType=accounting_storage/slurmdbd
 AccountingStorageHost={{ slurmctrl }}
-AccountingStorageEnforce=limits,safe
+#AccountingStorageEnforce=limits,safe
 #AccountingStorageLoc=
 #AccountingStoragePass=
 #AccountingStorageUser=
 #
 
 # Fair share
-{% if slurmfairshare %}
-PriorityWeightFairshare={{ slurmfairshare }}
+{% if slurmfairshare.def %}
+PriorityWeightFairshare={{ slurmfairshare.val }}
 {% endif %}
 
 DisableRootJobs=YES
