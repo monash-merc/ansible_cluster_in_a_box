@@ -1,0 +1,21 @@
+<background>
+  <starttime>
+    <year>2010</year>
+    <month>11</month>
+    <day>11</day>
+    <hour>00</hour>
+    <minute>00</minute>
+    <second>00</second>
+  </starttime>
+
+<static>
+<duration>10000000000.0</duration>
+<file>
+	<!-- Wide 16:10 -->
+	<size width="1920" height="1200">/usr/share/backgrounds/cvl_desktop.svg</size>
+	<!-- Standard 4:3 -->
+	<size width="1920" height="1440">/usr/share/backgrounds/cvl_desktop.svg</size>
+</file>
+</static>
+
+</background>

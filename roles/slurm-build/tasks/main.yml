@@ -12,6 +12,14 @@
     - perl-ExtUtils-MakeMaker
     - bzip2-devel
 
+- name: install deps in control node
+  yum: name={{ item }} state=installed
+  sudo: true
+  with_items:
+    - mysql
+    - mysql-devel
+  when: ansible_hostname == slurmctrl
+
 - name: get munge
   shell: wget https://munge.googlecode.com/files/munge-{{ munge_version }}.tar.bz2
   args:

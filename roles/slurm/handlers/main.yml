@@ -6,3 +6,8 @@
   - name: restart slurm
     service: name=slurm state=restarted
     sudo: true
+
+  - name: restart slurmdbd
+    service: name=slurmdbd state=restarted
+    sudo: true
+

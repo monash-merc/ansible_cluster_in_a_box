@@ -15,6 +15,7 @@
 - name: "make basedir"
   file: path={{ ldapCaCertDir.stdout }} state=directory owner=root
   sudo: true
+  ignore_errors: true
 
 - name: "Copy the CA cert"
   copy: src={{ ldapCaCertSrc }} dest={{ ldapCaCertFile }} owner=root mode=644
@@ -38,9 +39,9 @@
   template: src=authconfig.j2 dest=/etc/sysconfig/authconfig
   sudo: true
 
-#- name: "Copy ldap.conf file "
-#  template: src=ldap.conf.j2 dest=/etc/openldap/ldap.conf
-#  sudo: true
+- name: "Copy ldap.conf file "
+  template: src=ldap.conf.j2 dest=/etc/openldap/ldap.conf
+  sudo: true
 
 - name: "Add LDAP server IP address to /etc/hosts"
   lineinfile: dest=/etc/hosts line="{{ ldapServerHostIpLine }}" state=present insertafter=EOF

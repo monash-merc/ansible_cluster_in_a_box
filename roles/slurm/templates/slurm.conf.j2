@@ -8,7 +8,7 @@
 #
 # See the slurm.conf man page for more information.
 #
-ClusterName=CIAB
+ClusterName={{ clustername }}
 ControlMachine={{ slurmctrl }}
 #ControlAddr=
 #BackupController=
@@ -21,8 +21,8 @@ SlurmdPort=6818
 AuthType=auth/munge
 #JobCredentialPrivateKey=
 #JobCredentialPublicCertificate=
-StateSaveLocation=/tmp
-SlurmdSpoolDir=/tmp/slurmd
+StateSaveLocation=/var/spool
+SlurmdSpoolDir=/var/spool/slurmd
 SwitchType=switch/none
 MpiDefault=none
 SlurmctldPidFile=/var/run/slurmctld.pid
@@ -74,10 +74,27 @@ FastSchedule=1
 #PriorityMaxAge=1-0
 #
 # LOGGING
-SlurmctldDebug=3
+{% if slurmctlddebug and slurmctldlogfile %}
+SlurmctldDebug={{ slurmctlddebug }}
+SlurmctldLogFile={{ slurmctldlogfile }}
+{% else %}
+#SlurmctldDebug=
 #SlurmctldLogFile=
-SlurmdDebug=3
+{% endif %}
+{% if slurmddebug and slurmdlogfile %}
+SlurmdDebug={{ slurmddebug }}
+SlurmdLogFile={{ slurmdlogfile }}
+{% else %}
+#SlurmdDebug=
 #SlurmdLogFile=
+{% endif %}
+{% if slurmschedlog and slurmschedlogfile %}
+SlurmSchedlogLevel={{ slurmschedlog }}
+SlurmSchedLogFile={{ slurmschedlogfile }}
+{% else %}
+#SlurmSchedlogLevel=
+#SlurmSchedLogFile=
+{% endif %}
 JobCompType=jobcomp/none
 #JobCompLoc=
 #
@@ -85,12 +102,20 @@ JobCompType=jobcomp/none
 #JobAcctGatherType=jobacct_gather/linux
 #JobAcctGatherFrequency=30
 #
-#AccountingStorageType=accounting_storage/slurmdbd
-#AccountingStorageHost=
+AccountingStorageType=accounting_storage/slurmdbd
+AccountingStorageHost={{ slurmctrl }}
+AccountingStorageEnforce=limits,safe
 #AccountingStorageLoc=
 #AccountingStoragePass=
 #AccountingStorageUser=
 #
+
+# Fair share
+{% if slurmfairshare %}
+PriorityWeightFairshare={{ slurmfairshare }}
+{% endif %}
+
+DisableRootJobs=YES
 MpiParams=ports=12000-12999
 # COMPUTE NODES
 {% set nodelist = [] %}

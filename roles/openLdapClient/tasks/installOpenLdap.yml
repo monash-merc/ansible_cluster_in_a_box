@@ -2,15 +2,15 @@
 - name: "Install open ldap package yum"
   action: yum pkg={{ item }} state=installed 
   with_items:
-      #    - openldap
-      #    - openldap-clients
+    - openldap
+    - openldap-clients
     - sssd
     - sssd-common
     - sssd-client
     - nss
     - nss-tools
-      #    - nss-pam-ldapd
-      #    - pam_ldap
+    - nss-pam-ldapd
+    - pam_ldap
   sudo: true
   when: ansible_os_family == 'RedHat'
 
