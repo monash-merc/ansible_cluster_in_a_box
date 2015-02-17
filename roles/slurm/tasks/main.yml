@@ -15,19 +15,13 @@
     - perl-DBI
   sudo: true
 
-- name: check slurm account
-  shell: id slurm  
-  register: slurm_account
-
 - name: create slurm group
   group: name=slurm system=yes
   sudo: true
-  when: slurm_account | failed
 
 - name: create slurm user
   user: name=slurm group=slurm system=yes createhome=no
   sudo: true
-  when: slurm_account | failed
 
 - name: install slurm rpms
   shell: "rpm --install /tmp/rpmbuild/RPMS/x86_64/slurm*{{ slurm_version }}*rpm"

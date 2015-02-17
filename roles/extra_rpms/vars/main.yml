@@ -121,6 +121,7 @@ pkgs:
  - libXpm
  - libXt
  - libXtst
+ - man
  - mod_ssl
  - mysql-server
  - nagios-plugins

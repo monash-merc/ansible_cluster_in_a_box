@@ -1,0 +1,8 @@
+---
+clustername: "CIAB" 
+#slurmctlddebug: 3
+#slurmddebug: 3
+#slurmdlogfile: /tmp/slurm/log/slurmd.log 
+#slurmctldlogfile: /tmp/slurm/log/slurmctld.log 
+#slurmschedlog: 9
+#slurmschedlogfile: /tmp/slurm/log/slurmsched.log
