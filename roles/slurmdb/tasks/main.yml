@@ -1,0 +1,13 @@
+---
+- name: create slurmdb user
+  user: name=slurmdb group=slurmdb system=yes createhome=no
+  sudo: true
+
+- name: install slurmdbd.conf
+  template: src=slurmdbd.conf.j2 dest=/etc/slurm/slurmdbd.conf
+  sudo: true
+
+- name: slurm db template 
+  template: src=slurmdb.sh.j2 dest=/etc/slurm/slurmdb.sh
+  sudo: true
+  notify: restart slurmdbd

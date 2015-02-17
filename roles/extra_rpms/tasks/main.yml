@@ -3,10 +3,12 @@
 - name: "update cache"
   shell: yum update -y
   sudo: true
+  when: ansible_os_family == 'RedHat'
 
 - name: "Install extra packages"
   yum: "name={{ item }} state=latest"
   with_items:
     pkgs
   sudo: true
+  when: ansible_os_family == 'RedHat'
 

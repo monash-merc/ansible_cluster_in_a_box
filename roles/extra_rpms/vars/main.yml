@@ -121,6 +121,7 @@ pkgs:
  - libXpm
  - libXt
  - libXtst
+ - man
  - mod_ssl
  - mysql-server
  - nagios-plugins
@@ -170,6 +171,7 @@ pkgs:
  - python-paramiko
  - python-pmw
  - python-setuptools
+ - python-psycopg2
  - pytz
  - qhull
  - qt
@@ -236,4 +238,5 @@ pkgs:
  - perl-HTML-Parser
  - perl-HTML-Tagset 
  - postgresql-contrib
+ - postgresql-devel
  - environment-modules
