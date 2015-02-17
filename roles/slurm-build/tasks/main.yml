@@ -11,6 +11,7 @@
     - pam-devel
     - perl-ExtUtils-MakeMaker
     - bzip2-devel
+    - mysql
 
 - name: install deps in control node
   yum: name={{ item }} state=installed
