@@ -38,7 +38,7 @@ PidFile=/var/run/slurmdbd.pid
 StorageType=accounting_storage/mysql
 StorageHost={{ slurmctrl }}
 #StoragePort=1234
-StoragePass=password
+StoragePass={{ slurmDbPassword }}
 StorageUser=slurmdb
 StorageLoc=slurm_acct_db
 

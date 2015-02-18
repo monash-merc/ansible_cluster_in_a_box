@@ -29,11 +29,11 @@
   sudo: true
 #  notify: restart slurmdb
 
-- name: sanitic check service
+- name: sanity check slrumdbd service
   service: "name=slurmdbd enabled=yes state=started"
   sudo: true
 
-- name: sanitic check service
+- name: sanity check slurm service
   service: "name=slurm enabled=yes state=started"
   sudo: true
 

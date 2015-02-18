@@ -49,6 +49,12 @@
   notify: restart slurm
   when: slurm_use_vpn==True
 
+- name: create data directory
+  shell: mkdir -p /var/spool/slurm 
+  args:
+    creates: "/var/spool/slurm"
+  sudo: true
+
 - name: create log directory
   shell: mkdir -p {{ slurmddebug.log | dirname }} 
   args:
