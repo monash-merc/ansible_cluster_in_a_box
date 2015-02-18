@@ -15,13 +15,13 @@ ControlMachine={{ slurmctrl }}
 #BackupAddr=
 #
 SlurmUser=slurm
-#SlurmdUser=root
+SlurmdUser=root
 SlurmctldPort=6817
 SlurmdPort=6818
 AuthType=auth/munge
 #JobCredentialPrivateKey=
 #JobCredentialPublicCertificate=
-StateSaveLocation=/var/spool
+StateSaveLocation=/var/spool/slurmd
 SlurmdSpoolDir=/var/spool/slurmd
 SwitchType=switch/none
 MpiDefault=none
