@@ -15,14 +15,14 @@ ControlMachine={{ slurmctrl }}
 #BackupAddr=
 #
 SlurmUser=slurm
-#SlurmdUser=root
+SlurmdUser=root
 SlurmctldPort=6817
 SlurmdPort=6818
 AuthType=auth/munge
 #JobCredentialPrivateKey=
 #JobCredentialPublicCertificate=
-StateSaveLocation=/var/spool
-SlurmdSpoolDir=/var/spool/slurmd
+StateSaveLocation={{ slurmdatadir }}
+SlurmdSpoolDir={{ slurmdatadir }} 
 SwitchType=switch/none
 MpiDefault=none
 SlurmctldPidFile=/var/run/slurmctld.pid

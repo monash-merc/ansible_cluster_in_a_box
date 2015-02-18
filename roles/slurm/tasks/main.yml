@@ -50,13 +50,11 @@
   when: slurm_use_vpn==True
 
 - name: create data directory
-  shell: mkdir -p /var/spool/slurm 
-  args:
-    creates: "/var/spool/slurm"
+  file: path="{{ slurmdatadir }}" state=directory owner=slurm group=slurm mode=644 
   sudo: true
 
 - name: create log directory
-  shell: mkdir -p {{ slurmddebug.log | dirname }} 
+  shell: mkdir -p {{ slurmddebug.log | dirname }}; chown slurm:slurm {{ slurmddebug.log | dirname }} 
   args:
     creates: "{{ slurmddebug.log | dirname }}"
   sudo: true
