@@ -5,4 +5,4 @@ slurmddebug: {}
 slurmschedlog: {} 
 slurmdbdlog: {}
 slurmfairshare: {def: false, val: 10000}
-
+slurmdatadir: "/var/spool/slurm"
