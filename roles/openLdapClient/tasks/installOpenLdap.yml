@@ -10,7 +10,6 @@
     - nss
     - nss-tools
     - nss-pam-ldapd
-    - pam_ldap
   sudo: true
   when: ansible_os_family == 'RedHat'
 
