@@ -50,7 +50,7 @@
   when: slurm_use_vpn==True
 
 - name: create data directory
-  file: path="{{ slurmdatadir }}" state=directory owner=slurm group=slurm mode=644 
+  file: path="{{ slurmdatadir }}" state=directory owner=slurm group=slurm mode=755 
   sudo: true
 
 - name: create log directory
