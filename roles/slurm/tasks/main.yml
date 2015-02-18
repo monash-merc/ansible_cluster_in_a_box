@@ -49,6 +49,13 @@
   notify: restart slurm
   when: slurm_use_vpn==True
 
+- name: create log directory
+  shell: mkdir -p {{ slurmddebug.log | dirname }} 
+  args:
+    creates: "{{ slurmddebug.log | dirname }}"
+  sudo: true
+  when: slurmddebug is defined and slurmddebug.log
+
 - name: start slurm
   service: name=slurm state=started
   sudo: true

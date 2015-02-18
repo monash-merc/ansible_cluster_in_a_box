@@ -9,7 +9,7 @@
     - MySQL-python
 
 - name: "Start the Server"
-  service: "name=mysqld enabled=yes state=restarted"
+  service: "name=mysqld enabled=yes state=started"
   sudo: true
 
 - name: install mysql local root password 
@@ -27,4 +27,14 @@
 - name: configure database slurmdb domain 
   mysql_user: login_user=root login_password="{{ sqlrootPassword }}" name=slurmdb password="{{ slurmDbPassword }}" host="{{ ansible_hostname }}"."{{ ansible_domain }}" priv=*.*:ALL,GRANT state=present
   sudo: true
+#  notify: restart slurmdb
+
+- name: sanitic check service
+  service: "name=slurmdbd enabled=yes state=started"
+  sudo: true
+
+- name: sanitic check service
+  service: "name=slurm enabled=yes state=started"
+  sudo: true
+
 
