@@ -54,7 +54,7 @@
   sudo: true
 
 - name: create log directory
-  shell: mkdir -p {{ slurmddebug.log | dirname }} 
+  shell: mkdir -p {{ slurmddebug.log | dirname }}; chown slurm:slurm {{ slurmddebug.log | dirname }} 
   args:
     creates: "{{ slurmddebug.log | dirname }}"
   sudo: true
