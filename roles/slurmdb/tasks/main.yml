@@ -1,13 +1,40 @@
 ---
-- name: create slurmdb user
-  user: name=slurmdb group=slurmdb system=yes createhome=no
+- name: install deps in control node
+  yum: name={{ item }} state=installed
+  sudo: true
+  with_items:
+    - mysql
+    - mysql-server
+    - mysql-devel
+    - MySQL-python
+
+- name: "Start the Server"
+  service: "name=mysqld enabled=yes state=started"
+  sudo: true
+
+- name: install mysql local root password 
+  mysql_user: check_implicit_admin=True login_user=root login_password="{{ sqlrootPassword }}" name=root password="{{ sqlrootPassword }}" state=present
   sudo: true
 
 - name: install slurmdbd.conf
   template: src=slurmdbd.conf.j2 dest=/etc/slurm/slurmdbd.conf
   sudo: true
 
-- name: slurm db template 
-  template: src=slurmdb.sh.j2 dest=/etc/slurm/slurmdb.sh
+- name: configure database slurmdb localhost
+  mysql_user: login_user=root login_password="{{ sqlrootPassword }}" name=slurmdb password="{{ slurmDbPassword }}" host=localhost priv=*.*:ALL,GRANT state=present
   sudo: true
-  notify: restart slurmdbd
+
+- name: configure database slurmdb domain 
+  mysql_user: login_user=root login_password="{{ sqlrootPassword }}" name=slurmdb password="{{ slurmDbPassword }}" host="{{ ansible_hostname }}"."{{ ansible_domain }}" priv=*.*:ALL,GRANT state=present
+  sudo: true
+#  notify: restart slurmdb
+
+- name: sanity check slrumdbd service
+  service: "name=slurmdbd enabled=yes state=started"
+  sudo: true
+
+- name: sanity check slurm service
+  service: "name=slurm enabled=yes state=started"
+  sudo: true
+
+

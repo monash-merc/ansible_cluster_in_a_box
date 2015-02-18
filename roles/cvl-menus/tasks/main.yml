@@ -1,9 +1,15 @@
+- name: Sanity check menu directory
+  shell: mkdir -p /etc/xdg/menus/applications-merged 
+  args:
+    creates: "/etc/xdg/menus/applications-merged"
+  sudo: true
+  
 - name: configure the cvl menues
   copy: src=cvl.menu dest=/etc/xdg/menus/applications-merged/cvl.menu mode=644 owner=root group=root
   sudo: true
 
 - name: configure the cvl backgroud image 
-  copy: src={{ item }} dest=/usr/share/backgrounds/i{{ item }} mode=644 owner=root group=root
+  copy: src={{ item }} dest=/usr/share/backgrounds/{{ item }} mode=644 owner=root group=root
   with_items:
     - cvl_desktop.svg
     - default.xml

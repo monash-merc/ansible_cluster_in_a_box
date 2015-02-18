@@ -11,14 +11,8 @@
     - pam-devel
     - perl-ExtUtils-MakeMaker
     - bzip2-devel
-
-- name: install deps in control node
-  yum: name={{ item }} state=installed
-  sudo: true
-  with_items:
     - mysql
     - mysql-devel
-  when: ansible_hostname == slurmctrl
 
 - name: get munge
   shell: wget https://munge.googlecode.com/files/munge-{{ munge_version }}.tar.bz2
@@ -62,7 +56,7 @@
     creates: /tmp/rpmbuild/RPMS/x86_64/slurm-{{ slurm_version }}-1.el6.x86_64.rpm
 
 - name: retrieve rpms 1
-  shell: scp -r {{ hostvars[ansible_hostname]['ansible_user_id'] }}@{{ ansible_ssh_host }}:/tmp/rpmbuild/ /tmp
+  shell: scp -o StrictHostKeyChecking=no -r {{ hostvars[ansible_hostname]['ansible_user_id'] }}@{{ ansible_ssh_host }}:/tmp/rpmbuild/ /tmp
   delegate_to: 127.0.0.1
   when: ansible_ssh_host is defined
 
