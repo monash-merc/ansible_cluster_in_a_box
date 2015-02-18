@@ -9,7 +9,6 @@
     - sssd-client
     - nss
     - nss-tools
-    - nss-pam-ldapd
   sudo: true
   when: ansible_os_family == 'RedHat'
 
