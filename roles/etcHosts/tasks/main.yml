@@ -3,8 +3,13 @@
   run_once: True
   delegate_to: 127.0.0.1
 
+- name: copy script
+  copy: src=makehosts.py dest=/tmp/makehosts.py mode=755
+  delegate_to: 127.0.0.1
+  run_once: True
+
 - name: make hosts data
-  command: ./scripts/makehosts.py /tmp/groups {{ domain }}
+  command: /tmp/makehosts.py /tmp/groups {{ domain }}
   delegate_to: 127.0.0.1
   run_once: True
   register: hosts_data
