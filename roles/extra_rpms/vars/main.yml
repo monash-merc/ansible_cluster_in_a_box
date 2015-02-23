@@ -240,3 +240,5 @@ pkgs:
  - postgresql-contrib
  - postgresql-devel
  - environment-modules
+ - tcl
+ - rsync 

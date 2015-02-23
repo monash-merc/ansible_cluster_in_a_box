@@ -1,0 +1,7 @@
+---
+- name: cron job 
+  cron: name={{ item.name }} job={{ item.job }} user= {{ item.user}} hour={{ item.hour }} state=present
+  with_items: 
+    cronJobs 
+  sudo: true
+  when: cronJobs is defined
