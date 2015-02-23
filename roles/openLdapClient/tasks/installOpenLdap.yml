@@ -1,6 +1,6 @@
 ---
 - name: "Install open ldap package yum"
-  yum: name={{ item }} update_cache=yes state=latest
+  yum: name={{ item }} state=latest
   with_items:
     - openldap
     - openldap-clients
