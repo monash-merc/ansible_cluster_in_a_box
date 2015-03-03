@@ -24,7 +24,6 @@
     - xorg-x11-xauth
     - xorg-x11-proto-devel
     - xorg-x11-xkb-utils
-#  run_once: true
 
 - name: Add nouveau from blacklist
   lineinfile: 
@@ -44,8 +43,6 @@
 
 - name: check nvidia driver
   shell: ls /usr/lib64/libnvidia-opencl.so.{{ nvidia_version }} 
-#  shell: ls /usr/lib64/nvidia 
-#  shell: ls /tmp/NVIDIA-Linux-x86_64-{{ nvidia_version }}.run
   register: has_been_compiled
   ignore_errors: true
 
@@ -61,34 +58,29 @@
   template: src=xserver.j2 dest=/etc/pam.d/xserver
   sudo: true
   
-#- name: restart_host
-#  command: shutdown -r now "Reboot triggered by Ansible"
-#  async: 0
-#  poll: 0
-#  sudo: true
-#  ignore_errors: true
-#  when: has_been_compiled | failed
+- name: restart_host
+  command: shutdown -r now "Reboot triggered by Ansible"
+  async: 0
+  poll: 0
+  sudo: true
+  ignore_errors: true
+  when: has_been_compiled | failed
 
-#- name: wait_restart
-#  local_action: wait_for host="{{ inventory_hostname }}" port=22
-##  local_action: wait_for host="{{ inventory_hostname }}" port=22 delay=5 timeout=600
-##  local_action: wait_for host="{{ inventory_hostname }}" port=22 delay=5 search_regex=OpenSSH timeout=3600 state=started
-#  sudo: false 
-##  sudo: true 
-#  when: has_been_compiled | failed
+- name: wait_restart
+  local_action: wait_for host="{{ inventory_hostname }}" port=22 delay=5 timeout=600
+  sudo: true 
+  when: has_been_compiled | failed
  
 - name: get nvidia driver 
   shell: wget http://us.download.nvidia.com/XFree86/Linux-x86_64/{{ nvidia_version }}/NVIDIA-Linux-x86_64-{{ nvidia_version }}.run
   args:
     chdir: /tmp
     creates: /tmp/NVIDIA-Linux-x86_64-{{ nvidia_version }}.run
-#  run_once: true
   sudo: true 
   when: has_been_compiled | failed
 
 - name: build nvidia driver 
   shell: chmod 755 /tmp/NVIDIA-Linux-x86_64-{{ nvidia_version }}.run; /tmp/NVIDIA-Linux-x86_64-{{ nvidia_version }}.run --silent --kernel-source-path /usr/src/kernels/{{ kernel_version }}.el6.x86_64
-#  shell: chmod 755 /tmp/NVIDIA-Linux-x86_64-{{ nvidia_version }}.run; /tmp/NVIDIA-Linux-x86_64-{{ nvidia_version }}.run --silent --kernel-source-path /usr/src/kernels/{{ kernel_version }}.el6.x86_64 
   sudo: true
   when: has_been_compiled | failed
 
