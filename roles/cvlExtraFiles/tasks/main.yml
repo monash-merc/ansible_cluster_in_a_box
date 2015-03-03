@@ -1,0 +1,7 @@
+---
+- name: extra file symbolic links 
+  file: src={{ item.src }} path={{ item.dest }} state={{ item.type }} force=yes
+  with_items: 
+    extraFiles
+  sudo: true
+  when: extraFiles is defined
