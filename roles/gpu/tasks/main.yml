@@ -1,0 +1,106 @@
+---
+- name: install deps 
+  yum: name={{ item }} state=installed
+  sudo: true
+  with_items:
+    - gcc
+    - perl
+    - wget
+    - pciutils
+    - kernel-headers
+    - kernel-devel 
+    - xterm
+    - libX11-common
+    - libX11-devel
+    - libX11
+    - xorg-x11-server-common
+    - xorg-x11-util-macros
+    - xorg-x11-server-utils
+    - xorg-x11-font-utils
+    - xorg-x11-server-Xorg
+    - xorg-x11-glamor
+    - xorg-x11-xinit
+    - xorg-x11-utils
+    - xorg-x11-xauth
+    - xorg-x11-proto-devel
+    - xorg-x11-xkb-utils
+#  run_once: true
+
+- name: Add nouveau from blacklist
+  lineinfile: 
+  args:
+    dest: /etc/modprobe.d/blacklist.conf 
+    line: "blacklist nouveau"  
+    state: present
+  sudo: true
+
+- name: Template disable-nouvear.conf 
+  template: dest=/etc/modprobe.d/disable-nouveau.conf src=disable-nouveau.conf.j2
+  sudo: true
+
+- name: Template nvidia.conf 
+  template: dest=/etc/modprobe.d/nvidia.conf src=nvidia.conf.j2
+  sudo: true
+
+- name: check nvidia driver
+  shell: ls /usr/lib64/libnvidia-opencl.so.{{ nvidia_version }} 
+#  shell: ls /usr/lib64/nvidia 
+#  shell: ls /tmp/NVIDIA-Linux-x86_64-{{ nvidia_version }}.run
+  register: has_been_compiled
+  ignore_errors: true
+
+- name: Copy boot file
+  template: src=grub.conf.j2 dest=/boot/grub/grub.conf 
+  sudo: true
+
+- name: Copy X config file
+  template: src=xorg.conf.j2 dest=/etc/X11/xorg.conf 
+  sudo: true
+
+- name: Copy xserver file
+  template: src=xserver.j2 dest=/etc/pam.d/xserver
+  sudo: true
+  
+#- name: restart_host
+#  command: shutdown -r now "Reboot triggered by Ansible"
+#  async: 0
+#  poll: 0
+#  sudo: true
+#  ignore_errors: true
+#  when: has_been_compiled | failed
+
+#- name: wait_restart
+#  local_action: wait_for host="{{ inventory_hostname }}" port=22
+##  local_action: wait_for host="{{ inventory_hostname }}" port=22 delay=5 timeout=600
+##  local_action: wait_for host="{{ inventory_hostname }}" port=22 delay=5 search_regex=OpenSSH timeout=3600 state=started
+#  sudo: false 
+##  sudo: true 
+#  when: has_been_compiled | failed
+ 
+- name: get nvidia driver 
+  shell: wget http://us.download.nvidia.com/XFree86/Linux-x86_64/{{ nvidia_version }}/NVIDIA-Linux-x86_64-{{ nvidia_version }}.run
+  args:
+    chdir: /tmp
+    creates: /tmp/NVIDIA-Linux-x86_64-{{ nvidia_version }}.run
+#  run_once: true
+  sudo: true 
+  when: has_been_compiled | failed
+
+- name: build nvidia driver 
+  shell: chmod 755 /tmp/NVIDIA-Linux-x86_64-{{ nvidia_version }}.run; /tmp/NVIDIA-Linux-x86_64-{{ nvidia_version }}.run --silent --kernel-source-path /usr/src/kernels/{{ kernel_version }}.el6.x86_64
+#  shell: chmod 755 /tmp/NVIDIA-Linux-x86_64-{{ nvidia_version }}.run; /tmp/NVIDIA-Linux-x86_64-{{ nvidia_version }}.run --silent --kernel-source-path /usr/src/kernels/{{ kernel_version }}.el6.x86_64 
+  sudo: true
+  when: has_been_compiled | failed
+
+- name: set persistence mode 
+  lineinfile: 
+  args:
+    dest: /etc/rc.d/rc.local
+    line: "nvidia-smi --persistence-mode=1"  
+    state: present
+  sudo: true
+
+- name: Load module
+  shell: modprobe nvidia
+  sudo: true
+

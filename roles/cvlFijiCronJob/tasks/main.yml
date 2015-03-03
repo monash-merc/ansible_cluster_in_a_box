@@ -1,0 +1,10 @@
+---
+- name: Check CVL cron job
+  shell: ls /cvl/local/bin/fiji_daily_update.sh
+  ignore_errors: true
+  register: fijiupdatescript
+
+- name: CVL fiji cron job 
+  cron: name=fijiupdate job=/cvl/local/bin/fiji_daily_update.sh user=root hour=5 state=present
+  sudo: true
+  when: fijiupdatescript | success

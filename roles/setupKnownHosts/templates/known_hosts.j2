@@ -1,0 +1,14 @@
+{% set nodelist = [] %}
+{% for desktop in desktopNodeList %}
+{% for node in groups[desktop.name] %}
+{% if hostvars[node]['ansible_'+desktop.interface] is defined %}
+{% set host = {'name': node, 'ip': hostvars[node]['ansible_'+desktop.interface]['ipv4']['address'], 'rsa': hostvars[node]['ansible_ssh_host_key_rsa_public']} %}
+{% if nodelist.append(host) %}
+{% endif %}
+{% endif %}
+{% endfor %}
+{% endfor %}
+
+{% for host in nodelist|unique %}
+{{ host.name }} {{ host.ip }} {{ host.rsa }}
+{% endfor %}

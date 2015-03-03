@@ -27,20 +27,24 @@
   sudo: true
   when: ldapCaCertContents is defined
 
-- name: "Copy pam config to ldap client"
-  template: src=system-auth-ac.j2 dest=/etc/pam.d/system-auth
+- name: "Copy system auth"
+  template: src=system-auth.j2 dest=/etc/pam.d/system-auth
   sudo: true
 
-- name: "Copy pam config to ldap client"
+- name: "Copy password auth"
   template: src=password-auth.j2 dest=/etc/pam.d/password-auth
   sudo: true
 
-- name: "Copy system auth to ldap client"
+- name: "Copy authconfig"
   template: src=authconfig.j2 dest=/etc/sysconfig/authconfig
   sudo: true
 
 - name: "Copy ldap.conf file "
   template: src=ldap.conf.j2 dest=/etc/openldap/ldap.conf
+  sudo: true
+
+- name: "Copy pam xserver file "
+  template: src=xserver.j2 dest=/etc/pam.d/xserver
   sudo: true
 
 - name: "Add LDAP server IP address to /etc/hosts"
