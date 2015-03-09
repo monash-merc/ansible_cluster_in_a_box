@@ -1,4 +1,14 @@
 ---
+- name: install environment-modules
+  yum: name=environment-modules state=installed
+  sudo: true
+  when: ansible_os_family == 'RedHat'
+
+- name: install environment-modules
+  apt: name=environment-modules state=installed
+  sudo: true
+  when: ansible_os_family == 'Debian'
+
 - name: add /usr/local/Modules to the module file path
   lineinfile: 
   args:
