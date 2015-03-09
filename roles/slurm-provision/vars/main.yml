@@ -1,2 +1,2 @@
 ---
-slurm_provision: /root/slurm_provision.sh
+  slurm_provision: /root/slurm_provision.sh
