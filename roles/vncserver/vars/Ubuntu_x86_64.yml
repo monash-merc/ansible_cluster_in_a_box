@@ -2,6 +2,3 @@
  system_packages:
    - mate-desktop-environment
    - tightvncserver
-
- apt_repos:
-   - "http://repo.mate-desktop.org/archive/1.8/ubuntu"

@@ -3,17 +3,12 @@
   service: name=fail2ban state=stopped
   sudo: true
 
-- name: restart idmap 
-  service: name={{ item }} state=restarted
-  with_items:
-    - rpcbind
-    - rpcidmapd
-  sudo: true
 
 - name: "Mounting NFS mounts"
   mount: name={{ item.name }} src={{ item.ipv4 }}:{{ item.src }} fstype={{ item.fstype }} opts={{ item.opts }} state=mounted
   with_items: exportList 
   notify: "restart authentication"
+  notify: "restart rpcbind"
   notify: "restart idmap"
   sudo: true 
   ignore_errors: true
@@ -30,6 +25,7 @@
   with_items: exportList 
   notify: "restart authentication"
   notify: "restart idmap"
+  notify: "restart rpcbind"
   sudo: true 
   when: exportList is defined and firstMount | failed
 

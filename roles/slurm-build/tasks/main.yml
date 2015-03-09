@@ -13,6 +13,18 @@
     - bzip2-devel
     - mysql
     - mysql-devel
+  when: ansible_os_family == "RedHat"
+
+- name: install deps
+  apt: name={{ item }} state=installed update_cache=yes
+  sudo: true
+  with_items:
+    - gcc
+    - wget
+    - libssl-dev
+    - libpam0g-dev
+    - libbz2-dev
+  when: ansible_os_family == "Debian"
 
 - name: get munge
   shell: wget https://munge.googlecode.com/files/munge-{{ munge_version }}.tar.bz2
@@ -26,9 +38,25 @@
   args:
     chdir: /tmp
     creates: /root/rpmbuild/RPMS/x86_64/munge-{{ munge_version }}-1.el6.x86_64.rpm
+  when: ansible_os_family == "RedHat"
+
+- name: untar munge
+  shell: tar jxf /tmp/munge-{{ munge_version }}.tar.bz2
+  sudo: true
+  args:
+    chdir: /tmp
+    creates: /tmp/munge-{{ munge_version }}
+  when: ansible_os_family == "Debian"
+
+- name: build munge
+  shell: configure && make && make install
+  sudo: true
+  args:
+    chdir: /tmp/munge-{{ munge_version }}
+  when: ansible_os_family == "Debian"
 
 - name: get slurm
-  shell: wget http://www.schedmd.com/download/archive/slurm-{{ slurm_version }}.tar.bz2
+  shell: wget http://www.schedmd.com/download/latest/slurm-{{ slurm_version }}.tar.bz2
   args:
     chdir: /tmp
     creates: /tmp/slurm-{{ slurm_version }}.tar.bz2
@@ -36,6 +64,7 @@
 - name: check munge installation
   shell: rpm -qa munge
   register: munge_installed
+  when: ansible_os_family == "RedHat"
 
 - name: install munge deps
   shell: rpm -i /root/rpmbuild/RPMS/x86_64/munge-libs-{{ munge_version }}-1.el6.x86_64.rpm /root/rpmbuild/RPMS/x86_64/munge-{{ munge_version }}-1.el6.x86_64.rpm /root/rpmbuild/RPMS/x86_64/munge-devel-{{ munge_version }}-1.el6.x86_64.rpm
