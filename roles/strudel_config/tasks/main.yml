@@ -6,3 +6,8 @@
   template: src=generic_slurm_config.json.j2 dest=/tmp/Strudel_Desktops.json
   delegate_to: 127.0.0.1
   run_once: True
+
+- name: "Temlate TurboVNC Strudel config"
+  template: src=turbo_slurm_config.json.j2 dest=/tmp/Strudel_TurboVNC_Desktops.json
+  delegate_to: 127.0.0.1
+  run_once: True

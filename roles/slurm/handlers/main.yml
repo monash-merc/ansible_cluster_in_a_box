@@ -11,3 +11,8 @@
     service: name=slurmdbd state=restarted
     sudo: true
 
+  - name: scontrol reconfigure
+    shell: sleep 10 ; scontrol reconfigure
+    sudo: true
+    delegate_to: "{{ slurmctrl }}"
+    run_once: true

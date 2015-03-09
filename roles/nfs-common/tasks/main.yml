@@ -1,5 +1,9 @@
 ---
 - include: yumPackages.yml
+  when: ansible_os_family == "RedHat"
+
+- include: aptPackages.yml
+  when: ansible_os_family == "Debian"
 
 - name: setup idmap.conf
   template: src=idmapd.conf.j2 dest=/etc/idmapd.conf
