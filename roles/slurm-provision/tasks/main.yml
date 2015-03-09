@@ -1,0 +1,8 @@
+---
+- name: copy slurm provision template 
+  template: src=slurm_provision.sh.j2 dest={{ slurm_provision }} mode=755 owner=root
+  sudo: true
+
+- name: slurm cron job 
+  cron: name=slurm-provision job={{ slurm_provision }} user=root minute=*/5 state=present
+  sudo: true
