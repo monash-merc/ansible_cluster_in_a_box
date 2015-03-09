@@ -1,0 +1,13 @@
+- name: "Templating /etc/ssh/known_hosts"
+  template: src=known_hosts.j2 dest=/etc/ssh/known_hosts owner=root group=root mode=600
+  delegate_to: "{{ slurmlogin }}"
+  run_once: true
+  sudo: true
+  register: sshknowhost 
+
+- name: ecrypt the hosts file
+  shell: ssh-keygen -H -f /etc/ssh/known_hosts
+  sudo: true
+  run_once: true
+  when: sshknowhost.changed
+

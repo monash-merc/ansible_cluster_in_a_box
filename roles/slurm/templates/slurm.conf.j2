@@ -58,12 +58,12 @@ KillWait=30
 Waittime=0
 #
 # SCHEDULING
-SchedulerType=sched/backfill
+SchedulerType={{ slurmschedulertype }}
 #SchedulerAuth=
 #SchedulerPort=
 #SchedulerRootFilter=
-SelectType=select/linear
-FastSchedule=1
+SelectType={{ slurmselecttype }}
+FastSchedule={{ slurmfastschedule }}
 #PriorityType=priority/multifactor
 #PriorityDecayHalfLife=14-0
 #PriorityUsageResetPeriod=14-0
@@ -109,6 +109,8 @@ AccountingStorageHost={{ slurmctrl }}
 #AccountingStoragePass=
 #AccountingStorageUser=
 #
+#GRES
+GresTypes=gpu
 
 # Fair share
 {% if slurmfairshare.def %}
