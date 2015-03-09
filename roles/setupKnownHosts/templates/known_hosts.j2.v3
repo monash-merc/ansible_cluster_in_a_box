@@ -1,0 +1,16 @@
+{% set nodelist = [] %}
+{% for desktop in desktopNodeList %}
+{% for node in groups[desktop.name] %}
+{% if hostvars[node]['ansible_'+desktop.interface] is defined %}
+{% set host = {'name': node, 'ip': hostvars[node]['ansible_'+desktop.interface]['ipv4']['address']} %}
+{% if nodelist.append(host) %}
+{% endif %}
+{% endif %}
+{% endfor %}
+{% endfor %}
+
+{% for host in nodelist|unique %}
+echo "{{ host.name }} {{ host.ip }}"
+#ssh-keyscan -t rsa {{ host.name }} >> /etc/ssh/known_hosts
+#ssh-keyscan -t rsa {{ host.ip }} >> /etc/ssh/known_hosts
+{% endfor %}

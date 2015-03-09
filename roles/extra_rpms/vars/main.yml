@@ -145,6 +145,8 @@ pkgs:
  - perl-devel
  - perl-ExtUtils-MakeMaker
  - perl-ExtUtils-ParseXS
+ - perl-HTML-Parser
+ - perl-HTML-Tagset 
  - perl-Test-Harness
  - perl-Time-HiRes
  - pexpect
@@ -159,6 +161,8 @@ pkgs:
  - plymouth-system-theme
  - polkit-gnome
  - postgresql
+ - postgresql-contrib
+ - postgresql-devel
  - postgresql-libs
  - postgresql-server
  - PyGreSQL
@@ -179,10 +183,12 @@ pkgs:
  - qt-sqlite
  - qt-x11
  - rhino
+ - rsync 
  - scipy
  - spice-vdagent
  - suitesparse
  - system-gnome-theme
+ - tcl
  - tcsh
  - Terminal
  - texlive-texmf-errata-fonts
@@ -235,8 +241,3 @@ pkgs:
  - xvattr
  - yum-utils
  - zip
- - perl-HTML-Parser
- - perl-HTML-Tagset 
- - postgresql-contrib
- - postgresql-devel
- - environment-modules
