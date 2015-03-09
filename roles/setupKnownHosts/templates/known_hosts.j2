@@ -10,6 +10,5 @@
 {% endfor %}
 
 {% for host in nodelist|unique %}
-{{ host.name }} {{ host.rsa }}
-{{ host.ip }} {{ host.rsa }}
+{{ host.ip }} {{ host.name }} {{ host.rsa }}
 {% endfor %}

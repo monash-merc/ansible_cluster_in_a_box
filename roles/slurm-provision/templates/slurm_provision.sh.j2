@@ -8,7 +8,7 @@ for user in ${user_list[*]}; do
     uid=$(id -u ${user})
     gid=$(id -g ${user})
     user_home=${CVL_HOME}/${user}
-    if [ ! -d ${user_home} ]; then
+    if [[ ! -d ${user_home} && ${uid} -gt 1000 ]]; then
         mkdir -p ${user_home}
         cp -r /etc/skel/* ${user_home}
         chown -R ${uid}:${gid} ${user_home}
