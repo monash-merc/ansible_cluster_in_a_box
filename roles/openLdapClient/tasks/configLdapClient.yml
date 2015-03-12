@@ -35,14 +35,6 @@
   template: src=password-auth.j2 dest=/etc/pam.d/password-auth
   sudo: true
 
-- name: "Copy authconfig"
-  template: src=authconfig.j2 dest=/etc/sysconfig/authconfig
-  sudo: true
-
-- name: "Copy ldap.conf file "
-  template: src=ldap.conf.j2 dest=/etc/openldap/ldap.conf
-  sudo: true
-
 - name: "Add LDAP server IP address to /etc/hosts"
   lineinfile: dest=/etc/hosts line="{{ ldapServerHostIpLine }}" state=present insertafter=EOF
   sudo: true

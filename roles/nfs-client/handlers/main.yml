@@ -1,7 +1,10 @@
 ---
-- name: restart idmap 
-  service: name={{ item }} state=restarted
-  with_items:
-    - rpcbind
-    - rpcidmapd
+- name: restart rpcbind
+  service: name=rpcbind state=restarted
   sudo: true
+
+- name: restart idmap 
+  service: name=rpcidmapd state=restarted
+  sudo: true
+  when: ansible_os_family == "RedHat"
+

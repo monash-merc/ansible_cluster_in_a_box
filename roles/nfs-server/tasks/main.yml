@@ -1,3 +1,8 @@
 ---
+- name: install nfs kernel server
+  apt: name=nfs-kernel-server state=latest
+  sudo: true
+  when: ansible_os_family == "Debian"
+
 - include: mkFilesystem.yml 
 - include: startServer.yml

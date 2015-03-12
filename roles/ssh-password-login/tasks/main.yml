@@ -6,7 +6,9 @@
     line: "ChallengeResponseAuthentication yes" 
     backrefs: yes
   sudo: true
-  notify: restart sshd
+  notify: 
+  - restart sshd
+  - restart ssh
 
 - name: "Enable Challenge Response"
   lineinfile:
@@ -16,5 +18,19 @@
     line: "PasswordAuthentication yes"
     backrefs: yes
   sudo: true
-  notify: restart sshd
+  notify: 
+  - restart sshd
+  - restart ssh
+
+- name: "Disable Challenge Response"
+  lineinfile:
+  args:
+    dest: /etc/ssh/sshd_config
+    regexp: "PasswordAuthentication yes"
+    line: "PasswordAuthentication no"
+    backrefs: yes
+  sudo: true
+  notify: 
+  - restart sshd
+  - restart ssh
 

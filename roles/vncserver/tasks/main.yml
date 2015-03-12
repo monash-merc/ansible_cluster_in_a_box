@@ -2,11 +2,17 @@
 #- include_vars: "{{ hostvars[ansible_hostname]['ansible_distribution'] }}_{{ ansible_architecture }}.yml"
 - include_vars: "{{ ansible_distribution }}_{{ ansible_architecture }}.yml"
 
+# Use mate DE on systems that have moved to gnome3, since there is no gpu acceleration by default on NeCTAR openstack
+# Trusty (Ubuntu 14.04 LTS) needs repos added. Wheezy (Debian Stable) gets mate from backports, Utopic (Ubuntu 14.10) Jessie (Debian testing) and Sid (Debian unstable) get it by default
 - name: add repos apt
-  shell: "add-apt-repository -y 'deb {{ item }} {{ ansible_distribution_release }} main' "
+  shell: "add-apt-repository -y ppa:ubuntu-mate-dev/ppa"
   sudo: true
-  with_items: apt_repos
-  when: ansible_os_family == 'Debian'
+  when: ansible_distribution_release == 'trusty'
+
+- name: add repos apt
+  shell: "add-apt-repository -y ppa:ubuntu-mate-dev/trusty-mate"
+  sudo: true
+  when: ansible_distribution_release == 'trusty'
 
 - name: install system packages apt
   apt: name={{ item }} state=installed update_cache=true  force=yes
