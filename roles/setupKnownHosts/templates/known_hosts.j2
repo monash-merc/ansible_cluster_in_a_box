@@ -1,8 +1,8 @@
 {% set nodelist = [] %}
-{% for desktop in desktopNodeList %}
-{% for node in groups[desktop.name] %}
-{% if hostvars[node]['ansible_'+desktop.interface] is defined %}
-{% set host = {'name': node, 'ip': hostvars[node]['ansible_'+desktop.interface]['ipv4']['address'], 'rsa': hostvars[node]['ansible_ssh_host_key_rsa_public']} %}
+{% for node in groups['all'] %}
+{% for interface in hostvars[node]['ansible_interfaces'] %}
+{% if interface != "lo" %}
+{% set host = {'name': node, 'ip': hostvars[node]['ansible_'+interface]['ipv4']['address'], 'rsa': hostvars[node]['ansible_ssh_host_key_rsa_public']} %}
 {% if nodelist.append(host) %}
 {% endif %}
 {% endif %}
@@ -10,5 +10,6 @@
 {% endfor %}
 
 {% for host in nodelist|unique %}
-{{ host.ip }} {{ host.name }} {{ host.rsa }}
+{{ host.ip }} ssh-rsa {{ host.rsa }}
+{{ host.name }} ssh-rsa {{ host.rsa }}
 {% endfor %}
