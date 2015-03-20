@@ -1,0 +1,13 @@
+---
+- name: start munge
+  service: name=munge state=started
+  sudo: true
+
+- name: start slurmdbd
+  service: name=slurmdbd state=started
+  sudo: true
+  ignore_errors: true
+
+- name: start slurm
+  service: name=slurm state=started
+  sudo: true

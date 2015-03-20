@@ -1,8 +1,0 @@
----
-  - name: restart slurmdbd
-    service: name={{ item }} state=restarted
-    with_items:
-      - slurmdbd
-      - slurm
-    sudo: true
-
