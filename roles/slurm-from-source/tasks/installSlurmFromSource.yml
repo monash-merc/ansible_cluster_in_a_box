@@ -1,0 +1,26 @@
+- name: get slurm
+  shell: wget http://www.schedmd.com/download/archive/slurm-{{ slurm_version }}.tar.bz2
+  args:
+    chdir: /tmp
+    creates: /tmp/slurm-{{ slurm_version }}.tar.bz2
+
+- name: untar slurm
+  shell: tar jxf /tmp/slurm-{{ slurm_version }}.tar.bz2
+  args:
+    chdir: /tmp
+
+- name: build slurm
+  shell: ./configure --prefix={{ slurm_dir }} --with-munge={{ munge_dir }} && make
+  args:
+    chdir: /tmp/slurm-{{ slurm_version }}
+
+- name: install slurm
+  shell: make install
+  sudo: true
+  args:
+    chdir: /tmp/slurm-{{ slurm_version }}
+
+- name: copy init script
+  template: dest=/etc/init.d/slurm src=slurm.initd.j2  mode=755
+  sudo: true   
+
