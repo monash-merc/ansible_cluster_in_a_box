@@ -1,0 +1,9 @@
+---
+- 
+  name: "Install nfs-utils"
+  with_items:
+    - nfs-common
+    - nfs-kernel-server
+  apt: "name={{ item }} state=latest"
+  sudo: true
+
