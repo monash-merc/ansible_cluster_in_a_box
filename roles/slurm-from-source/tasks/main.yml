@@ -1,0 +1,84 @@
+---
+- name: create munge group
+  group: name=munge system=yes gid=498
+  sudo: true
+
+- name: create munge user
+  user: name=munge group=munge system=yes createhome=no uid=498
+  sudo: true
+
+- name: create slurm group
+  group: name=slurm system=yes gid=497
+  sudo: true
+
+- name: create slurm user
+  user: name=slurm group=slurm system=yes createhome=no uid=497
+  sudo: true
+
+- name: make sure slurm conf dir exists
+  file: dest={{ slurm_dir }}/etc state=directory
+  sudo: true
+
+- name: make sure slurm lock dir exists
+  file: dest=/var/lock/subsys state=directory owner=root group=root mode=755
+  sudo: true
+
+- name: create data directory
+  file: path={{ slurmdatadir }} state=directory owner=slurm group=slurm mode=755 
+  sudo: true
+
+- name: create log directory
+  shell: mkdir -p {{ slurmddebug.log | dirname }}; chown slurm:slurm {{ slurmddebug.log | dirname }} 
+  args:
+    creates: "{{ slurmddebug.log | dirname }}"
+  sudo: true
+  when: slurmddebug is defined and slurmddebug.log
+
+- name: install deps
+  yum: name={{ item }} state=latest
+  with_items:
+    - perl
+    - perl-DBI
+  sudo: true
+  when: ansible_os_family == "RedHat"
+
+- name: install deps
+  apt: name={{ item }} state=installed update_cache=yes
+  sudo: true
+  with_items:
+    - gcc
+    - wget
+    - libssl-dev
+    - libpam0g-dev
+    - libbz2-dev
+    - make
+    - perl
+    - libdbi-perl
+  when: ansible_os_family == "Debian"
+
+- include: installMungeFromSource.yml
+
+- name: chown mungedir
+  file: path={{ munge_dir }} state=directory owner=munge recurse=yes
+  sudo: true
+
+- name: make munge logdir
+  file: path={{ munge_dir }}/var/log/munge state=directory owner=munge mode=700
+  sudo: true
+
+- name: install munge key
+  template: src=munge_key.j2 dest={{ munge_dir }}/etc/munge/munge.key owner=munge mode=600
+  sudo: true
+  notify: restart munge
+
+- include: installSlurmFromSource.yml
+
+- name: install slurm.conf
+  template: src=slurm.conf.j2 dest={{ slurm_dir }}/etc/slurm.conf
+  sudo: true
+  when: slurm_use_vpn==False
+
+- name: install slurm.conf
+  template: src=slurm-vpn.conf.j2 dest={{ slurm_dir }}/etc/slurm.conf
+  sudo: true
+  when: slurm_use_vpn==True

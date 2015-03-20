@@ -1,0 +1,18 @@
+---
+  - name: restart munge
+    service: name=munge state=restarted
+    sudo: true
+
+  - name: restart slurm
+    service: name=slurm state=restarted
+    sudo: true
+
+  - name: restart slurmdbd
+    service: name=slurmdbd state=restarted
+    sudo: true
+
+  - name: scontrol reconfigure
+    shell: sleep 10 ; scontrol reconfigure
+    sudo: true
+    delegate_to: "{{ slurmctrl }}"
+    run_once: true

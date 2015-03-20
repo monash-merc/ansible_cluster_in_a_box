@@ -2,6 +2,14 @@
 - name: "Starting rpcbind"
   service: "name=rpcbind state=restarted"
   sudo: true
+  when: ansible_os_family == "RedHat"
+
 - name: "Start the Server"
   service: "name=nfs state=restarted"
   sudo: true
+  when: ansible_os_family == "RedHat"
+
+- name: "Start the Server"
+  service: "name=nfs-kernel-server state=restarted"
+  sudo: true
+  when: ansible_os_family == "Debian"

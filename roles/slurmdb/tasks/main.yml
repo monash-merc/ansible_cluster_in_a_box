@@ -13,12 +13,23 @@
   sudo: true
 
 - name: install mysql local root password 
-  mysql_user: check_implicit_admin=True login_user=root login_password="{{ sqlrootPasswd }}" name=root password="{{ sqlrootPasswd }}" state=present
+  mysql_user: check_implicit_admin=True login_user=root login_password={{ sqlrootPasswd }} name=root password={{ sqlrootPasswd }} state=present
   sudo: true
+
+- name: install slurmdbd init
+  template: src=slurmdbd.initd.j2 dest=/etc/init.d/slurmdbd mode=755
+  sudo: true
+
+- name: install slurmdb.conf init
+  template: src=slurmdbd.conf.j2 dest={{ slurm_dir }}/etc/slurmdbd.conf
+  sudo: true
+  when: slurm_dir is defined
+
 
 - name: install slurmdbd.conf
   template: src=slurmdbd.conf.j2 dest=/etc/slurm/slurmdbd.conf
   sudo: true
+  when: slurm_dir is not defined
 
 - name: configure database slurmdb localhost
   mysql_user: login_user=root login_password="{{ sqlrootPasswd }}" name=slurmdb password="{{ slurmdb_passwd }}" host=localhost priv=*.*:ALL,GRANT state=present
@@ -27,7 +38,6 @@
 - name: configure database slurmdb domain 
   mysql_user: login_user=root login_password="{{ sqlrootPasswd }}" name=slurmdb password="{{ slurmdb_passwd }}" host="{{ ansible_hostname }}"."{{ ansible_domain }}" priv=*.*:ALL,GRANT state=present
   sudo: true
-#  notify: restart slurmdb
 
 - name: sanity check slrumdbd service
   service: "name=slurmdbd enabled=yes state=started"
