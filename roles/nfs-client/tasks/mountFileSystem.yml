@@ -4,16 +4,18 @@
   sudo: true
 
 
+
+
 - name: "Mounting NFS mounts"
-  mount: name={{ item.name }} src={{ item.ipv4 }}:{{ item.src }} fstype={{ item.fstype }} opts={{ item.opts }} state=mounted
-  with_items: exportList 
+  mount: name={{ item.mntpt }} src={{ item.src }} fstype={{ item.fstype }} opts={{ item.opts }} state=mounted
+  with_items: nfsMounts
   notify: "restart authentication"
   notify: "restart rpcbind"
   notify: "restart idmap"
   sudo: true 
   ignore_errors: true
   register: firstMount
-  when: exportList is defined 
+  when: nfsMounts is defined 
 
 - name: "Wait for nfs to stabailse"
   command: sleep 60
@@ -21,13 +23,13 @@
   when: firstMount | failed
 
 - name: "Mounting NFS mounts"
-  mount: name={{ item.name }} src={{ item.ipv4 }}:{{ item.src }} fstype={{ item.fstype }} opts={{ item.opts }} state=mounted
-  with_items: exportList 
+  mount: name={{ item.name }} src=" {{ item.ipv4 }}:{{ item.src }} " fstype={{ item.fstype }} opts={{ item.opts }} state=mounted
+  with_items: nfsMounts
   notify: "restart authentication"
   notify: "restart idmap"
   notify: "restart rpcbind"
   sudo: true 
-  when: exportList is defined and firstMount | failed
+  when: nfsMounts is defined and firstMount | failed
 
 - name: "restart fail2ban"
   service: name=fail2ban state=started

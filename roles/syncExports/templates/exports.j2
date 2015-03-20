@@ -1,13 +1,10 @@
 {% set iplist = [] %}
 {% for export in exportList %}
-{% for group in groupList %}
-{% for node in groups[group.name] %}
-{% if hostvars[node]['ansible_'+group.interface] is defined %}
-{% if iplist.append(hostvars[node]['ansible_'+group.interface]['ipv4']['address']) %}
+{% for node in groups[export.group] %}
+{% if hostvars[node]['ansible_'+export.interface] is defined %}
+{% if iplist.append(hostvars[node]['ansible_'+export.interface]['ipv4']['address']) %} 
 {% endif %}
 {% endif %}
-{% endfor %}
 {% endfor %}
 {{ export.src }} {% for ip in iplist|unique %}{{ ip }}({{ export.srvopts }}) {% endfor %}
-
 {% endfor %}
