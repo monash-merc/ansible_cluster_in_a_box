@@ -54,6 +54,10 @@
     - make
     - perl
     - libdbi-perl
+    - mysql-server
+    - mysql-client
+    - python-mysqldb
+    - libmysqlclient-dev
   when: ansible_os_family == "Debian"
 
 - include: installMungeFromSource.yml
