@@ -7,10 +7,26 @@
     - mysql-server
     - mysql-devel
     - MySQL-python
+  when: ansible_os_family == "RedHat"
+
+- name: install deps in control node
+  apt: name={{ item }} state=installed
+  sudo: true
+  with_items:
+    - mysql-client
+    - mysql-server
+    - python-mysqldb
+  when: ansible_os_family == "Debian"
 
 - name: "Start the Server"
   service: "name=mysqld enabled=yes state=started"
   sudo: true
+  when: ansible_os_family == "RedHat"
+
+- name: "Start the Server"
+  service: "name=mysql enabled=yes state=started"
+  sudo: true
+  when: ansible_os_family == "Debian"
 
 - name: install mysql local root password 
   mysql_user: check_implicit_admin=True login_user=root login_password={{ sqlrootPasswd }} name=root password={{ sqlrootPasswd }} state=present

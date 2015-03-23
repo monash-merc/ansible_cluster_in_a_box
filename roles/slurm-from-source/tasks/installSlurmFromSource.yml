@@ -13,12 +13,14 @@
   shell: ./configure --prefix={{ slurm_dir }} --with-munge={{ munge_dir }} && make
   args:
     chdir: /tmp/slurm-{{ slurm_version }}
+    creates: /tmp/slurm-{{ slurm_version }}/src/srun/srun
 
 - name: install slurm
   shell: make install
   sudo: true
   args:
     chdir: /tmp/slurm-{{ slurm_version }}
+    creates: "{{ slurm_dir }}/bin/srun"
 
 - name: copy init script
   template: dest=/etc/init.d/slurm src=slurm.initd.j2  mode=755

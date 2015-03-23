@@ -4,25 +4,24 @@
     chdir: /tmp
     creates: /tmp/munge-{{ munge_version }}.tar.bz2
 
-- name: remove old
-  shell: rm -rf /tmp/munge-{{ munge_version }} && rm -rf /tmp/slurm-{{ slurm_version }}
-  sudo: true
-
 - name: untar munge
   shell: tar jxf munge-{{ munge_version }}.tar.bz2
   args:
     chdir: /tmp
+    creates: /tmp/munge-{{ munge_version }}
 
 - name: build munge
   shell: ./configure --prefix={{ munge_dir }} && make
   args:
     chdir: /tmp/munge-{{ munge_version }}
+    creates: /tmp/munge-{{ munge_version }}/src/munge/munge
 
 - name: install munge
   shell: make install
   sudo: true
   args:
     chdir: /tmp/munge-{{ munge_version }}
+    creates: "{{ munge_dir }}/bin/munge"
 
 - name: copy init script
   template: dest=/etc/init.d/munge src=munge.initd.j2 mode=755

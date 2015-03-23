@@ -1,6 +1,4 @@
 ---
-munge_dir: /opt/munge
-slurm_dir: /opt/slurm
 slurm_use_vpn: False 
 slurmctlddebug: {level: 9, log: '/var/log/slurm/slurmctld.log'}
 slurmddebug: {level: 9, log: '/var/log/slurm/slurmd.log'}
