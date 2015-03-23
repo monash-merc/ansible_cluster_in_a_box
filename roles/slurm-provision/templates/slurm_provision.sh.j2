@@ -1,13 +1,13 @@
 #!/bin/sh
 
-CVL_HOME="/cvl/home"
+HOME_DIR={{ user_home_dir }}
 user_list=($(getent passwd | cut -d ":" -f1))
 log_file="/root/slurm.log"
 
 for user in ${user_list[*]}; do
     uid=$(id -u ${user})
     gid=$(id -g ${user})
-    user_home=${CVL_HOME}/${user}
+    user_home=${HOME_DIR}/${user}
     if [[ ! -d ${user_home} && ${uid} -gt 1000 ]]; then
         mkdir -p ${user_home}
         cp -r /etc/skel/* ${user_home}
