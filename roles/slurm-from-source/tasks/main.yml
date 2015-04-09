@@ -39,6 +39,17 @@
   with_items:
     - perl
     - perl-DBI
+    - openssl-devel
+    - mysql
+    - mysql-devel
+    - gcc
+    - rpm-build
+    - wget
+    - openssl-devel
+    - readline-devel
+    - pam-devel
+    - perl-ExtUtils-MakeMaker
+    - bzip2-devel
   sudo: true
   when: ansible_os_family == "RedHat"
 

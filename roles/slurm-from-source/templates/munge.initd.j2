@@ -26,7 +26,7 @@
 unset SERVICE_NAME DAEMON_EXEC DAEMON_ARGS CONFIG PIDFILE NICE USER GROUP \
   SIGHUP_RELOAD VARRUNDIR
 
-prefix="/opt/munge"
+prefix="{{ munge_dir }}"
 exec_prefix="${prefix}"
 sbindir="${exec_prefix}/sbin"
 sysconfdir="${prefix}/etc"
