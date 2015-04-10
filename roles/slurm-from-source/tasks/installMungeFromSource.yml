@@ -1,3 +1,9 @@
+- name: clean up system installation
+  shell: rpm -e munge-libs slurm-munge munge slurm-plugins munge-devel slurm slurm-slurmdbd slurm-perlapi slurm-devel slurm-pam_slurm slurm-sjstat slurm-perlapi slurm-pam_slurm slurm-slurmdb-direct slurm-torque slurm-sjobexit
+  ignore_errors: true
+  sudo: true
+  when: ansible_distribution == "RedHat"
+
 - name: get munge
   shell: wget https://munge.googlecode.com/files/munge-{{ munge_version }}.tar.bz2
   args:
