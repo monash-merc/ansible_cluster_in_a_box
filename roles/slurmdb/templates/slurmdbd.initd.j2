@@ -21,10 +21,11 @@
 # Description:       Start slurm to provide database server for SLURM
 ### END INIT INFO
 
+munge_lib="{{ munge_dir }}/lib"
 exec_prefix="{{ slurm_dir }}"
 prefix="{{ slurm_dir }}"
 CONFDIR="${prefix}/etc"
-LIBDIR="${exec_prefix}/lib"
+LIBDIR="${exec_prefix}/lib:${munge_lib}"
 SBINDIR="${exec_prefix}/sbin"
 
 #Source function library.
