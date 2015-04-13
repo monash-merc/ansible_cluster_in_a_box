@@ -34,7 +34,7 @@ localstatedir="${prefix}/var"
 
 SERVICE_NAME="MUNGE"
 DAEMON_EXEC="$sbindir/munged"
-#DAEMON_ARGS=
+DAEMON_ARGS="-S ${localstatedir}/run/munge/munge.socket.2"
 #CONFIG=#_NOT_SUPPORTED_#
 PIDFILE="$localstatedir/run/munge/munged.pid"
 #NICE=
