@@ -24,12 +24,12 @@
 # Short-Description: slurm daemon management
 # Description:       Start slurm to provide resource management
 ### END INIT INFO
-
+munge_lib="{{ munge_dir }}/lib"
 exec_prefix="{{ slurm_dir }}"
 prefix="{{ slurm_dir }}"
 BINDIR="${exec_prefix}/bin"
 CONFDIR="${prefix}/etc"
-LIBDIR="${exec_prefix}/lib"
+LIBDIR="${exec_prefix}/lib:${munge_lib}"
 SBINDIR="${exec_prefix}/sbin"
 
 # Source function library.

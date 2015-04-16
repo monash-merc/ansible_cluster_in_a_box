@@ -98,6 +98,11 @@ SlurmSchedLogFile={{ slurmschedlog.log }}
 JobCompType=jobcomp/none
 #JobCompLoc=
 #
+{% if slurmjob %}
+Prolog={{ slurmjob.prolog }}
+Epilog={{ slurmjob.epilog }}
+{% endif %}
+#
 # ACCOUNTING
 #JobAcctGatherType=jobacct_gather/linux
 #JobAcctGatherFrequency=30
@@ -110,7 +115,7 @@ AccountingStorageHost={{ slurmctrl }}
 #AccountingStorageUser=
 #
 #GRES
-GresTypes=gpu
+#GresTypes=gpu
 
 # Fair share
 {% if slurmfairshare.def %}
@@ -128,7 +133,7 @@ MpiParams=ports=12000-12999
 {% endfor %}
 {% endfor %}
 {% for node in nodelist|unique %}
-NodeName={{ node }} Procs={{ hostvars[node]['ansible_processor_vcpus'] }} State=UNKNOWN
+NodeName={{ node }} Procs={{ hostvars[node]['ansible_processor_vcpus'] }} 
 {% endfor %}
 
 {% for queue in slurmqueues %}
