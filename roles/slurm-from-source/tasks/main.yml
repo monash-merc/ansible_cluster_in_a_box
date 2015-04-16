@@ -24,27 +24,24 @@
   sudo: true
 
 - name: create data directory
-  file: path={{ slurmdatadir }} state=directory owner=slurm group=slurm mode=755 
+  file: path={{ slurmdatadir }} state=directory owner=slurm group=slurm mode=750
   sudo: true
   when: slurmdatadir is defined 
 
 - name: create run directory
-  file: path={{ slurmpiddir }} state=directory owner=root group=root mode=755 
+  file: path={{ slurmpiddir }} state=directory owner=root group=root mode=750
   sudo: true
   when: slurmpiddir is defined 
 
 - name: create state directory
-  file: path={{ slurmstatedir }} state=directory owner=slurm group=slurm mode=755 
+  file: path={{ slurmstatedir }} state=directory owner=slurm group=slurm mode=750
   sudo: true
   when: slurmstatedir is defined 
 
-
 - name: create log directory
-  shell: mkdir -p {{ slurmddebug.log | dirname }}; chown slurm:slurm {{ slurmddebug.log | dirname }} 
-  args:
-    creates: "{{ slurmddebug.log | dirname }}"
+  file: path={{ slurmlogdir }} state=directory owner=slurm group=slurm mode=750
   sudo: true
-  when: slurmddebug is defined and slurmddebug.log
+  when: slurmlogdir is defined 
 
 - name: install deps
   yum: name={{ item }} state=latest
