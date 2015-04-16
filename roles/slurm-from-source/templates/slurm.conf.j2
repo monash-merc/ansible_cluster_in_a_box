@@ -98,7 +98,7 @@ SlurmSchedLogFile={{ slurmschedlog.log }}
 JobCompType=jobcomp/none
 #JobCompLoc=
 #
-{% if slurmjob %}
+{% if slurmjob is defined %}
 Prolog={{ slurmjob.prolog }}
 Epilog={{ slurmjob.epilog }}
 {% endif %}

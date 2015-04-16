@@ -22,7 +22,7 @@ DbdHost={{ slurmctrl }}
 SlurmUser=slurm
 #MessageTimeout=300
 #DefaultQOS=normal,standby
-{% if slurmdbdlog %}
+{% if slurmdbdlog is defined %}
 DebugLevel={{ slurmdbdlog.level }}
 LogFile={{ slurmdbdlog.log }}
 {% else %}
