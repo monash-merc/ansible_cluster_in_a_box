@@ -92,6 +92,14 @@
   sudo: true
   notify: restart munge
 
+- name: enable munge on boot
+  service: name=munge enabled=yes
+  sudo: true
+
+- name: start munge
+  service: name=munge state=started
+  sudo: true
+
 - include: installSlurmFromSource.yml
 
 - name: install slurm.conf
