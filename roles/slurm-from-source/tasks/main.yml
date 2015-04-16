@@ -1,10 +1,4 @@
 ---
-- name: clean up system installation
-  shell: rpm -e munge munge-libs munge-devel slurm slurm-sql
-  ignore_errors: true
-  sudo: true
-  when: ansible_os_family == 'RedHat' 
-
 - name: create munge group
   group: name=munge system=yes gid=498
   sudo: true
