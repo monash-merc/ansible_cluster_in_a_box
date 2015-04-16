@@ -26,8 +26,3 @@
 - name: copy init script
   template: dest=/etc/init.d/munge src=munge.initd.j2 mode=755
   sudo: true
-
-- name: start on boot
-  shell: update-rc.d munge defaults
-  sudo: true
-  when: ansible_distribution == "Ubuntu"

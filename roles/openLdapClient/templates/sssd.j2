@@ -4,7 +4,8 @@ domains = {{ ansible_domain }}
 services = nss, pam, autofs
 
 [nss]
-filter_users = root
+filter_users = root, slurm, munge
+filter_groups = slurm, munge
 
 [pam]
 

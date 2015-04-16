@@ -22,7 +22,7 @@ DbdHost={{ slurmctrl }}
 SlurmUser=slurm
 #MessageTimeout=300
 #DefaultQOS=normal,standby
-{% if slurmdbdlog %}
+{% if slurmdbdlog is defined %}
 DebugLevel={{ slurmdbdlog.level }}
 LogFile={{ slurmdbdlog.log }}
 {% else %}
@@ -36,7 +36,7 @@ PidFile=/var/run/slurmdbd.pid
 #
 # Database info
 StorageType=accounting_storage/mysql
-StorageHost={{ slurmctrl }}
+StorageHost=localhost
 #StoragePort=1234
 StoragePass={{ slurmdb_passwd }}
 StorageUser=slurmdb
