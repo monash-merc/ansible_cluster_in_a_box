@@ -21,12 +21,12 @@ SlurmdPort=6818
 AuthType=auth/munge
 #JobCredentialPrivateKey=
 #JobCredentialPublicCertificate=
-StateSaveLocation={{ slurmdatadir }}
-SlurmdSpoolDir={{ slurmdatadir }} 
+StateSaveLocation={{ slurmstatedir }}
+SlurmdSpoolDir={{ slurmdatadir }}
 SwitchType=switch/none
 MpiDefault=none
-SlurmctldPidFile=/var/run/slurmctld.pid
-SlurmdPidFile=/var/run/slurmd.pid
+SlurmctldPidFile={{ slurmpiddir }}/slurmctld.pid
+SlurmdPidFile={{ slurmpiddir }}/slurmd.pid
 ProctrackType=proctrack/pgid
 #PluginDir=
 CacheGroups=0
@@ -76,21 +76,21 @@ FastSchedule={{ slurmfastschedule }}
 # LOGGING
 {% if slurmctlddebug %}
 SlurmctldDebug={{ slurmctlddebug.level }}
-SlurmctldLogFile={{ slurmctlddebug.log }}
+SlurmctldLogFile={{ slurm_dir }}{{ slurmctlddebug.log }}
 {% else %}
 #SlurmctldDebug=
 #SlurmctldLogFile=
 {% endif %}
 {% if slurmddebug %}
 SlurmdDebug={{ slurmddebug.level }}
-SlurmdLogFile={{ slurmddebug.log }}
+SlurmdLogFile={{ slurm_dir }}{{ slurmddebug.log }}
 {% else %}
 #SlurmdDebug=
 #SlurmdLogFile=
 {% endif %}
 {% if slurmschedlog %}
 SlurmSchedlogLevel={{ slurmschedlog.level }}
-SlurmSchedLogFile={{ slurmschedlog.log }}
+SlurmSchedLogFile={{ slurm_dir }}{{ slurmschedlog.log }}
 {% else %}
 #SlurmSchedlogLevel=
 #SlurmSchedLogFile=
@@ -98,7 +98,7 @@ SlurmSchedLogFile={{ slurmschedlog.log }}
 JobCompType=jobcomp/none
 #JobCompLoc=
 #
-{% if slurmjob %}
+{% if slurmjob is defined %}
 Prolog={{ slurmjob.prolog }}
 Epilog={{ slurmjob.epilog }}
 {% endif %}
