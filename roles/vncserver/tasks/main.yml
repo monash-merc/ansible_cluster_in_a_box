@@ -2,6 +2,9 @@
 #- include_vars: "{{ hostvars[ansible_hostname]['ansible_distribution'] }}_{{ ansible_architecture }}.yml"
 - include_vars: "{{ ansible_distribution }}_{{ ansible_architecture }}.yml"
 
+- include_vars: "CentOS_7_x86_64.yml"
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+
 # Use mate DE on systems that have moved to gnome3, since there is no gpu acceleration by default on NeCTAR openstack
 # Trusty (Ubuntu 14.04 LTS) needs repos added. Wheezy (Debian Stable) gets mate from backports, Utopic (Ubuntu 14.10) Jessie (Debian testing) and Sid (Debian unstable) get it by default
 - name: add repos apt
@@ -14,6 +17,18 @@
   sudo: true
   when: ansible_distribution_release == 'trusty'
 
+- name: add epel on CentOS 7
+  shell: rpm -iUvh http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm
+  sudo: true
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+  ignore_errors: true
+
+- name: add epel on CentOS 7
+  shell: yum -y update
+  sudo: true
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+
+
 - name: install system packages apt
   apt: name={{ item }} state=installed update_cache=true  force=yes
   sudo: true
@@ -21,7 +36,7 @@
   when: ansible_os_family == 'Debian'
 
 - name: install system packages yum
-  yum: name={{ item }} state=installed
+  yum: name={{ item }} state=installed update_cache=yes
   sudo: true
   with_items: system_packages
   when: ansible_os_family == 'RedHat'
