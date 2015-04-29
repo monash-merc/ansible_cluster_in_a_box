@@ -1,0 +1,50 @@
+---
+
+- include_vars: "{{ hostvars[ansible_hostname]['ansible_distribution'] }}_{{ hostvars[ansible_hostname]['ansible_distribution_version'] }}_{{ ansible_architecture }}.yml"
+
+- name: install system packages apt
+  apt: name={{ item }} state=installed update_cache=true
+  sudo: true
+  with_items: system_packages
+  when: ansible_os_family == 'Debian'
+
+- name: install system packages yum
+  yum: name={{ item }} state=installed
+  sudo: true
+  with_items: system_packages
+  when: ansible_os_family == 'RedHat'
+
+
+- name: checkout strudel
+  git: repo=https://github.com/monash-merc/cvl-fabric-launcher.git dest=/tmp/strudel
+
+- name: update submodules
+  command: git submodule update chdir=/tmp/strudel
+
+- name: install pip packages
+  command: pip install {{ item }}
+  sudo: true
+  with_items: pip_packages
+  when: pip_packages is defined
+
+#- name: install pkg deps
+#  shell: /tmp/strudel/system_build_scripts/{{ install_prerequisites }} chdir=/tmp/strudel
+#  sudo: true
+#  when: ansible_os_family == 'RedHat'
+
+- name: build
+  shell: /tmp/strudel/{{ build_launcher }} chdir=/tmp/strudel
+
+- name: scan host
+  shell: ssh-keyscan cvl.massive.org.au >> ~/.ssh/known_hosts
+
+- name: ls package
+  shell: ls -l /tmp/strudel/{{ pkg_name }}
+
+#- name: copy package
+#  shell: rsync /tmp/strudel/{{ pkg_name }} root@cvl.massive.org.au:/tmp/strudel_{{ ansible_distribution }}_{{ ansible_distribution_version }}_{{ hostvars[ansible_hostname]['ansible_date_time']['date'] }}_x86_64.deb
+#  when: ansible_os_family == 'Debian'
+
+- name: copy package
+  shell: rsync {{ hostvars[ansible_hostname]['ansible_user_id'] }}@{{ ansible_ssh_host }}:/tmp/strudel/{{ pkg_name }} /tmp/{{ dest_pkg_name }}
+  delegate_to: 127.0.0.1

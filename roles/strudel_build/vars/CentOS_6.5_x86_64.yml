@@ -1,0 +1,72 @@
+---
+ install_prerequisites: install_centos6_64bit_prerequisites.sh
+ build_launcher: package_centos_version.sh
+ pip_packages:
+   - appdirs
+ system_packages:
+   - python-pip
+   - git
+   - curl
+   - gcc
+   - bc
+   - glibc-devel
+   - libgcc
+   - libxml2-devel
+   - libxslt-devel
+   - ncurses-libs
+   - ncurses-devel
+   - readline
+   - readline-devel
+   - zlib
+   - zlib-devel
+   - bzip2-libs
+   - bzip2-devel
+   - gdbm
+   - gdbm-devel
+   - sqlite
+   - sqlite-devel
+   - db4
+   - db4-devel
+   - openssl
+   - openssl-devel
+   - libX11
+   - libX11-devel
+   - tk
+   - tk-devel
+   - gcc-c++
+   - gtk2-devel
+   - gtk2-engines
+   - glib2-devel
+   - mesa-libGL
+   - mesa-libGL-devel
+   - mesa-libGLU
+   - mesa-libGLU-devel
+   - mesa-libGLw
+   - mesa-libGLw-devel
+   - gtkglext-libs
+   - gtkglext-devel
+   - gimp-libs
+   - gimp-devel
+   - gvfs
+   - atk-devel
+   - pango-devel
+   - cairo-devel
+   - freetype-devel
+   - fontconfig-devel
+   - libcanberra-gtk2
+   - PackageKit-gtk-module
+   - make
+   - cmake
+   - rpm-build
+   - wxPython
+   - python-paramiko
+   - python-crypto
+   - python-requests
+   - pexpect
+   - python-lxml
+   - python-psutil
+
+
+ 
+ pkg_name: ./rpmbuild/RPMS/x86_64/strudel-0.6.0-1.x86_64.rpm
+ dest_pkg_name: strudel_{{ ansible_distribution }}_{{ ansible_distribution_version }}_{{ hostvars[ansible_hostname]['ansible_date_time']['date'] }}_x86_64.rpm
