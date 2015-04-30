@@ -1,7 +1,9 @@
 ---
+ strudel_ver: "20150417"
  build_launcher: "package_ubuntu_version.sh"
  pip_packages:
    - appdirs
+   - requests
  system_packages:
    - git
    - curl
@@ -12,8 +14,7 @@
    - python-pexpect
    - python-paramiko
    - python-pycryptopp
-   - python-requests
    - python-pip
- pkg_name: strudel_UBUNTU_0.6.0_amd64.deb
- dest_pkg_name: strudel_{{ ansible_distribution }}_{{ ansible_distribution_version }}_{{ hostvars[ansible_hostname]['ansible_date_time']['date'] }}_x86_64.deb
+ pkg_name: strudel_UBUNTU_{{ strudel_ver }}_amd64.deb
+ dest_pkg_name: strudel_{{ ansible_distribution }}_{{ ansible_distribution_major_version }}_{{ strudel_ver }}_x86_64.deb
 

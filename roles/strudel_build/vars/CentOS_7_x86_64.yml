@@ -44,8 +44,6 @@
    - mesa-libGLU-devel
    - mesa-libGLw
    - mesa-libGLw-devel
-   - gtkglext-libs
-   - gtkglext-devel
    - gimp-libs
    - gimp-devel
    - gvfs
