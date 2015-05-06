@@ -1,0 +1,36 @@
+#!/bin/bash
+
+error=""
+state_change="1"
+current_state="0"
+previous_state="0"
+
+[ -e /etc/sysconfig/nhc ] && . /etc/sysconfig/nhc
+config_file=${CONFFILE-/etc/nhc/nhc.conf}
+loop=${NHC_LOOP_TIME-300}
+email_subject=${NHC_EMAIL_SUBJECT-notification}
+logfile=${LOGFILE-/var/log/nhc.log}
+email_to=${NHC_EMAIL_TO-root}
+
+function log() {
+    message="$1"
+    echo "$(date): ${message}" >> ${logfile}
+}
+
+function email() {
+    post=$(cat /root/nhc_cron_sendemail.txt)
+    if [ -z "${post}" ]; then
+        message=$(cat /root/nhc.log)
+        echo "${message}" | mail -s "${email_subject}" "${email_to}"
+        log "Node error, send email to ${email_to}"
+        echo "1" >| /root/nhc_cron_sendemail.txt
+    fi
+}
+
+log "Start health check ${config_file}"
+
+nhc -c "${config_file}" > /root/nhc.log 2>&1  || { log "$(cat /root/nhc.log)" && email && exit 1; }
+
+echo -n "" >| /root/nhc_cron_sendemail.txt
+
+

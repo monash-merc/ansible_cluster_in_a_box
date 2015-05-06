@@ -1,0 +1,56 @@
+- name: Download nhc source  
+  shell: wget https://cvl.massive.org.au/warewulf-nhc-{{ nhc_version }}.tar.gz
+#  shell: wget http://warewulf.lbl.gov/downloads/releases/warewulf-nhc/warewulf-nhc-{{ nhc_version }}.tar.gz
+  args:
+    chdir: /tmp
+    creates: /tmp/warewulf-nhc-{{ nhc_version }}.tar.gz
+
+- name: untar nhc 
+  shell: tar zxf /tmp/warewulf-nhc-{{ nhc_version }}.tar.gz 
+  args:
+    chdir: /tmp
+
+- name: build nhc 
+  shell: ./configure --prefix={{ nhc_dir }} && make
+  args:
+    chdir: /tmp/warewulf-nhc-{{ nhc_version }} 
+
+- name: install nhc 
+  shell: make install
+  sudo: true
+  args:
+    chdir: /tmp/warewulf-nhc-{{ nhc_version }} 
+
+- name: copy nhc sysconfig script
+  template: dest=/etc/sysconfig/nhc src=nhc.sysconfig.j2 mode=644
+  sudo: true
+
+- name: copy cron script
+  template: dest={{ nhc_dir }}/sbin/nhc_cron src=nhc_cron.j2 mode=755
+  sudo: true
+
+- name: copy nhc log rotate script
+  template: dest=/etc/logrotate.d/nhc src=nhclog.j2 mode=644
+  sudo: true
+
+- name: check configure file
+  shell: ls {{ nhc_dir }}/etc/nhc/{{ nhc_config_file }}
+  ignore_errors: true
+  register: generate_nhc_config_file 
+
+- name: generate config file
+  shell: "{{ nhc_dir }}/sbin/nhc-genconf"
+  sudo: true
+  when: generate_nhc_config_file 
+
+- name: config file extension
+  lineinfile: dest="{{ nhc_dir }}/etc/nhc/{{ nhc_config_file }}" line="{{ item }}"
+  with_items:
+    nhc_user_conf
+  sudo: true
+  when: nhc_user_conf is defined and generate_nhc_config_file
+
+- name: start cron job 
+  cron: name=nhc_monitor job={{ nhc_dir }}/sbin/nhc_cron user=root minute=*/5 state=present 
+  sudo: true
+

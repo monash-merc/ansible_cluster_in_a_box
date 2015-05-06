@@ -24,7 +24,7 @@
   sudo: true
 
 - name: create data directory
-  file: path={{ slurmdatadir }} state=directory owner=slurm group=slurm mode=750
+  file: path={{ slurmdatadir }} state=directory owner=slurm group=slurm mode=755
   sudo: true
   when: slurmdatadir is defined 
 
@@ -59,6 +59,8 @@
     - pam-devel
     - perl-ExtUtils-MakeMaker
     - bzip2-devel
+    - hwloc
+    - hwloc-devel
   sudo: true
   when: ansible_os_family == "RedHat"
 
@@ -119,4 +121,7 @@
   template: src=slurm_setup.sh.j2 dest=/etc/profile.d/slurm_setup.sh
   sudo: true
   when: ansible_os_family == 'RedHat' 
+
+- include: installCgroup.yml
+- include: installNhc.yml
 
