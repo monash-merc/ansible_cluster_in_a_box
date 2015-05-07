@@ -24,7 +24,7 @@ AuthType=auth/munge
 StateSaveLocation={{ slurmstatedir }}
 SlurmdSpoolDir={{ slurmdatadir }}
 SwitchType=switch/none
-MpiDefault=none
+MpiDefault=pmi2
 SlurmctldPidFile={{ slurmpiddir }}/slurmctld.pid
 SlurmdPidFile={{ slurmpiddir }}/slurmd.pid
 ProctrackType=proctrack/linuxproc
@@ -131,7 +131,7 @@ PriorityWeightFairshare={{ slurmfairshare.val }}
 {% endif %}
 
 DisableRootJobs=YES
-#MpiParams=ports=12000-12999
+MpiParams=ports=12000-12999
 # COMPUTE NODES
 {% set nodelist = [] %}
 {% for queue in slurmqueues %}
