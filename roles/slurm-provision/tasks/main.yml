@@ -4,5 +4,5 @@
   sudo: true
 
 - name: slurm cron job 
-  cron: name=slurm-provision job={{ slurm_provision }} user=root minute=*/5 state=present
+  cron: name=slurm_provision job={{ slurm_provision }} user=root minute=*/5 state=present
   sudo: true

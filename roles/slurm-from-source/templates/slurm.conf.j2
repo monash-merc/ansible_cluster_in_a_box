@@ -24,14 +24,14 @@ AuthType=auth/munge
 StateSaveLocation={{ slurmstatedir }}
 SlurmdSpoolDir={{ slurmdatadir }}
 SwitchType=switch/none
-MpiDefault=none
+MpiDefault=pmi2
 SlurmctldPidFile={{ slurmpiddir }}/slurmctld.pid
 SlurmdPidFile={{ slurmpiddir }}/slurmd.pid
-ProctrackType=proctrack/pgid
+ProctrackType=proctrack/linuxproc
 #PluginDir=
 CacheGroups=0
 #FirstJobId=
-ReturnToService=0
+ReturnToService=1
 #MaxJobCount=
 #PlugStackConfig=
 #PropagatePrioProcess=
@@ -43,19 +43,25 @@ ReturnToService=0
 #SrunEpilog=
 #TaskProlog=
 #TaskEpilog=
-#TaskPlugin=
+TaskPlugin=task/cgroup
+#TaskPlugin=task/affinity
+#TaskPlugin=task/affinity,task/cgroup
+#JobSubmitPlugins=lua
+OverTimeLimit=1
+CompleteWait=10
+
 #TrackWCKey=no
 #TreeWidth=50
 #TmpFS=
 #UsePAM=
 #
 # TIMERS
-SlurmctldTimeout=300
-SlurmdTimeout=300
-InactiveLimit=0
-MinJobAge=300
-KillWait=30
-Waittime=0
+#SlurmctldTimeout=300
+#SlurmdTimeout=300
+#InactiveLimit=0
+#MinJobAge=300
+KillWait=10
+#Waittime=0
 #
 # SCHEDULING
 SchedulerType={{ slurmschedulertype }}
@@ -65,32 +71,34 @@ SchedulerType={{ slurmschedulertype }}
 SelectType={{ slurmselecttype }}
 FastSchedule={{ slurmfastschedule }}
 #PriorityType=priority/multifactor
-#PriorityDecayHalfLife=14-0
+#PriorityFlags=Ticket_Based
+#PriorityCalcPeriod=5
+#PriorityDecayHalfLife=0
 #PriorityUsageResetPeriod=14-0
-#PriorityWeightFairshare=100000
-#PriorityWeightAge=1000
+##PriorityWeightFairshare=10000
+#PriorityWeightAge=10000
 #PriorityWeightPartition=10000
-#PriorityWeightJobSize=1000
-#PriorityMaxAge=1-0
+#PriorityWeightJobSize=10000
+#PriorityMaxAge=14-0
 #
 # LOGGING
 {% if slurmctlddebug %}
 SlurmctldDebug={{ slurmctlddebug.level }}
-SlurmctldLogFile={{ slurm_dir }}{{ slurmctlddebug.log }}
+SlurmctldLogFile={{ slurmctlddebug.log }}
 {% else %}
 #SlurmctldDebug=
 #SlurmctldLogFile=
 {% endif %}
 {% if slurmddebug %}
 SlurmdDebug={{ slurmddebug.level }}
-SlurmdLogFile={{ slurm_dir }}{{ slurmddebug.log }}
+SlurmdLogFile={{ slurmddebug.log }}
 {% else %}
 #SlurmdDebug=
 #SlurmdLogFile=
 {% endif %}
 {% if slurmschedlog %}
 SlurmSchedlogLevel={{ slurmschedlog.level }}
-SlurmSchedLogFile={{ slurm_dir }}{{ slurmschedlog.log }}
+SlurmSchedLogFile={{ slurmschedlog.log }}
 {% else %}
 #SlurmSchedlogLevel=
 #SlurmSchedLogFile=
@@ -115,7 +123,7 @@ AccountingStorageHost={{ slurmctrl }}
 #AccountingStorageUser=
 #
 #GRES
-#GresTypes=gpu
+GresTypes=gpu
 
 # Fair share
 {% if slurmfairshare.def %}
@@ -133,9 +141,9 @@ MpiParams=ports=12000-12999
 {% endfor %}
 {% endfor %}
 {% for node in nodelist|unique %}
-NodeName={{ node }} Procs={{ hostvars[node]['ansible_processor_vcpus'] }} 
+NodeName={{ node }} Procs={{ hostvars[node]['ansible_processor_vcpus'] }} RealMemory={{ hostvars[node].ansible_memory_mb.real.total }} Sockets={{ hostvars[node]['ansible_processor_vcpus'] }} CoresPerSocket=1 ThreadsPerCore={{ hostvars[node].ansible_processor_threads_per_core }} {% if hostvars[node].ansible_hostname.find('vis') != -1 %}Gres=gpu{% endif %} Feature="cryoem" State=UNKNOWN  
 {% endfor %}
 
 {% for queue in slurmqueues %}
-PartitionName={{ queue.name }} {% if queue.default %}Default=yes{% endif %} Nodes={{ groups[queue.group]|join(',') }}
+PartitionName={{ queue.name }} {% if queue.default %}Default=yes{% endif %} Nodes={{ groups[queue.group]|join(',') }} DefMemPerCPU=1024 DefaultTime=24:00:00 State=UP 
 {% endfor %}
