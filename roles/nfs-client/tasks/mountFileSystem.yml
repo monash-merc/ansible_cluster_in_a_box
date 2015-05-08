@@ -6,7 +6,6 @@
 - name: "Mounting NFS mounts"
   mount: name={{ item.name }} src=" {{ item.ipv4 }}:{{ item.src }} " fstype={{ item.fstype }} opts={{ item.opts }} state=mounted
   with_items: nfsMounts
-  notify: "restart authentication"
   notify: "restart rpcbind"
   notify: "restart idmap"
   sudo: true 
@@ -22,7 +21,6 @@
 - name: "Mounting NFS mounts"
   mount: name={{ item.name }} src=" {{ item.ipv4 }}:{{ item.src }} " fstype={{ item.fstype }} opts={{ item.opts }} state=mounted
   with_items: nfsMounts
-  notify: "restart authentication"
   notify: "restart idmap"
   notify: "restart rpcbind"
   sudo: true 

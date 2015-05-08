@@ -1,0 +1,8 @@
+---
+- name: copy provision template 
+  template: src=provision.sh.j2 dest={{ provision }} mode=755 owner=root
+  sudo: true
+
+- name: provision cron job 
+  cron: name=provision job={{ provision }} user=root minute=*/5 state=present
+  sudo: true

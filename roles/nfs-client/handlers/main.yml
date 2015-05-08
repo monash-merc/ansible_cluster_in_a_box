@@ -7,9 +7,3 @@
   service: name=rpcidmapd state=restarted
   sudo: true
   when: ansible_os_family == "RedHat"
-
-- name: restart authentication
-  service: name=authentication state=restarted
-  sudo: true
-  when: ansible_os_family == "Debian"
-
