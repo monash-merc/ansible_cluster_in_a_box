@@ -1,0 +1,22 @@
+- name: yum install cgroup  
+  yum: name={{ item }} state=installed
+  with_items:
+    - libcgroup
+  sudo: true
+  when: ansible_os_family == "RedHat"
+
+- name: apt install cgroup 
+  apt: name={{ item }} state=installed update_cache=yes
+  with_items:
+    - cgmanager
+    - cgmanager-utils
+    - libcgmanager0 
+  when: ansible_os_family == "Debian"    
+
+- name: config cgroup.conf file
+  template: dest={{ slurm_dir }}/etc/cgroup.conf src=cgroup.conf.j2 mode=644
+  sudo: true
+
+- name: config cgroup_allowed_devices.conf file
+  template: dest={{ slurm_dir }}/etc/cgroup_allowed_devices.conf src=cgroup_allowed_devices.conf.j2 mode=644
+  sudo: true

@@ -7,4 +7,3 @@
   service: name=rpcidmapd state=restarted
   sudo: true
   when: ansible_os_family == "RedHat"
-

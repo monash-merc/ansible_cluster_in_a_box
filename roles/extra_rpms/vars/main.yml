@@ -121,6 +121,7 @@ pkgs:
  - libXpm
  - libXt
  - libXtst
+ - mailx
  - man
  - mod_ssl
  - mysql-server
