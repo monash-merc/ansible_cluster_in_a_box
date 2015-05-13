@@ -1,5 +1,6 @@
 - name: get slurm
-  shell: wget http://www.schedmd.com/download/archive/slurm-{{ slurm_version }}.tar.bz2
+  shell: wget https://cvl.massive.org.au/slurm-{{ slurm_version }}.tar.bz2
+#  shell: wget http://www.schedmd.com/download/archive/slurm-{{ slurm_version }}.tar.bz2
   args:
     chdir: /tmp
     creates: /tmp/slurm-{{ slurm_version }}.tar.bz2
