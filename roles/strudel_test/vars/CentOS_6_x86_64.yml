@@ -55,6 +55,7 @@
    - freetype-devel
    - fontconfig-devel
    - libcanberra-gtk2
+   - PackageKit-gtk-module
    - make
    - cmake
    - rpm-build

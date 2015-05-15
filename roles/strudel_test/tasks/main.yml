@@ -1,0 +1,34 @@
+---
+- include_vars: "{{ ansible_distribution }}_{{ ansible_distribution_major_version }}_{{ ansible_architecture }}.yml"
+
+- name: get turbovnc
+  shell: wget http://sourceforge.net/projects/turbovnc/files/1.2.3/turbovnc_1.2.3_amd64.deb 
+  when: ansible_os_family == "Debian"
+
+- name: install turobvnc
+  apt: deb=turbovnc_1.2.3_amd64.deb
+  sudo: true
+  when: ansible_os_family == "Debian"
+
+- name: get turbovnc
+  shell: wget http://sourceforge.net/projects/turbovnc/files/1.2.3/turbovnc-1.2.3.x86_64.rpm
+  when: ansible_os_family == "RedHat"
+
+- name: install turobvnc
+  yum: src=turbovnc-1.2.3.x86_64.rpm
+  sudo: true
+  when: ansible_os_family == "RedHat"
+
+- name: copy launcher
+  copy: src=/tmp/{{ dest_pkg_name }} dest=/tmp/{{ dest_pkg_name }}
+
+- name: install launhcer
+  apt: deb=/tmp/{{ dest_pkg_name }} 
+  sudo: true
+  when: ansible_os_family == "Debian"
+
+- name: install launcher
+  yum: src=/tmp/{{ dest_pkg_name }}
+  sudo: true
+  when: ansible_os_family == "RedHat"
+
