@@ -11,6 +11,7 @@
     - cgmanager
     - cgmanager-utils
     - libcgmanager0 
+  sudo: true
   when: ansible_os_family == "Debian"    
 
 - name: config cgroup.conf file
