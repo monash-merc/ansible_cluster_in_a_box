@@ -145,5 +145,5 @@ NodeName={{ node }} Procs={{ hostvars[node]['ansible_processor_vcpus'] }} RealMe
 {% endfor %}
 
 {% for queue in slurmqueues %}
-PartitionName={{ queue.name }} {% if queue.default %}Default=yes{% endif %} Nodes={{ groups[queue.group]|join(',') }} DefMemPerCPU=1024 DefaultTime=24:00:00 State=UP 
+PartitionName={{ queue.name }} {% if queue.default %}Default=yes{% endif %} Nodes={{ groups[queue.group]|join(',') }} DefaultTime=24:00:00 State=UP 
 {% endfor %}
