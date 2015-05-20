@@ -120,7 +120,7 @@
 - name: install gres config file 
   template: src=gres.conf.j2 dest={{ slurm_dir }}/etc/gres.conf mode=644
   sudo: true
-  when: slurm_generic_resource.stdout 
+  when: slurm_generic_resource is defined and slurm_generic_resource.stdout 
 
 - name: install gres sub config file 
   template: src=gres_sub.conf.j2 dest={{ slurm_dir }}/etc/gres/gres.conf mode=644
