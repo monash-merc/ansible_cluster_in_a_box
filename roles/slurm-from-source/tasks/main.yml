@@ -43,6 +43,10 @@
   sudo: true
   when: slurmlogdir is defined 
 
+- name: create greps directory
+  file: path={{ slurm_dir }}/etc/gres state=directory owner=slurm group=slurm mode=755
+  sudo: true
+
 - name: install deps
   yum: name={{ item }} state=latest
   with_items:
@@ -107,11 +111,27 @@
 
 - include: installSlurmFromSource.yml
 
+- name: check slurm generic resource
+  shell: "{{ slurm_gres_check }}"
+  register: slurm_generic_resource
+  ignore_errors: true
+  when: slurm_gres_check is defined
+
+- name: install gres config file 
+  template: src=gres.conf.j2 dest={{ slurm_dir }}/etc/gres.conf mode=644
+  sudo: true
+  when: slurm_generic_resource.stdout 
+
+- name: install gres sub config file 
+  template: src=gres_sub.conf.j2 dest={{ slurm_dir }}/etc/gres/gres.conf mode=644
+  sudo: true
+  when: slurm_gres_list is defined
+
 - name: install slurm.conf
   template: src=slurm.conf.j2 dest={{ slurm_dir }}/etc/slurm.conf
   sudo: true
   notify: restart slurm
-  when: slurm_use_vpn==False
+  when: slurm_use_vpn==False and slurm_gres_list is defined
 
 - name: install slurm.conf
   template: src=slurm-vpn.conf.j2 dest={{ slurm_dir }}/etc/slurm.conf
