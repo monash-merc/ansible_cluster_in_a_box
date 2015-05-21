@@ -1,0 +1,9 @@
+---
+ system_packages:
+  - slapd
+  - ldap-utils
+  - openssl
+
+ ldapuser: openldap
+ ldapgroup: openldap
+ dbname: olcDatabase={1}hdb

@@ -1,5 +1,4 @@
 ---
- strudel_ver: "20150417"
  install_prerequisites: install_centos6_64bit_prerequisites.sh
  build_launcher: package_centos_version.sh
  pip_packages:
@@ -68,5 +67,5 @@
 
 
  
- pkg_name: ./rpmbuild/RPMS/x86_64/strudel-{{ strudel_ver }}-1.x86_64.rpm
- dest_pkg_name: strudel_{{ ansible_distribution }}_{{ ansible_distribution_major_version }}_{{ strudel_ver }}_x86_64.rpm
+ pkg_name: ./rpmbuild/RPMS/x86_64/strudel-0.6.0-1.x86_64.rpm
+ dest_pkg_name: strudel_{{ ansible_distribution }}_{{ ansible_distribution_version }}_{{ hostvars[ansible_hostname]['ansible_date_time']['date'] }}_x86_64.rpm

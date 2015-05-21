@@ -1,10 +1,7 @@
-dn: olcDatabase={2}bdb,cn=config
+dn: {{ dbname }},cn=config
 changetype: modify
 replace: olcSuffix
 olcSuffix: {{ ldapDomain }}
 -
 replace: olcRootDN
 olcRootDN: {{ ldapManager }}
--
-add: olcRootPW
-olcRootPW: {{ ldapManagerHash.stdout }}

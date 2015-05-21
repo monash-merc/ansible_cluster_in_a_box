@@ -1,0 +1,15 @@
+---
+ system_packages:
+   - "@desktop"
+   - tigervnc-server
+   - "@xfce"
+   - libXcomposite
+   - libXdamage
+   - mesa-libEGL
+   - mesa-libgbm
+   - harfbuzz
+   - libwayland-client
+   - libwayland-server
+   - mesa-libglapi
+   - graphite2
+   - xterm
