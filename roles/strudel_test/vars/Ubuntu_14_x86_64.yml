@@ -1,0 +1,19 @@
+---
+ strudel_ver: "20150417"
+ install_prerequisites: install_ubuntu_64bit_prerequisites.sh
+ build_launcher: "package_ubuntu_version.sh"
+ system_packages:
+   - git
+   - curl
+   - gcc
+   - python-dev
+   - libwxgtk2.8-dev
+   - python-wxgtk2.8
+   - python-pexpect
+   - python-paramiko
+   - python-pycryptopp
+   - python-appdirs
+   - python-requests
+ pkg_name: strudel_UBUNTU_{{ strudel_ver }}_amd64.deb
+ dest_pkg_name: strudel_{{ ansible_distribution }}_{{ ansible_distribution_major_version }}_{{ strudel_ver }}_x86_64.deb
+

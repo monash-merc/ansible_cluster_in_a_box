@@ -1,6 +1,21 @@
 ---
 
-- include_vars: "{{ hostvars[ansible_hostname]['ansible_distribution'] }}_{{ hostvars[ansible_hostname]['ansible_distribution_version'] }}_{{ ansible_architecture }}.yml"
+#- include_vars: "{{ hostvars[ansible_hostname]['ansible_distribution'] }}_{{ hostvars[ansible_hostname]['ansible_distribution_major_version'] }}_{{ ansible_architecture }}.yml"
+- include_vars: "{{ ansible_distribution }}_{{ ansible_distribution_major_version }}_{{ ansible_architecture }}.yml"
+
+- name: add epel on CentOS 7
+  shell: rpm -iUvh http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm
+  sudo: true
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+  ignore_errors: true
+
+- name: add epel on CentOS 7
+  shell: yum -y update
+  sudo: true
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+
+
+
 
 - name: install system packages apt
   apt: name={{ item }} state=installed update_cache=true
@@ -35,8 +50,11 @@
 - name: build
   shell: /tmp/strudel/{{ build_launcher }} chdir=/tmp/strudel
 
-- name: scan host
-  shell: ssh-keyscan cvl.massive.org.au >> ~/.ssh/known_hosts
+#- name: remove old host key
+#  shell: ssh-keygen -f "/home/ubuntu/.ssh/known_hosts" -R 118.138.240.227
+#
+#- name: scan host
+#  shell: ssh-keyscan cvl.massive.org.au >> ~/.ssh/known_hosts
 
 - name: ls package
   shell: ls -l /tmp/strudel/{{ pkg_name }}
@@ -46,5 +64,8 @@
 #  when: ansible_os_family == 'Debian'
 
 - name: copy package
-  shell: rsync {{ hostvars[ansible_hostname]['ansible_user_id'] }}@{{ ansible_ssh_host }}:/tmp/strudel/{{ pkg_name }} /tmp/{{ dest_pkg_name }}
-  delegate_to: 127.0.0.1
+  fetch: src=/tmp/strudel/{{ pkg_name }} dest=/tmp/{{ dest_pkg_name }} flat=yes
+
+#- name: copy package
+#  shell: rsync {{ hostvars[ansible_hostname]['ansible_user_id'] }}@{{ ansible_ssh_host }}:/tmp/strudel/{{ pkg_name }} /tmp/{{ dest_pkg_name }}
+#  delegate_to: 127.0.0.1
