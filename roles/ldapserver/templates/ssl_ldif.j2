@@ -1,9 +1,9 @@
 dn: cn=config
 replace: olcTLSCACertificateFile
-olcTLSCACertificateFile: /etc/openldap/certs/cacert.pem
+olcTLSCACertificateFile: {{ cacert }}
 -
 replace: olcTLSCertificateFile
-olcTLSCertificateFile: /etc/openldap/certs/ldapcert.pem
+olcTLSCertificateFile:  {{ ldapcert }}
 -
 replace: olcTLSCertificateKeyFile
-olcTLSCertificateKeyFile: /etc/openldap/certs/ldapkey.pem
+olcTLSCertificateKeyFile: {{ ldapkey }}

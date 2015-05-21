@@ -1,7 +1,12 @@
 --- 
 - 
   name: "Building the CA Certificate"
-  shell: ' cd /etc/easy-rsa/2.0; source ./vars; ./clean-all;  export EASY_RSA="${EASY_RSA:-.}"; "$EASY_RSA/pkitool" --initca $*'
+  shell: ' bash -c " cd /etc/easy-rsa/2.0; source ./vars; ./clean-all;  export EASY_RSA=/etc/easy-rsa/2.0; /etc/easy-rsa/2.0/pkitool --initca $* "'
   args:
     creates: /etc/easy-rsa/2.0/keys/ca.crt
+  register: initca
   sudo: True
+
+- name: debug
+  debug: var=initca
+
