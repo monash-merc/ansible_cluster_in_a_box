@@ -35,7 +35,7 @@
 module load openssh
 RETVAL=0
 prog="ssh"
-lockfile=${SSH_HOME}/var/lock/subsys/${prog}
+lockfile=/var/lock/subsys/${prog}
 
 # Some functions to make the below more readable
 KEYGEN=${SSH_HOME}/bin/ssh-keygen
@@ -46,11 +46,9 @@ RSA_KEY=${SSH_HOME}/etc/ssh_host_rsa_key
 DSA_KEY=${SSH_HOME}/etc/ssh_host_dsa_key
 PID_FILE=/var/run/sshd.pid
 ##PID_FILE=${SSH_HOME}/var/run/sshd.pid
-SSHD_LOG="${SSH_HOME}/var/log/sshd.log"
-OPTIONS="-E ${SSHD_LOG} -f ${SSHD_CONFIG}"
+##SSHD_LOG="${SSH_HOME}/var/log/sshd.log"
+OPTIONS="-f ${SSHD_CONFIG}"
 runlevel=$(set -- $(runlevel); eval "echo \$$#" )
-
-[ -f ${SSHD_LOG} ] || touch ${SSHD_LOG}
 
 fips_enabled() {
 	if [ -r /proc/sys/crypto/fips_enabled ]; then
