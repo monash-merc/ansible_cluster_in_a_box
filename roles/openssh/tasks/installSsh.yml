@@ -1,0 +1,58 @@
+- name: install deps
+  apt: name={{ item }} state=installed update_cache=yes
+  sudo: true
+  with_items:
+    - gcc 
+    - make 
+    - libssl-dev
+    - zlib1g-dev
+    - libpam0g-dev
+  when: ansible_os_family == "Debian"
+
+- name: get ssh source 
+  shell: wget http://mirror.aarnet.edu.au/pub/OpenBSD/OpenSSH/portable/openssh-{{ ssh_version }}.tar.gz
+  args:
+    chdir: /tmp
+    creates: /tmp/openssh-{{ ssh_version }}.tar.gz
+
+- name: untar ssh 
+  shell: tar zxf /tmp/openssh-{{ ssh_version }}.tar.gz 
+  args:
+    chdir: /tmp
+
+- name: build ssh 
+  shell: ./configure --prefix={{ ssh_dir }} --with-ipv4-default --with-md5-passwords --with-pam && make
+  args:
+    chdir: /tmp/openssh-{{ ssh_version }}
+    creates: /tmp/openssh-{{ ssh_version }}/ssh
+
+- name: install ssh 
+  shell: make install
+  sudo: true
+  args:
+    chdir: /tmp/openssh-{{ ssh_version }}
+    creates: "{{ ssh_dir }}/bin/ssh"
+
+- name: copy init script
+  template: dest=/etc/init.d/{{ sshd_name }} src=ssh.initd.centos.j2 mode=755
+  sudo: true   
+  when: ansible_os_family == "RedHat"
+
+- name: copy config script
+  template: dest={{ ssh_dir }}/etc/sshd_config src=sshd_config_centos.j2 mode=644
+  notify: restart openssh 
+  sudo: true   
+  when: ansible_os_family == "RedHat"
+
+- name: copy init script
+  template: dest=/etc/init.d/{{ sshd_name }} src=ssh.initd.debian.j2 mode=755
+  sudo: true   
+  when: ansible_os_family == "Debian"
+
+- name: copy config script
+  template: dest={{ ssh_dir }}/etc/sshd_config src=sshd_config_debian.j2 mode=644
+  notify: restart openssh 
+  sudo: true   
+  when: ansible_os_family == "Debian"
+
+
