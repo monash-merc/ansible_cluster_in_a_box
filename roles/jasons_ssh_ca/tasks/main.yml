@@ -1,0 +1,14 @@
+---
+- name: copy ca cert
+  copy: src=server_ca.pub dest=/etc/ssh/server_ca.pub owner=root group=root mode=644
+  sudo: true
+
+- name: edit sshd_config
+  lineinfile:
+  args: 
+    dest: /etc/ssh/sshd_config
+    line: TrustedUserCAKeys /etc/ssh/server_ca.pub
+    state: present
+  sudo: true
+  notify: restart ssh debian
+  when: ansible_os_family == "Debian"
