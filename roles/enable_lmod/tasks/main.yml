@@ -1,0 +1,33 @@
+---
+- include_vars: "{{ ansible_os_family }}.yml"
+
+- name: install lua
+  yum: name={{ item }} state=installed
+  with_items:
+    - lua
+    - lua-filesystem
+    - lua-posix
+  sudo: true
+  when: ansible_os_family == 'RedHat'
+
+- name: install lua
+  apt: name={{ item }} state=installed
+  with_items:
+    - lua5.2
+    - lua5.2
+    - lua-filesystem
+    - lua-bitop
+    - lua-posix
+    - liblua5.2-0
+    - liblua5.2-dev
+    - tcl
+  sudo: true
+  when: ansible_os_family == 'Debian'
+
+- name: link bash
+  file: src={{ soft_dir }}/lmod/lmod/init/bash dest=/etc/profile.d/lmod.sh state=link
+  sudo: true
+
+- name: link csh
+  file: src={{ soft_dir }}/lmod/lmod/init/cshrc dest=/etc/profile.d/lmod.csh state=link
+  sudo: true
