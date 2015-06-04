@@ -21,6 +21,10 @@
   args:
     chdir: /tmp/warewulf-nhc-{{ nhc_version }} 
 
+- name: ensure sysconfig dir exists
+  file: dest=/etc/sysconfig state=directory owner=root group=root mode=755
+  sudo: true
+
 - name: copy nhc sysconfig script
   template: dest=/etc/sysconfig/nhc src=nhc.sysconfig.j2 mode=644
   sudo: true
