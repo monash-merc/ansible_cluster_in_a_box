@@ -1,0 +1,4 @@
+---
+source_dir: /tmp
+soft_dir: /usr/local
+lmod_version: 5.8.6

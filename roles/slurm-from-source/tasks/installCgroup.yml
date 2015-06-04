@@ -13,6 +13,7 @@
     - libcgmanager0 
   sudo: true
   when: ansible_os_family == "Debian"    
+  sudo: true
 
 - name: config cgroup.conf file
   template: dest={{ slurm_dir }}/etc/cgroup.conf src=cgroup.conf.j2 mode=644

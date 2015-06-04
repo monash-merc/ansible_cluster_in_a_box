@@ -1,0 +1,44 @@
+---
+- include_vars: "{{ ansible_os_family }}.yml"
+
+- name: install lua
+  yum: name={{ item }} state=installed
+  with_items:
+    - lua
+    - lua-filesystem
+    - lua-posix
+  sudo: true
+  when: ansible_os_family == 'RedHat'
+
+- name: install lua
+  apt: name={{ item }} state=installed
+  with_items:
+    - lua5.2
+    - lua5.2
+    - lua-filesystem
+    - lua-bitop
+    - lua-posix
+    - liblua5.2-0
+    - liblua5.2-dev
+    - tcl
+  sudo: true
+  when: ansible_os_family == 'Debian'
+
+- name: Download LMOD
+  get_url:
+    url=http://downloads.sourceforge.net/project/lmod/Lmod-{{ lmod_version }}.tar.bz2
+    dest={{source_dir}}/Lmod-{{ lmod_version }}.tar.bz2
+    mode=0444
+
+- name: Uncompress LMOD
+  unarchive:
+    src={{ source_dir }}/Lmod-{{ lmod_version }}.tar.bz2
+    dest={{ source_dir }}
+    copy=no
+    creates={{source_dir}}/Lmod-{{ lmod_version }}/README
+
+- name: Compile and install Lmod
+  shell: cd {{ source_dir }}/Lmod-{{ lmod_version }}; ./configure --prefix={{ soft_dir }} --with-mpathSearch=YES --with-caseIndependentSorting=YES && make install LUA_INCLUDE={{ lua_include }}
+  args:
+    creates: "{{ soft_dir }}/lmod/{{ lmod_version }}"
+  sudo: true

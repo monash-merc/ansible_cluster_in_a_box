@@ -46,7 +46,7 @@ ReturnToService=1
 TaskPlugin=task/cgroup
 #TaskPlugin=task/affinity
 #TaskPlugin=task/affinity,task/cgroup
-{% if slurm_lua %}
+{% if slurm_lua is defined %}
 JobSubmitPlugins=lua
 {% endif %}
 OverTimeLimit=1
