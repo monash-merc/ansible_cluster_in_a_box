@@ -4,5 +4,5 @@
   sudo: true
 
 - name: provision cron job 
-  cron: name=provision job={{ provision }} user=root minute=*/5 state=present
+  cron: name=provision job="/usr/bin/flock -x -n /tmp/provision.lck -c {{ provision }}" user=root minute=*/30 state=present
   sudo: true

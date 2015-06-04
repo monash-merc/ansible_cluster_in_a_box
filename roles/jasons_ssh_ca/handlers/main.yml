@@ -1,0 +1,5 @@
+---
+- name: restart ssh debian
+  service: name=ssh state=restarted
+  sudo: true
+  when: ansible_os_family == "Debian"

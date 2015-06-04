@@ -14,4 +14,14 @@
   args:
     dest: /usr/share/Modules/init/.modulespath
     line: /usr/local/Modules/modulefiles
+  ignore_errors: true
+  sudo: true
+
+# for some reason ubuntu uses lowercase modules
+- name: add /usr/local/Modules to the module file path
+  lineinfile: 
+  args:
+    dest: /usr/share/modules/init/.modulespath
+    line: /usr/local/Modules/modulefiles
+  ignore_errors: true
   sudo: true
