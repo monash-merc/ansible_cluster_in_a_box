@@ -31,22 +31,19 @@
 
 # pull in sysconfig settings
 [ -f /etc/sysconfig/sshd ] && . /etc/sysconfig/sshd
-[ -f /etc/profile.d/modules.sh ] && . /etc/profile.d/modules.sh
-module load openssh
 RETVAL=0
 prog="ssh"
 lockfile=/var/lock/subsys/${prog}
 
 # Some functions to make the below more readable
+SSH_HOME={{ ssh_dir }}
 KEYGEN=${SSH_HOME}/bin/ssh-keygen
 SSHD=${SSH_HOME}/sbin/sshd
-SSHD_CONFIG=${SSH_HOME}/etc/sshd_config
-RSA1_KEY=${SSH_HOME}/etc/ssh_host_key
-RSA_KEY=${SSH_HOME}/etc/ssh_host_rsa_key
-DSA_KEY=${SSH_HOME}/etc/ssh_host_dsa_key
+SSHD_CONFIG=/etc/ssh/sshd_config
+RSA1_KEY=/etc/ssh/ssh_host_key
+RSA_KEY=/etc/ssh/ssh_host_rsa_key
+DSA_KEY=/etc/ssh/ssh_host_dsa_key
 PID_FILE=/var/run/sshd.pid
-##PID_FILE=${SSH_HOME}/var/run/sshd.pid
-##SSHD_LOG="${SSH_HOME}/var/log/sshd.log"
 OPTIONS="-f ${SSHD_CONFIG}"
 runlevel=$(set -- $(runlevel); eval "echo \$$#" )
 
@@ -146,9 +143,6 @@ start()
 	RETVAL=$?
         echo "return $RETVAL"
 	[ $RETVAL -eq 0 ] && touch $lockfile
-	echo "Start OK"
-        sleep 2
-        cp -f /var/run/sshd.pid ${PID_FILE}; cp -f /var/run/sshd.pid.ori /var/run/sshd.pid
 	return $RETVAL
 }
 
