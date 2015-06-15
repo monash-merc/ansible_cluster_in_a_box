@@ -1,5 +1,5 @@
 ---
-- include_vars: "roles/openssh/vars/{{ ansible_os_family }}_{{ ansible_architecture }}.yml"
+- include_vars: "{{ ansible_os_family }}_{{ ansible_architecture }}.yml"
 
 - name: restart ssh
   service: name={{ sshd_name }} state=restarted
