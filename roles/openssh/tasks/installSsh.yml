@@ -19,6 +19,7 @@
   shell: tar zxf /tmp/openssh-{{ ssh_version }}.tar.gz 
   args:
     chdir: /tmp
+    creates: /tmp/openssh-{{ ssh_version }}/ssh
 
 - name: build ssh 
   shell: ./configure --prefix={{ ssh_dir }} --with-ipv4-default --with-md5-passwords --with-pam && make
