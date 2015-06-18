@@ -1,0 +1,7 @@
+---
+- 
+  hosts: karaage-server
+  remote_user: ec2-user
+  roles:
+    - karaage3.1.17
+  sudo: true
