@@ -1,0 +1,3 @@
+---
+groupList:
+  - { name : 'computeNodes', interface : 'tun0' }

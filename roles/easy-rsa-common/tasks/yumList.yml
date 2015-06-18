@@ -1,0 +1,16 @@
+---
+-
+  name: "Install these yum packages"
+  with_items:
+    - gcc
+    - make
+    - tcsh
+    - bind-utils
+  yum: "name={{ item }} state=present"
+-
+  name: "Setting hostname"
+  shell: sysctl kernel.hostname={{ inventory_hostname }} 
+
+-
+  name: "Restarting Network"
+  service: name=network state=restarted

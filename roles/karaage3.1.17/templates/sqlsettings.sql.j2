@@ -1,0 +1,4 @@
+CREATE DATABASE IF NOT EXISTS karaage;
+DROP USER 'karaage'@'localhost';
+CREATE USER 'karaage'@'localhost' IDENTIFIED BY '{{ karaage_sql_password }}';
+GRANT ALL PRIVILEGES ON karaage.* TO 'karaage'@'localhost';

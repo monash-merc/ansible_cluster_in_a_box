@@ -1,12 +1,13 @@
 ---
--
- name: Format File Systems
- filesystem: fstype={{ item.fstype }} dev={{ item.dev }} opts={{ item.opts }}
- with_items: mkFileSystems
- when: configDiskDevice
--
- name: Mount file systems
- mount: name=/mnt/{{ item.dev | basename }} src={{ item.dev }} fstype={{ item.fstype }} opts=loop state=mounted
- with_items: mkFileSystems
- when: configDiskDevice
+- name: Format File Systems
+  filesystem: fstype={{ item.fstype }} dev={{ item.dev }} opts={{ item.opts }}
+  with_items: mkFileSystems
+  sudo: true
+  when: configDiskDevice
+
+- name: Mount device 
+  mount: name={{ item.name }} src={{ item.src }} fstype={{ item.fstype }} opts={{ item.mntopts }} state=mounted
+  with_items: mntFileSystems
+  sudo: true
+  when: configDiskDevice
 

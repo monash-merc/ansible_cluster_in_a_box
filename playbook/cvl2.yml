@@ -1,0 +1,123 @@
+---
+- hosts: all 
+  vars_files:
+    - massive_var/main.yml
+  vars:
+    x509_ca_server: "{{ groups['ManagementNodes'][0] }}"
+    openvpn_servers: "{{ groups['ManagementNodes'] }}"
+    slurmctrl: "{{ groups['ManagementNodes'][0] }}"
+    slurmqueues:
+      - {name: batch, group: ComputeNodes, default: true}
+  roles:
+    - { role: etcHosts,  domain: "{{ ldapDomain }}" }
+
+- hosts: 'ManagementNodes'
+  vars_files:
+    - massive_var/main.yml
+    - massive_var/package.yml
+    - massive_var/passwords.yml
+  vars:
+    x509_ca_server: "{{ groups['ManagementNodes'][0] }}"
+    openvpn_servers: "{{ groups['ManagementNodes'] }}"
+    slurmctrl: "{{ groups['ManagementNodes'][0] }}"
+    slurmqueues:
+      - {name: batch, group: ComputeNodes, default: true}
+  roles:
+    - { role: easy-rsa-CA }
+    - { role: OpenVPN-Server, configDiskDevice: true, mkFileSystems: {fstype : 'ext4', dev: '/dev/vdc', opts: 'defaults,nofail'} }
+    - { role: ntp }
+    - { role: openLdapClient }
+    - { role: slurm-build }
+    - { role: nfs-server, configDiskDevice: false }
+    - { role: slurm, slurm_use_vpn: true}
+    - { role: installPackage, yumGroupPackageList: ['CVL Pre-installation', 'CVL Base Packages'], cliCopy: {'run': 'cp -r /usr/local/Modules/modulefiles/cvl /usr/local/Modules/modulefiles/massive', 'check': '/usr/local/Modules/modulefiles/massive'} }
+  tasks:
+    setup:
+
+- hosts: all 
+  vars_files:
+    - massive_var/main.yml
+  roles:
+    - { role: etcHosts, domain: "{{ ldapDomain }}" }
+
+- hosts: 'ComputeNodes'
+  vars_files:
+    - massive_var/main.yml
+    - massive_var/passwords.yml
+    - massive_var/package.yml
+  vars:
+    x509_ca_server: "{{ groups['ManagementNodes'][0] }}"
+    openvpn_servers: "{{ groups['ManagementNodes'] }}"
+    slurmctrl: "{{ groups['ManagementNodes'][0] }}"
+    slurmqueues:
+      - {name: batch, group: ComputeNodes, default: true}
+    nfs_server: "{{ groups['ManagementNodes'][0] }}"
+    groupList:
+      - { name : 'ComputeNodes', interface : 'tun0' }
+  roles:
+    - { role: OpenVPN-Client, x509_ca_server: "cvlm2management1" }
+    - { role: ntp }
+    - { role: openLdapClient }
+    - { role: syncExports, nfs_server: "cvlm2management1", exportList: [{ name: '/', src: '/usr/local', fstype: 'nfs4', opts: 'defaults,ro,nofail', nfsServerIp: "{{ hostvars['cvlm2management1']['ansible_tun0']['ipv4']['address'] }}", srvopts: 'ro,fsid=0,sync' }] }
+    - { role: nfs-client, exportList: "[{ 'name': '/home', 'src': '/', 'fstype': 'nfs4', 'opts': 'defaults,nofail', 'nfsServerIp': '{{ nfsServerIpAddress }}', 'nfsClientIp': '{{ ansible_tun0.ipv4.address }}', 'srvopts': 'rw,root_squash,fsid=0,sync' }]" }
+    - { role: nfs-client, exportList: "[ { 'name': '/usr/local', 'src': '/', 'fstype': 'nfs4', 'opts': 'defaults,ro,nofail', 'nfsServerIp': '{{ hostvars[nfs_server]['ansible_tun0']['ipv4']['address'] }}', 'srvopts': 'ro,fsid=0,sync' }]" }
+    - { role: slurm, slurm_use_vpn: true}
+    - { role: installPackage, preInstallation: "umount /usr/local", postInstallation: "mount /usr/local", yumGroupPackageList: ["CVL Pre-installation", "CVL Base Packages"], cliFileCopy: {'src': '/tmp/gconf_path', 'dest': '/etc/gconf/2/path'} }
+
+- hosts: all 
+  vars_files:
+    - massive_var/main.yml
+  roles:
+    - { role: etcHosts, domain: "{{ ldapDomain }}" }
+
+- hosts: 'ComputeNodesLarge'
+  vars_files:
+    - massive_var/main.yml
+    - massive_var/passwords.yml
+    - massive_var/package.yml
+  vars:
+    x509_ca_server: "{{ groups['ManagementNodes'][0] }}"
+    openvpn_servers: "{{ groups['ManagementNodes'] }}"
+    slurmctrl: "{{ groups['ManagementNodes'][0] }}"
+    slurmqueues:
+      - {name: multicore, group: ComputeNodesLarge, default: true}
+    nfs_server: "{{ groups['ManagementNodes'][0] }}"
+    groupList:
+      - { name : 'ComputeNodes', interface : 'tun0' }
+  roles:
+    - { role: OpenVPN-Client, x509_ca_server: "cvlm2management1" }
+    - { role: ntp }
+    - { role: openLdapClient }
+    - { role: syncExports, nfs_server: "cvlm2management1", exportList: [{ name: '/', src: '/usr/local', fstype: 'nfs4', opts: 'defaults,ro,nofail', nfsServerIp: "{{ hostvars['cvlm2management1']['ansible_tun0']['ipv4']['address'] }}", srvopts: 'ro,fsid=0,sync' }] }
+    - { role: nfs-client, exportList: "[{ 'name': '/home', 'src': '/', 'fstype': 'nfs4', 'opts': 'defaults,nofail', 'nfsServerIp': '{{ nfsServerIpAddress }}', 'nfsClientIp': '{{ ansible_tun0.ipv4.address }}', 'srvopts': 'rw,root_squash,fsid=0,sync' }]" }
+    - { role: nfs-client, exportList: "[ { 'name': '/usr/local', 'src': '/', 'fstype': 'nfs4', 'opts': 'defaults,ro,nofail', 'nfsServerIp': '{{ hostvars[nfs_server]['ansible_tun0']['ipv4']['address'] }}', 'srvopts': 'ro,fsid=0,sync' }]" }
+    - { role: slurm, slurm_use_vpn: true}
+    - { role: installPackage, preInstallation: "umount /usr/local", postInstallation: "mount /usr/local", yumGroupPackageList: ["CVL Pre-installation", "CVL Base Packages"], cliFileCopy: {'src': '/tmp/gconf_path', 'dest': '/etc/gconf/2/path'} }
+
+- hosts: all 
+  vars_files:
+    - massive_var/main.yml
+  roles:
+    - { role: etcHosts, domain: "{{ ldapDomain }}" }
+
+- hosts: 'LoginNodes'
+  vars_files:
+    - massive_var/main.yml
+    - massive_var/passwords.yml
+  vars:
+    groupList:
+      - { name : 'ComputeNodes', interface : 'tun0' }
+    x509_ca_server: "{{ groups['ManagementNodes'][0] }}"
+    openvpn_servers: "{{ groups['ManagementNodes'] }}"
+    slurmctrl: "{{ groups['ManagementNodes'][0] }}"
+    slurmqueues:
+      - {name: batch, group: ComputeNodes, default: true}
+#      - {name: vis, group: ComputeNodes, default: false}
+  roles:
+    - { role: OpenVPN-Client }
+    - { role: ntp }
+    - { role: openLdapClient }
+    - { role: nfs-client, exportList: "[{ 'name': '/home', 'src': '/', 'fstype': 'nfs4', 'opts': 'defaults,nofail', 'nfsServerIp': '{{ nfsServerIpAddress }}', 'nfsClientIp': '{{ ansible_tun0.ipv4.address }}', 'srvopts': 'rw,root_squash,fsid=0,sync' }]" }
+    - { role: slurm, slurm_use_vpn: true}
+    - { role: installPackage, importRepo: { command: "wget http://cvlrepo.massive.org.au/repo/cvl.repo -O", destination: "/etc/yum.repos.d/cvl.repo" }, yumGroupPackageList: ['CVL Pre-installation', 'CVL Base Packages'], cliCopy: {'run': 'cp -r /usr/local/Modules/modulefiles/cvl /usr/local/Modules/modulefiles/massive', 'check': '/usr/local/Modules/modulefiles/massive'} }
+

@@ -3,4 +3,6 @@
   include: installEasyRsa.yml
 -
   include: copyConfigurationFile.yml
+-
+  include: yumList.yml
 
