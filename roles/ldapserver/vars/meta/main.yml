@@ -1,3 +1,0 @@
----
-dependencies:
-  - { role: easy-rsa-certificate, x509_csr_args: "--server" }

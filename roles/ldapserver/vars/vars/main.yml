@@ -1,7 +1,0 @@
----
-  ldapuser:  ldap
-  ldapgroup: ldap
-  system_packages:
-    - openldap-servers
-    - openldap-clients
-    - openssl
