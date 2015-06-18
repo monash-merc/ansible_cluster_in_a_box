@@ -1,0 +1,47 @@
+---
+- 
+ name: "Installing MySQL"
+ apt: name="{{ item }}" update_cache=yes cache_valid_time=3600 state=present
+ with_items:
+  - python
+  - python-dev
+  - libmysqlclient-dev
+  - python-pip
+  - libapache2-mod-wsgi
+  - python-mysql.connector
+  - mysql-server
+  - python-mysqldb
+- 
+ name: "Starting MySQL"
+ service: name=mysql state=started enabled=true
+#-
+# name: "Templating .my.cnf"
+# template: src=".my.cnf.j2" dest=/root/.my.cnf owner=root group=root mode=0600
+-
+ name: "Templating karaage.cnf"
+ template: src="karaage.cnf.j2" dest=/etc/mysql/conf.d/karaage.cnf owner=root group=root
+-
+ name: "Adding root"
+ sudo: true
+ mysql_user: name=root host="{{ item }}" password="{{ mysql_root_password }}" login_user=root login_password="{{ mysql_root_password }}" check_implicit_admin=yes priv="*.*:ALL,GRANT"
+ with_items:
+  - "{{ ansible_hostname }}"
+  - 127.0.0.1
+  - ::1
+  - localhost
+-
+ name: "Adding Karaage Database"
+ mysql_db: name=karaage state=present login_user=root login_password={{ mysql_root_password }} 
+-
+ name: "Giving priviliges to karaage user"
+ mysql_user: name=karaage password={{ karaage_sql_password }} login_user=root login_password={{ mysql_root_password }} priv=karaage.*:ALL state=present
+
+#-
+# name: "Templating mysql settings"
+# template: src="sqlsettings.sql.j2" dest=/root/sqlsettings.sql owner=root group=root mode=0600
+#-
+# name: "Setting root and karaage accounts"
+# shell: mysql < /root/sqlsettings.sql
+- 
+ name: "Starting MySQL"
+ service: name=mysql state=restarted
