@@ -6,8 +6,8 @@
   when: configDiskDevice
 
 - name: Mount device 
-  mount: name={{ item.name }} src={{ item.dev }} fstype={{ item.fstype }} opts={{ item.mntopts }} state=mounted
-  with_items: mkFileSystems
+  mount: name={{ item.name }} src={{ item.src }} fstype={{ item.fstype }} opts={{ item.mntopts }} state=mounted
+  with_items: mntFileSystems
   sudo: true
   when: configDiskDevice
 
