@@ -7,14 +7,10 @@
     - tcsh
     - bind-utils
   yum: "name={{ item }} state=present"
-<<<<<<< HEAD
   sudo: true
-=======
 -
   name: "Setting hostname"
   shell: sysctl kernel.hostname={{ inventory_hostname }} 
-
 -
   name: "Restarting Network"
   service: name=network state=restarted
->>>>>>> 90b67d1ef1d855521077ce6ccab2d41c55c1a3e6
