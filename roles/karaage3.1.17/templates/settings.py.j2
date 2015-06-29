@@ -40,7 +40,7 @@ STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 #
 # default: HTTP_HOST = FQDN hostname
 #
-HTTP_HOST = "{% for host in groups['karaage-server'] %}{{ hostvars[host]['ansible_fqdn'] }}{% endfor %}"
+HTTP_HOST = "{{ x509_common_name }}"
 
 # A list of strings representing the host/domain names that this Django site
 # can serve. This is a security measure to prevent an attacker from poisoning

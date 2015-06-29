@@ -6,7 +6,7 @@
   when: ansible_os_family == 'RedHat'
 - 
   name: "Installing easy-rsa"
-  apt: "name=openvpn state=present update_cache=yes"
+  apt: "name=easy-rsa state=present"
   sudo: True
   when: ansible_os_family == 'Debian'
 - 
@@ -22,7 +22,17 @@
   args:
     creates: /etc/easy-rsa
   sudo: True
-  when: ansible_os_family == 'Debian'
+  when: ansible_os_family == 'Debian' and ansible_distribution_release != 'jessie'
+  register: installed
+- 
+  name: "Create /etc/easy-rsa/2.0 for Jessie"
+  file: path=/etc/easy-rsa/2.0 state=directory mode=0755
+  when: ansible_os_family == 'Debian' and ansible_distribution_release == 'jessie'
+- 
+  name: "Moving easy-rsa to /etc"
+  shell: "cp -rf /usr/share/easy-rsa/* /etc/easy-rsa/2.0/"
+  sudo: True
+  when: ansible_os_family == 'Debian' and ansible_distribution_release == 'jessie'
   register: installed
 
 - name: "Clean all"

@@ -1,0 +1,21 @@
+---
+
+-
+ name: Download easy-rsa 2.2.2
+ get_url: url=https://github.com/OpenVPN/easy-rsa/archive/2.2.2.tar.gz dest=/tmp/2.2.2.tar.gz
+-
+ name: Untar the source
+ shell: tar xvfz 2.2.2.tar.gz chdir=/tmp creates=/tmp/easy-rsa-2.2.2
+- 
+  name: "Moving easy-rsa to /etc"
+  shell: cp -rf /tmp/easy-rsa-2.2.2/easy-rsa /etc/ creates=/etc/easy-rsa
+  sudo: True
+  register: installed
+
+- name: "Clean all"
+  shell: " cd /etc/easy-rsa/2.0; . ./vars; export EASY_RSA=\"${EASY_RSA:-.}\"; \"$EASY_RSA\"/clean-all"
+  args:
+    creates: "/etc/easy-rsa/2.0/keys/"
+  when: installed|changed
+  sudo: true
+ 

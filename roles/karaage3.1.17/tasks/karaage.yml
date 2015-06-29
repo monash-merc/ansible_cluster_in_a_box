@@ -53,6 +53,7 @@
  with_items:
   - python-kgusage
   - karaage-cluster-tools
+  - karaage3-celery
 -
  name: "Set Secret Key"
  lineinfile: dest=/etc/karaage3/settings.py regexp="SECRET_KEY = ''" line="SECRET_KEY = 'imkaraage'" state=present
@@ -69,9 +70,6 @@
  name: Templating ldap.conf
  template: src=client-ldap.conf.j2 dest=/etc/ldap/ldap.conf owner=root group=root mode=0644
  when: ansible_fqdn != "{% for host in groups['ldap-server'] %}{{ hostvars[host]['ansible_fqdn'] }}{% endfor %}"
--
- name: Add missing ldap entries
- shell: kg-manage migrate_ldap
 -
  name: "Reloading apache"
  service: name=apache2 state=reloaded

@@ -6,7 +6,7 @@
 # This file should be world readable but not world writable.
 
 #BASE	dc=example,dc=com
-URI	ldap://{% for host in groups['ldap-server'] %}{{ hostvars[host]['ansible_fqdn'] }}{% endfor %} ldaps://{% for host in groups['ldap-server'] %}{{ hostvars[host]['ansible_fqdn'] }}{% endfor %}
+URI {{ ldapURI }}
 
 #SIZELIMIT	12
 #TIMELIMIT	15
@@ -14,4 +14,3 @@ URI	ldap://{% for host in groups['ldap-server'] %}{{ hostvars[host]['ansible_fqd
 
 # TLS certificates (needed for GnuTLS)
 TLS_CACERT	{{ x509_cacert_file }}
-TLS_REQCERT allow

@@ -1,17 +1,32 @@
 ---
 -
   hosts: ldap-server
+  pre_tasks:
+    - sysctl: name=kernel.hostname value={{ inventory_hostname }} state=present
+      ignore_errors: yes
+    - service: name=network state=restarted
+      when: ansible_os_family == 'Redhat'
   roles:
-#   - easy-rsa-CA
-#   - ldapserver
+   - easy-rsa-CA
+   - easy-rsa-certificate
+   - ldapserver
   sudo: true
+  vars:
+   - x509_ca_server: "{% for host in groups['ldap-server'] %}{{ hostvars[host]['ansible_fqdn'] }}{% endfor %}"
   vars_files:
    - vars/karaageVars.yml
 - 
   hosts: karaage-server
+  pre_tasks:
+    - sysctl: name=kernel.hostname value={{ inventory_hostname }} state=present
+      ignore_errors: yes
+    - service: name=network state=restarted
+      when: ansible_os_family == 'Redhat'
   roles:
-#    - easy-rsa-certificate
+    - easy-rsa-certificate
     - karaage3.1.17
   sudo: true
+  vars:
+   - x509_ca_server: "{% for host in groups['ldap-server'] %}{{ hostvars[host]['ansible_fqdn'] }}{% endfor %}"
   vars_files:
    - vars/karaageVars.yml
