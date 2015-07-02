@@ -1,4 +1,12 @@
 ---
-- name: Install tmux
-  apt: name=tmux state=latest
+- name: make sure /usr/local/bin exists
+  file: path=/usr/local/bin state=directory mode=755 owner=root
+  sudo: true
+
+- name: install get_node.py
+  copy: src=get_node.py dest=/usr/local/bin/get_node.py mode=755 owner=root
+  sudo: true
+
+- name: install mbp_node
+  copy: src=mbp_node dest=/usr/local/bin/mbp_node mode=755 owner=root
   sudo: true
