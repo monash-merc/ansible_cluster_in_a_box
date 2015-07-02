@@ -10,5 +10,4 @@
     line: TrustedUserCAKeys /etc/ssh/server_ca.pub
     state: present
   sudo: true
-  notify: restart ssh debian
-  when: ansible_os_family == "Debian"
+  notify: restart ssh

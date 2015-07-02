@@ -30,7 +30,7 @@ SSHD_LOG="${SSHD_LOG_DIR}/sshd.log"
 PID_DIR="{{ ssh_pid_dir }}"
 ###PID_DIR="${SSH_HOME}/var/run"
 PID_FILE=${PID_DIR}/sshd.pid
-SSHD_CONFIG=${SSH_HOME}/etc/sshd_config
+SSHD_CONFIG=/etc/ssh/sshd_config
 SSHD="${SSH_HOME}/sbin/sshd"
 SSHD_OPTS="-f ${SSHD_CONFIG}"
 

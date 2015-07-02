@@ -1,5 +1,6 @@
 ---
-- name: restart ssh debian
-  service: name=ssh state=restarted
+- include_vars: "{{ ansible_os_family }}_{{ ansible_architecture }}.yml"
+
+- name: restart ssh
+  service: name={{ sshd_name }} state=restarted
   sudo: true
-  when: ansible_os_family == "Debian"

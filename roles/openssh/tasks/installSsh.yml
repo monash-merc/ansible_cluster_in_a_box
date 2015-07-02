@@ -19,6 +19,7 @@
   shell: tar zxf /tmp/openssh-{{ ssh_version }}.tar.gz 
   args:
     chdir: /tmp
+    creates: /tmp/openssh-{{ ssh_version }}/ssh
 
 - name: build ssh 
   shell: ./configure --prefix={{ ssh_dir }} --with-ipv4-default --with-md5-passwords --with-pam && make
@@ -38,21 +39,35 @@
   sudo: true   
   when: ansible_os_family == "RedHat"
 
-- name: copy config script
-  template: dest={{ ssh_dir }}/etc/sshd_config src=sshd_config_centos.j2 mode=644
-  notify: restart openssh 
-  sudo: true   
-  when: ansible_os_family == "RedHat"
-
 - name: copy init script
   template: dest=/etc/init.d/{{ sshd_name }} src=ssh.initd.debian.j2 mode=755
-  sudo: true   
+  sudo: true
   when: ansible_os_family == "Debian"
 
-- name: copy config script
-  template: dest={{ ssh_dir }}/etc/sshd_config src=sshd_config_debian.j2 mode=644
-  notify: restart openssh 
-  sudo: true   
-  when: ansible_os_family == "Debian"
+- name: check config file
+  stat: path=/etc/ssh/sshd_config
+  register: ssh_config 
+  ignore_errors: true
 
+- name: create config file link
+  file: src={{ ssh_dir }}/etc dest=/etc/ssh state=link force=yes
+  sudo: true
+  when: ssh_config.stat.exists == false
 
+- name: edit config file replace"
+  lineinfile: dest=/etc/ssh/sshd_config line="{{ item.line }}" regexp="{{ item.regexp }}" backrefs=yes
+  with_items:
+    - {line: "HostKey /etc/ssh/ssh_host_rsa_key", regexp: "^#HostKey /etc/ssh/ssh_host_rsa_key"}
+    - {line: "HostKey /etc/ssh/ssh_host_dsa_key", regexp: "^#HostKey /etc/ssh/ssh_host_dsa_key"}
+    - {line: "#GSSAPIAuthentication yes", regexp: "^GSSAPIAuthentication yes"}
+    - {line: "#GSSAPICleanupCredentials yes", regexp: "^GSSAPICleanupCredentials yes"}
+  sudo: true
+
+- name: edit config file attache lines"
+  lineinfile: dest=/etc/ssh/sshd_config line="{{ item }}" 
+  with_items:
+    - "KexAlgorithms curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group14-sha1,diffie-hellman-group-exchange-sha1,diffie-hellman-group1-sha1"
+    - "Ciphers aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128,aes128-gcm@openssh.com,aes256-gcm@openssh.com,chacha20-poly1305@openssh.com,aes128-cbc,3des-cbc,blowfish-cbc,cast128-cbc,aes192-cbc,aes256-cbc,arcfour"
+  notify: restart openssh
+  sudo: true
+  
