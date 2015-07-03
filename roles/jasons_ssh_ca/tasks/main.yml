@@ -1,4 +1,6 @@
 ---
+- include_vars: "{{ ansible_os_family }}_{{ ansible_architecture }}.yml"
+
 - name: copy ca cert
   copy: src=server_ca.pub dest=/etc/ssh/server_ca.pub owner=root group=root mode=644
   sudo: true
