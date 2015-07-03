@@ -1,0 +1,6 @@
+#!/bin/bash 
+mpbctrl='/home/hines/mbp_script/get_node.py'
+node=$( $mbpctrl $1 )
+if [[ $node ]]; then
+    ssh -t $node tmux attach-session
+fi
