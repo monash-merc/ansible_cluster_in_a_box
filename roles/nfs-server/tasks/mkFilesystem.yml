@@ -6,13 +6,8 @@
   when: mkFileSystems is defined
 
 - name: Mount device 
-<<<<<<< HEAD
   mount: name={{ item.name }} src={{ item.dev }} fstype={{ item.fstype }} opts={{ item.opts }} state=mounted
   with_items: mountFileSystems
-=======
-  mount: name={{ item.name }} src={{ item.src }} fstype={{ item.fstype }} opts={{ item.mntopts }} state=mounted
-  with_items: mntFileSystems
->>>>>>> 90b67d1ef1d855521077ce6ccab2d41c55c1a3e6
   sudo: true
   when: mountFileSystems is defined
 

@@ -31,7 +31,7 @@
   when: cert.stat.exists == false or cert.stat.size == 0
 
 - name: "Delete Zero Sized Ceritificates"
-  remote_user: "{{ hostvars[x509_ca_server]['ansible_ssh_user'] }}"
+  remote_user: "{{ x509_ca_server }}"
   delegate_to: "{{ x509_ca_server }}"
   shell: rm -rf /etc/easy-rsa/2.0/keys/{{ x509_common_name }}.*
   when: cert is defined and cert.stat.size == 0
@@ -61,29 +61,29 @@
   when: needcert
 
 - name: "Copy CSR to CA"
-  remote_user: "{{ hostvars[x509_ca_server]['ansible_ssh_user'] }}"
-  delegate_to: "{{ hostvars[x509_ca_server]['ansible_fqdn'] }}"
+  remote_user: "{{ x509_ca_server }}"
+  delegate_to: "{{ x509_ca_server }}"
   copy: "src=/tmp/{{ inventory_hostname }}/{{ inventory_hostname }}.csr dest=/etc/easy-rsa/2.0/keys/{{ x509_common_name }}.csr force=yes"
   when: needcert
   sudo: true
 
 - name: "Sign Certificate"
-  remote_user: "{{ hostvars[x509_ca_server]['ansible_ssh_user'] }}"
-  delegate_to: "{{ hostvars[x509_ca_server]['ansible_fqdn'] }}"
+  remote_user: "{{ x509_ca_server }}"
+  delegate_to: "{{ x509_ca_server }}"
   shell:    "cd /etc/easy-rsa/2.0; . ./vars; export EASY_RSA=\"${EASY_RSA:-.}\" ;\"$EASY_RSA\"/pkitool --sign {{ x509_sign_args }} {{ x509_common_name }}"
   when: needcert
   sudo: true
 
 - name: "Copy the Certificate to ansible host"
-  remote_user: "{{ hostvars[x509_ca_server]['ansible_ssh_user'] }}"
-  delegate_to: "{{ hostvars[x509_ca_server]['ansible_fqdn'] }}"
+  remote_user: "{{ x509_ca_server }}"
+  delegate_to: "{{ x509_ca_server }}"
   fetch: "src=/etc/easy-rsa/2.0/keys/{{ x509_common_name }}.crt dest=/tmp/{{ inventory_hostname }}/{{ x509_common_name }}.crt fail_on_missing=yes validate_md5=yes flat=yes"
   sudo: true
   when: needcert
 
 - name: "Copy the CA Certificate to the ansible host"
-  remote_user: "{{ hostvars[x509_ca_server]['ansible_ssh_user'] }}"
-  delegate_to: "{{ hostvars[x509_ca_server]['ansible_fqdn'] }}"
+  remote_user: "{{ x509_ca_server }}"
+  delegate_to: "{{ x509_ca_server }}"
   fetch: "src=/etc/easy-rsa/2.0/keys/ca.crt dest=/tmp/{{ inventory_hostname }}/ca.crt fail_on_missing=yes validate_md5=yes flat=yes"
   sudo: true
   when: "ca_cert.stat.exists == false"

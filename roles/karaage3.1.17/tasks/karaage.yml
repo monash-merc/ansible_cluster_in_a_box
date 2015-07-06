@@ -61,15 +61,8 @@
  name: " Create DB tables"
  shell: kg-manage migrate 
 -
- name: "Reloading apache"
- service: name=apache2 state=reloaded
--
  name: "Restarting Celery"
  service: name=karaage3-celery state=restarted
--
- name: Templating ldap.conf
- template: src=client-ldap.conf.j2 dest=/etc/ldap/ldap.conf owner=root group=root mode=0644
- when: ansible_fqdn != "{% for host in groups['ldap-server'] %}{{ hostvars[host]['ansible_fqdn'] }}{% endfor %}"
 -
  name: "Reloading apache"
  service: name=apache2 state=reloaded

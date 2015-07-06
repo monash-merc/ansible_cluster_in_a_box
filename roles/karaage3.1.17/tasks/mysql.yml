@@ -14,9 +14,6 @@
 - 
  name: "Starting MySQL"
  service: name=mysql state=started enabled=true
-#-
-# name: "Templating .my.cnf"
-# template: src=".my.cnf.j2" dest=/root/.my.cnf owner=root group=root mode=0600
 -
  name: "Templating karaage.cnf"
  template: src="karaage.cnf.j2" dest=/etc/mysql/conf.d/karaage.cnf owner=root group=root
@@ -36,12 +33,6 @@
  name: "Giving priviliges to karaage user"
  mysql_user: name=karaage password={{ karaage_sql_password }} login_user=root login_password={{ mysql_root_password }} priv=karaage.*:ALL state=present
 
-#-
-# name: "Templating mysql settings"
-# template: src="sqlsettings.sql.j2" dest=/root/sqlsettings.sql owner=root group=root mode=0600
-#-
-# name: "Setting root and karaage accounts"
-# shell: mysql < /root/sqlsettings.sql
 - 
  name: "Starting MySQL"
  service: name=mysql state=restarted

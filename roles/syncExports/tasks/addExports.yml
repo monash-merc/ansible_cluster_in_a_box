@@ -7,7 +7,6 @@
 - name: "Templating /etc/exports"
   template: src=exports.j2 dest=/etc/exports owner=root group=root mode=644
   sudo: true
-<<<<<<< HEAD
 
 - name: "Start the Server"
   service: "name=nfs state=restarted"
@@ -21,11 +20,10 @@
 
 - name : "Pause ... clients sometimes have errors"
   command: sleep 60
-=======
   notify: "Reload exports"
+
 - name: "Restart the NFS server"
   service: "name=nfs state=restarted"
   delegate_to: "{{ nfs_server }}"
   run_once: true
->>>>>>> 90b67d1ef1d855521077ce6ccab2d41c55c1a3e6
   sudo: true

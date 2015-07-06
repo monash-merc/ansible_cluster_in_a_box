@@ -1,7 +1,7 @@
 dn: {{ dbname }},cn=config
 changetype: modify
-replace: olcSuffix
+add: olcSuffix
 olcSuffix: {{ ldapDomain }}
 -
-replace: olcRootDN
+add: olcRootDN
 olcRootDN: {{ ldapManager }}

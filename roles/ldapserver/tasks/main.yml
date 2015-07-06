@@ -14,7 +14,7 @@
   when: ansible_os_family == 'RedHat'
 
 - name: hash password
-  command: /usr//sbin/slappasswd -h {SSHA} -s {{ ldapManagerPassword }}
+  command: /usr/sbin/slappasswd -h {SSHA} -s {{ ldapManagerPassword }}
   register: ldapManagerHash
 
 - name: hash binddn password
