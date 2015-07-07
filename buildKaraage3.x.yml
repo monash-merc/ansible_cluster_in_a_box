@@ -1,11 +1,11 @@
 ---
 -
   hosts: ldap-server
-  #pre_tasks:
-    #- sysctl: name=kernel.hostname value={{ inventory_hostname }} state=present
-    #  ignore_errors: yes
-    #- service: name=network state=restarted
-    #  when: ansible_os_family == 'Redhat'
+  pre_tasks:
+    - sysctl: name=kernel.hostname value={{ inventory_hostname }} state=present
+      ignore_errors: yes
+    - service: name=network state=restarted
+      when: ansible_os_family == 'Redhat'
   roles:
    - etcHosts
    - easy-rsa-CA
@@ -41,6 +41,11 @@
    - x509_common_name: "{{ inventory_hostname }}"
 - 
   hosts: karaage-server
+  pre_tasks:
+    - sysctl: name=kernel.hostname value={{ inventory_hostname }} state=present
+      ignore_errors: yes
+    - service: name=network state=restarted
+      when: ansible_os_family == 'Redhat'
   roles:
     - etcHosts
     - easy-rsa-certificate
