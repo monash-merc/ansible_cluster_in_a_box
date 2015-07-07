@@ -25,6 +25,7 @@ resources:
     flavor: m1.small
     image: { get_param: image_id }
     key_name: { get_param: key_name }
+    security_groups: [OpenVPN, NSF, default]
     metadata:
      ansible_host_group: headNode
      ansible_ssh_user: ec2-user

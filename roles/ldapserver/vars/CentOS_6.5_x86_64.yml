@@ -3,3 +3,6 @@
   - openldap-servers
   - openldap-clients
   - openssl
+ dbname: olcDatabase={2}bdb
+ ldapuser: ldap
+ ldapgroup: ldap

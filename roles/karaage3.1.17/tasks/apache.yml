@@ -1,0 +1,24 @@
+---
+-
+ name: "Install Apache2"
+ apt: name=apache2 state=present
+-
+ name: "Templating default-ssl site"
+ template: src=default-ssl.j2 dest=/etc/apache2/sites-available/default-ssl.conf owner=www-data group=www-data
+-
+ name: "Templating default site"
+ template: src=default.j2 dest=/etc/apache2/sites-available/000-default.conf owner=www-data group=www-data
+-
+ name: "Templating ssl configuration"
+ template: src=ssl.conf.j2 dest=/etc/apache2/mods-available/ssl.conf owner=www-data group=www-data
+-
+ name: "Enable ssl module"
+ apache2_module: state=present name=ssl
+
+-
+ name: "Enable default-ssl site"
+ shell: a2ensite default-ssl
+
+-
+ name: "Restarting Apache2"
+ service: name=apache2 state=restarted

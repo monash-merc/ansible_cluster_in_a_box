@@ -6,3 +6,5 @@
 # group is a group of nodes (ansible group) authorised to mount the export
 exportList:
   - { src: '/cinderVolume/home', srvopts: 'fsid=1,rw,no_root_squash,sync', 'opts': 'defaults,nofail', group: ['DesktopNodes', 'LoginNodes'], interface: 'eth0' }
+groupList:
+  - { name : 'computeNodes', interface : 'tun0' }

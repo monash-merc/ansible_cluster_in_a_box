@@ -1,4 +1,4 @@
 dn: {{ dbname }},cn=config
 changetype: modify
-add: olcRootPW
+replace: olcRootPW
 olcRootPW: {{ ldapManagerHash.stdout }}

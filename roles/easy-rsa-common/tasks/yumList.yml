@@ -3,11 +3,14 @@
   name: "Install these yum packages"
   with_items:
     - gcc
-    - rsync
     - make
     - tcsh
     - bind-utils
-    - openssl-devel
-    - nfs-utils
   yum: "name={{ item }} state=present"
   sudo: true
+-
+  name: "Setting hostname"
+  shell: sysctl kernel.hostname={{ inventory_hostname }} 
+-
+  name: "Restarting Network"
+  service: name=network state=restarted
