@@ -141,42 +141,42 @@
 
 
 - name: initialise server ssl
-  shell: /usr/bin/ldapmodify -Y EXTERNAL -H ldapi:/// -f /tmp/ssl.ldif -D cn=config 
+  shell: ldapmodify -Y EXTERNAL -H ldapi:/// -f /tmp/ssl.ldif -D cn=config 
   sudo: true
   when: tlsConfigured|failed
 
 - name: initialise server manager
-  shell:  /usr/bin/ldapmodify -Y EXTERNAL -H ldapi:/// -f /tmp/manager.ldif -D cn=config 
+  shell:  ldapmodify -Y EXTERNAL -H ldapi:/// -f /tmp/manager.ldif -D cn=config 
   sudo: true
   when: managerConfigured|failed
 - name: initialise server manager
-  shell:  /usr/bin/ldapmodify -Y EXTERNAL -H ldapi:/// -f /tmp/manager2.ldif -D cn=config 
+  shell:  ldapmodify -Y EXTERNAL -H ldapi:/// -f /tmp/manager2.ldif -D cn=config 
   sudo: true
   ignore_errors: true
   when: managerConfigured|failed
 - name: initialise server manager
-  shell:  /usr/bin/ldapmodify -Y EXTERNAL -H ldapi:/// -f /tmp/manager3.ldif -D cn=config 
+  shell:  ldapmodify -Y EXTERNAL -H ldapi:/// -f /tmp/manager3.ldif -D cn=config 
   sudo: true
   when: managerConfigured|failed
 
 - name: initialise server acls
-  shell:  /usr/bin/ldapmodify -Y EXTERNAL -H ldapi:/// -f /tmp/acls.ldif -D cn=config
+  shell:  ldapmodify -Y EXTERNAL -H ldapi:/// -f /tmp/acls.ldif -D cn=config
   sudo: true
   when: aclConfigured|failed
 
 - name: add DIT root
-  shell: /usr/bin/ldapadd -x -D {{ ldapManager }} -w {{ ldapManagerPassword }} -x -H ldap://localhost -f /tmp/root.ldif
+  shell: ldapadd -x -D {{ ldapManager }} -w {{ ldapManagerPassword }} -x -H ldap://localhost -f /tmp/root.ldif
   when: ditConfigured|failed
 
 - name: add Accounts OU
-  shell: /usr/bin/ldapadd -x -D {{ ldapManager }} -w {{ ldapManagerPassword }} -x -H ldap://localhost -f /tmp/accounts.ldif
+  shell: ldapadd -x -D {{ ldapManager }} -w {{ ldapManagerPassword }} -x -H ldap://localhost -f /tmp/accounts.ldif
   when: accountsConfigured|failed
 
 - name: add Groups OU
-  shell: /usr/bin/ldapadd -x -D {{ ldapManager }} -w {{ ldapManagerPassword }} -x -H ldap://localhost -f /tmp/groups.ldif
+  shell: ldapadd -x -D {{ ldapManager }} -w {{ ldapManagerPassword }} -x -H ldap://localhost -f /tmp/groups.ldif
   when: groupsConfigured|failed
 
 - name: add binddn
-  shell: /usr/bin/ldapadd -x -D {{ ldapManager }} -w {{ ldapManagerPassword }} -x -H ldap://localhost -f /tmp/binddn.ldif
+  shell: ldapadd -x -D {{ ldapManager }} -w {{ ldapManagerPassword }} -x -H ldap://localhost -f /tmp/binddn.ldif
   sudo: true
   when: binddnConfigured|failed
