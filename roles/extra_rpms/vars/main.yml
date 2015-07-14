@@ -8,6 +8,7 @@ pkgs:
  - bitmap-fonts-compat
  - bitmap-lucida-typewriter-fonts
  - bitmap-miscfixed-fonts
+ - blas
  - compiz-gnome
  - db4-cxx
  - db4-devel
@@ -15,6 +16,7 @@ pkgs:
  - enchant
  - eog
  - evince
+ - fftw
  - file-roller
  - firefox
  - firstboot
@@ -92,6 +94,7 @@ pkgs:
  - inotify-tools
  - java-1.7.0-openjdk
  - jline
+ - lapack
  - leafpad
  - libblkid
  - libdrm
