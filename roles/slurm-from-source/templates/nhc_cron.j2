@@ -10,6 +10,7 @@ config_file=${CONFFILE-/etc/nhc/nhc.conf}
 loop=${NHC_LOOP_TIME-300}
 email_subject=${NHC_EMAIL_SUBJECT-notification}
 logfile=${LOGFILE-/var/log/nhc.log}
+loglevel=${LOG_LEVEL-0}
 email_to=${NHC_EMAIL_TO-root}
 
 function log() {
@@ -27,7 +28,9 @@ function email() {
     fi
 }
 
-log "Start health check ${config_file}"
+if [ ${loglevel} -gt "0" ]; then
+    log "Start health check ${config_file}"
+fi
 
 nhc -c "${config_file}" > /root/nhc.log 2>&1  || { log "$(cat /root/nhc.log)" && email && exit 1; }
 
