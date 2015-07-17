@@ -4,7 +4,7 @@ HELPERDIR={{ nhc_dir }}/libexec/nhc
 PATH={{ slurm_dir }}/bin:{{ nhc_dir }}/sbin:$PATH
 LOGFILE=/var/log/nhc.log
 CONFFILE="{{ nhc_dir }}/etc/nhc/{{ nhc_config_file }}"
-NHC_EMAIL_TO="jupiter.hu@monash.edu,chris.hines@monash.edu"
+NHC_EMAIL_TO= {{ nhc_emails }}
 NHC_EMAIL_SUBJECT="Node failure"
 NHC_LOOP_TIME="300"
 
