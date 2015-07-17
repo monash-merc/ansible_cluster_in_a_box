@@ -27,15 +27,3 @@
   template: dest=/etc/init.d/slurm src=slurm.initd.j2  mode=755
   sudo: true   
 
-- name: "copy ldap.conf RedHat"
-  template: src=ldap.conf.j2 dest=/etc/openldap/ldap.conf owner=root group=root mode=644
-  sudo: true
-  when: ansible_os_family == "RedHat"
-
-- name: "copy ldap.conf Debian"
-  template: src=ldap.conf.j2 dest=/etc/ldap/ldap.conf owner=root group=root mode=644
-  sudo: true
-  when: ansible_os_family == "Debian"
-
-
-
