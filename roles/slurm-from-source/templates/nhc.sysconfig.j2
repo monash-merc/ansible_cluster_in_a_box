@@ -3,6 +3,7 @@ NHC_RM=slurm
 HELPERDIR={{ nhc_dir }}/libexec/nhc
 PATH={{ slurm_dir }}/bin:{{ nhc_dir }}/sbin:$PATH
 LOGFILE=/var/log/nhc.log
+LOG_LEVEL={{ nhc_log_level }}
 CONFFILE="{{ nhc_dir }}/etc/nhc/{{ nhc_config_file }}"
 NHC_EMAIL_TO= {{ nhc_emails }}
 NHC_EMAIL_SUBJECT="Node failure"
