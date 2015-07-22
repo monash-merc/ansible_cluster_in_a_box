@@ -1,0 +1,23 @@
+---
+
+-
+ name: "Installing Apache"
+ yum: name={{ item }} state=latest
+ with_items:
+  - mod_ssl
+  - mod_wsgi 
+  - openssl
+  - httpd
+  - httpd-devel
+-
+ name: Setting httpd.conf
+ replace: dest=/etc/httpd/conf/httpd.conf regexp="^#ServerName www.example.com:80" replace="ServerName {{ ansible_fqdn }}"
+-
+ name: Templating ssl.conf
+ template: src=ssl.conf.j2 dest=/etc/httpd/conf.d/ssl.conf owner=root group=root
+-
+ name: Templating wsgi.conf
+ template: src=wsgi.conf.j2 dest=/etc/httpd/conf.d/wsgi.conf owner=root group=root
+-
+ name: Restarting Apache
+ service: name=httpd state=restarted

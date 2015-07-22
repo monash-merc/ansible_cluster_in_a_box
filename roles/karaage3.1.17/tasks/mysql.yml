@@ -1,6 +1,6 @@
 ---
 - 
- name: "Installing MySQL"
+ name: "Installing MySQL Debian"
  apt: name="{{ item }}" update_cache=yes cache_valid_time=3600 state=present
  with_items:
   - python
@@ -11,12 +11,32 @@
   - python-mysql.connector
   - mysql-server
   - python-mysqldb
+ when: ansible_os_family == "Debian"
+-
+ name: Installing MySQL RedHat
+ yum: name="{{ item }}" state=latest
+ with_items:
+  - python
+  - python-devel
+  - mysql-devel
+  - mysql-libs
+  - MySQL-python
+  - mysql-server
+ when: ansible_os_family == "RedHat"
 - 
  name: "Starting MySQL"
  service: name=mysql state=started enabled=true
+ when: ansible_os_family == "Debian"
+
+- 
+ name: "Starting MySQL"
+ service: name=mysqld state=started enabled=true
+ when: ansible_os_family == "RedHat"
 -
  name: "Templating karaage.cnf"
  template: src="karaage.cnf.j2" dest=/etc/mysql/conf.d/karaage.cnf owner=root group=root
+ when: ansible_os_family == "Debian"
+
 -
  name: "Adding root"
  sudo: true
@@ -27,6 +47,21 @@
   - ::1
   - localhost
 -
+ name: Setting mysql global variables
+ mysql_variables: variable={{ item.var }} value={{ item.val }} login_user=root login_password="{{ mysql_root_password }}"
+ with_items:
+  - { var : 'character_set_server', val : 'utf8' }
+  - { var : 'storage_engine', val : 'innodb' }
+  - { var : 'sql_mode', val : 'STRICT_ALL_TABLES' }
+ when: ansible_os_family == "RedHat"
+-
+ name: "Editing my.cnf"
+ lineinfile: dest=/etc/my.cnf  line="{{ item }}"
+ with_items:
+  - '[client]'
+  - 'default-character-set = utf8'
+ when: ansible_os_family == "RedHat"
+-
  name: "Adding Karaage Database"
  mysql_db: name=karaage state=present login_user=root login_password={{ mysql_root_password }} 
 -
@@ -36,3 +71,8 @@
 - 
  name: "Starting MySQL"
  service: name=mysql state=restarted
+ when: ansible_os_family == "Debian"
+-
+ name: "Starting MySQL"
+ service: name=mysqld state=restarted
+ when: ansible_os_family == "RedHat"

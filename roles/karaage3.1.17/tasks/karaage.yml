@@ -1,6 +1,6 @@
 ---
 -
- name: "Installing prerequisites"
+ name: "Installing prerequisites Debian"
  apt: name={{ item }} update_cache=yes
  with_items:
   - libxml2-dev
@@ -11,58 +11,145 @@
   - ldap-utils
   - python-cracklib
   - git
+ when: ansible_os_family == "Debian"
+-
+ name: "Installing prerequisites Redhat"
+ yum: name={{ item }} state=latest
+ with_items:
+  - libxml2-devel
+  - libxslt-devel
+  - python-lxml
+  - openldap-clients
+  - cracklib-python
+  - git
+  - gcc
+  - gcc-c++
+  - gcc-gfortran
+  - freetype-devel
+  - libpng-devel
+  - lapack-devel
+  - blas-devel
+  - libffi-devel
+ when: ansible_os_family == "RedHat" 
+-
+ name: Install the latest pip
+ shell: source /root/.bash_profile; easy_install pip
+ when: ansible_os_family == "RedHat"
 -
  name: "Getting Karaage from Github"
  git: repo="https://github.com/monash-merc/karaage.git" dest="/root/karaage3.1.7"
 -
  name: "Installing Karaage Dependencies"
- pip: name={{ item }} extra_args="--upgrade"
+ shell: source /root/.bash_profile; pip install {{ item }}
  with_items:
   - six
   - MySQL-python
-  - mincss
   - slimit
   - ply
+  - cython
+  - django-celery
+  - mod_wsgi
 -
  name: "Restrict Django version to 1.7.8"
  replace: dest=/root/karaage3.1.7/setup.py regexp="Django >= 1.7" replace="Django == 1.7.8"
 -
  name: "Installing Karaage from source"
- shell: python setup.py install 
+ shell: "source /root/.bash_profile; env python setup.py install"
  args:
   chdir: /root/karaage3.1.7
   creates: /root/karaage3.1.7/build/bdist.linux-x86_64
 -
  name: "Templating Karaage settings"
- template: src=settings.py.j2 dest=/etc/karaage3/settings.py owner=root group=www-data mode=0640
+ template: src=settingsDebian.py.j2 dest=/etc/karaage3/settings.py owner=root group=www-data mode=0640
+ when: ansible_os_family == "Debian"
 -
- name: "Creating karaage3 in /var/log"
- file: path=/var/log/karaage3 state=directory owner=www-data group=www-data mode=0755 
+ name: "Templating Karaage settings"
+ template: src=settingsRedHat.py.j2 dest=/etc/karaage3/settings.py owner=root group=apache mode=0640
+ when: ansible_os_family == "RedHat"
 -
- name: "Creating karaage3 in /var/lib"
- file: path=/var/lib/karaage3 state=directory owner=root group=www-data mode=0775
+ name: "Creating karaage3 in /var directories log, lib and www"
+ file: path={{ item }} state=directory owner=root group=www-data mode=0775
+ with_items:
+  - /var/log/karaage3
+  - /var/lib/karaage3
+ when: ansible_os_family == "Debian"
+-
+ name: "Creating karaage3 in /var directories log, lib "
+ file: path={{ item }} state=directory owner=root group=apache mode=0775
+ with_items:
+  - /var/log/karaage3
+  - /var/lib/karaage3
+  - /var/cache/karaage3
+ when: ansible_os_family == "RedHat"
 -
  name: "Change permissions for /var/www"
  file: path=/var/www state=directory owner=root group=www-data mode=0775
+ when: ansible_os_family == "Debian"
+-
+ name: "Change permissions for /var/www"
+ file: path=/var/www state=directory owner=root group=apache mode=0775
+ when: ansible_os_family == "RedHat"
+-
+ name: Create a symlink to mod_wsgi-py27.so
+ file: src=/opt/rh/python27/root/usr/lib64/python2.7/site-packages/mod_wsgi/server/mod_wsgi-py27.so dest=/usr/lib64/httpd/modules/mod_wsgi.so owner=root group=root state=link
+ when: ansible_os_family == "RedHat"  and ansible_distribution_major_version < '7'
 -
  name: "enabling Karaage configuration"
  shell: a2enconf karaage3-wsgi
+ when: ansible_os_family == "Debian"
 -
- name: "Installing other packages"
+ name: "enabling Karaage configuration"
+ shell: cp -rvpf /root/karaage3.1.7/conf/karaage3-wsgi.conf /etc/httpd/conf.d/karaage3-wsgi.conf
+ when: ansible_os_family == "RedHat"
+-
+ name: "Installing other packages Debian"
  apt: name={{ item }} update_cache=yes
  with_items:
   - python-kgusage
   - karaage-cluster-tools
   - karaage3-celery
+ when: ansible_os_family == "Debian"
+-
+ name: Downloading other packages RedHat
+ git: repo={{ item.repo }} dest={{ item.dest }}
+ with_items:
+  - { repo : 'https://github.com/numpy/numpy.git', dest : '/root/numpy' }
+  - { repo : 'https://github.com/matplotlib/matplotlib.git', dest : '/root/matplotlib' }
+  - { repo : 'https://github.com/Karaage-Cluster/karaage-software.git', dest : '/root/karaage-software' }
+  - { repo : 'https://github.com/Karaage-Cluster/karaage-usage.git', dest : '/root/karaage-usage' }
+  - { repo : 'https://github.com/Karaage-Cluster/karaage-applications.git', dest : '/root/karaage-applications' }
+  - { repo : 'https://github.com/Karaage-Cluster/karaage-cluster-tools.git', dest : '/root/karaage-cluster-tools' }
+ when: ansible_os_family == "RedHat"
+- 
+  args: 
+    chdir: "/root/{{ item }}"
+    creates: "/root/{{ item }}/build/bdist.linux-x86_64"
+  name: "Installing other packages RedHat"
+  shell: "source /root/.bash_profile ; env python setup.py install"
+  when: ansible_os_family == "RedHat"
+  with_items: 
+    - numpy
+    - matplotlib
+    - karaage-applications
+    - karaage-software
+    - karaage-usage
+    - karaage-cluster-tools
 -
  name: "Set Secret Key"
  lineinfile: dest=/etc/karaage3/settings.py regexp="SECRET_KEY = ''" line="SECRET_KEY = 'imkaraage'" state=present
 -
  name: " Create DB tables"
- shell: kg-manage migrate 
+ shell: source /root/.bash_profile ; kg-manage migrate 
 -
  name: "Restarting Celery"
  service: name=karaage3-celery state=restarted
+ when: ansible_os_family == "Debian"
 -
  name: "Reloading apache"
  service: name=apache2 state=reloaded
+ when: ansible_os_family == "Debian"
+
+-
+ name: "Reloading apache"
+ service: name=httpd state=reloaded
+ when: ansible_os_family == "RedHat"
