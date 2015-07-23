@@ -5,12 +5,12 @@
     - sysctl: name=kernel.hostname value={{ inventory_hostname }} state=present
       ignore_errors: yes
     - service: name=network state=restarted
-      when: ansible_os_family == 'Redhat'
+      when: ansible_os_family == 'RedHat'
   roles:
-   - etcHosts
-   - easy-rsa-CA
-   - easy-rsa-certificate
-   - ldapserver
+    - etcHosts
+    - easy-rsa-CA
+    - easy-rsa-certificate
+    - ldapserver
   sudo: true
   vars:
    - x509_ca_server: "{% for host in groups['ldap-server'] %}{{ hostvars[host]['ansible_fqdn'] }}{% endfor %}"
@@ -45,7 +45,7 @@
     - sysctl: name=kernel.hostname value={{ inventory_hostname }} state=present
       ignore_errors: yes
     - service: name=network state=restarted
-      when: ansible_os_family == 'Redhat'
+      when: ansible_os_family == 'RedHat'
   roles:
     - etcHosts
     - easy-rsa-certificate
@@ -78,3 +78,4 @@
    - x509_csr_args: ""
    - x509_sign_args: "{{ x509_csr_args }}"
    - x509_common_name: "{{ inventory_hostname }}"
+   - apache_user: "{% if ansible_os_family == 'RedHat'  %}apache{% else %}www-data{% endif %}"

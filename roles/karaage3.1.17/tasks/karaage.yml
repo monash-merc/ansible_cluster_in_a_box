@@ -60,35 +60,17 @@
   creates: /root/karaage3.1.7/build/bdist.linux-x86_64
 -
  name: "Templating Karaage settings"
- template: src=settingsDebian.py.j2 dest=/etc/karaage3/settings.py owner=root group=www-data mode=0640
- when: ansible_os_family == "Debian"
--
- name: "Templating Karaage settings"
- template: src=settingsRedHat.py.j2 dest=/etc/karaage3/settings.py owner=root group=apache mode=0640
- when: ansible_os_family == "RedHat"
--
- name: "Creating karaage3 in /var directories log, lib and www"
- file: path={{ item }} state=directory owner=root group=www-data mode=0775
- with_items:
-  - /var/log/karaage3
-  - /var/lib/karaage3
- when: ansible_os_family == "Debian"
+ template: src=settings.py.j2 dest=/etc/karaage3/settings.py owner=root group={{ apache_user }} mode=0640
 -
  name: "Creating karaage3 in /var directories log, lib "
- file: path={{ item }} state=directory owner=root group=apache mode=0775
+ file: path={{ item }} state=directory owner=root group={{ apache_user }} mode=0775
  with_items:
   - /var/log/karaage3
   - /var/lib/karaage3
   - /var/cache/karaage3
- when: ansible_os_family == "RedHat"
 -
  name: "Change permissions for /var/www"
- file: path=/var/www state=directory owner=root group=www-data mode=0775
- when: ansible_os_family == "Debian"
--
- name: "Change permissions for /var/www"
- file: path=/var/www state=directory owner=root group=apache mode=0775
- when: ansible_os_family == "RedHat"
+ file: path=/var/www state=directory owner=root group={{ apache_user }} mode=0775
 -
  name: Create a symlink to mod_wsgi-py27.so
  file: src=/opt/rh/python27/root/usr/lib64/python2.7/site-packages/mod_wsgi/server/mod_wsgi-py27.so dest=/usr/lib64/httpd/modules/mod_wsgi.so owner=root group=root state=link

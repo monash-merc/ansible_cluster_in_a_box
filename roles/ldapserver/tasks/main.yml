@@ -167,10 +167,10 @@
   sudo: true
   when: managerConfigured|failed
 
-#- name: initialise server acls
-#  shell:  ldapmodify -Y EXTERNAL -H ldapi:/// -f /tmp/acls.ldif -D cn=config
-#  sudo: true
-#  when: aclConfigured|failed
+- name: initialise server acls
+  shell:  ldapmodify -Y EXTERNAL -H ldapi:/// -f /tmp/acls.ldif -D cn=config
+  sudo: true
+  when: aclConfigured|failed
 
 - name: add DIT root
   shell: ldapadd -x -D {{ ldapManager }} -w {{ ldapManagerPassword }} -x -H ldap://localhost -f /tmp/root.ldif
