@@ -22,8 +22,3 @@
   command: sleep 60
   notify: "Reload exports"
 
-- name: "Restart the NFS server"
-  service: "name=nfs state=restarted"
-  delegate_to: "{{ nfs_server }}"
-  run_once: true
-  sudo: true
