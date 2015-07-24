@@ -78,4 +78,3 @@
    - x509_csr_args: ""
    - x509_sign_args: "{{ x509_csr_args }}"
    - x509_common_name: "{{ inventory_hostname }}"
-   - apache_user: "{% if ansible_os_family == 'RedHat'  %}apache{% else %}www-data{% endif %}"
