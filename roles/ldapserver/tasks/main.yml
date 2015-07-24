@@ -93,7 +93,7 @@
 - name: enable ssl centos
   lineinfile: regexp="SLAPD_LDAPS=no" state=present line="SLAPD_LDAPS=yes" dest=/etc/sysconfig/ldap
   sudo: true
-  when: ansible_os_family == 'RedHat'
+  when: ansible_os_family == 'RedHat' and ansible_distribution_major_version < '7'
 
 - name: start ldap
   service: name=slapd state=restarted
@@ -139,6 +139,14 @@
   ignore_errors: true
   register: binddnConfigured
 
+-
+  name: Initialise cosine and ppolicy
+  shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/{{ item }}.ldif -D cn=config
+  with_items:
+   - ppolicy
+   - cosine
+  ignore_errors: true
+  when: ansible_os_family == 'RedHat' and ansible_distribution_major_version >= '7'
 
 - name: initialise server ssl
   shell: ldapmodify -Y EXTERNAL -H ldapi:/// -f /tmp/ssl.ldif -D cn=config 

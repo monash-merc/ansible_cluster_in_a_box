@@ -11,6 +11,7 @@
 -
   name: "Setting hostname"
   shell: sysctl kernel.hostname={{ inventory_hostname }} 
+  sudo: True
 -
   name: "Restarting Network"
   service: name=network state=restarted

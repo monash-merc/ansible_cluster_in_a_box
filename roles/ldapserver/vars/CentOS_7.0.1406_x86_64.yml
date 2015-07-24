@@ -5,4 +5,4 @@
   - openssl
  ldapuser:  ldap
  ldapgroup: ldap
- dbname: olcDatabase={2}bdb
+ dbname: olcDatabase={2}hdb
