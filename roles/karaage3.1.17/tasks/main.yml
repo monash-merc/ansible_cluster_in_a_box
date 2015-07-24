@@ -1,8 +1,6 @@
 ---
  - include: prerequisitesDebian.yml
    when: ansible_os_family == "Debian"
- - include: prerequisitesRedHat.yml
-   when: ansible_os_family == 'RedHat' and ansible_distribution_major_version < '7'
  - include: apacheDebian.yml
    when: ansible_os_family == "Debian"
  - include: apacheRedHat.yml

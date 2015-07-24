@@ -1,8 +1,0 @@
----
- system_packages:
-  - openldap-servers
-  - openldap-clients
-  - openssl
- ldapuser:  ldap
- ldapgroup: ldap
- dbname: olcDatabase={2}bdb
