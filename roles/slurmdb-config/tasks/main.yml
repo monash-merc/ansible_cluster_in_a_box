@@ -1,0 +1,37 @@
+---
+- name: install deps in control node
+  yum: name={{ item }} state=installed
+  sudo: true
+  with_items:
+    - mysql
+    - mysql-devel
+    - MySQL-python
+  when: ansible_os_family == "RedHat"
+
+- name: install deps in control node
+  apt: name={{ item }} state=installed
+  sudo: true
+  with_items:
+    - mysql-client
+    - python-mysqldb
+  when: ansible_os_family == "Debian"
+
+- name: install slurmdbd init
+  template: src=slurmdbd.initd.j2 dest=/etc/init.d/slurmdbd mode=755
+  sudo: true
+
+- name: install slurmdb.conf init
+  template: src=slurmdbd.conf.j2 dest={{ slurm_dir }}/etc/slurmdbd.conf
+  sudo: true
+  when: slurm_dir is defined
+
+
+- name: install slurmdbd.conf
+  template: src=slurmdbd.conf.j2 dest=/etc/slurm/slurmdbd.conf
+  sudo: true
+  when: slurm_dir is not defined
+
+- name: sanity check slurmdbd service
+  service: "name=slurmdbd enabled=yes state=started"
+  sudo: true
+
