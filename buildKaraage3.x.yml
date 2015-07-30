@@ -7,10 +7,10 @@
     - service: name=network state=restarted
       when: ansible_os_family == 'RedHat'
   roles:
-#    - etcHosts
-#    - easy-rsa-CA
-#    - easy-rsa-certificate
-#    - ldapserver
+    - etcHosts
+    - easy-rsa-CA
+    - easy-rsa-certificate
+    - ldapserver
   sudo: true
   vars:
    - x509_ca_server: "{% for host in groups['ldap-server'] %}{{ hostvars[host]['ansible_fqdn'] }}{% endfor %}"
@@ -47,9 +47,10 @@
     - service: name=network state=restarted
       when: ansible_os_family == 'RedHat'
   roles:
-#    - etcHosts
-#    - easy-rsa-certificate
+    - etcHosts
+    - easy-rsa-certificate
     - karaage3.1.17
+    - shibboleth-sp
   sudo: true
   vars:
    - x509_ca_server: "{% for host in groups['ldap-server'] %}{{ hostvars[host]['ansible_fqdn'] }}{% endfor %}"
@@ -78,3 +79,6 @@
    - x509_csr_args: ""
    - x509_sign_args: "{{ x509_csr_args }}"
    - x509_common_name: "{{ inventory_hostname }}"
+   - aaf_federation_url: "https://ds.test.aaf.edu.au/distribution/metadata"
+   - aaf_discovery_url: "https://ds.test.aaf.edu.au/discovery/DS"
+   - admin_email: "shahaan@gmail.com"
