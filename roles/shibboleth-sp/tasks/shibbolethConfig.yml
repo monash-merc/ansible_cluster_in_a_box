@@ -1,7 +1,7 @@
 ---
 -
  name: "Copying the metadata.aaf.xml and aaf-metadata-cert.pem"
- copy: src={{ item }} dest=/etc/shibboleth/{{ item }} mode=0644
+ template: src="{{ item }}.j2" dest="/etc/shibboleth/{{ item }}" mode=0644
  with_items:
   - metadata.aaf.xml
   - aaf-metadata-cert.pem
