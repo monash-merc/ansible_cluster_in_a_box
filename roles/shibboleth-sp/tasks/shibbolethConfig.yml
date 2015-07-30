@@ -1,0 +1,109 @@
+---
+-
+ name: "Copying the metadata.aaf.xml and aaf-metadata-cert.pem"
+ copy: src={{ item }} dest=/etc/shibboleth/{{ item }} mode=0644
+ with_items:
+  - metadata.aaf.xml
+  - aaf-metadata-cert.pem
+- 
+  name: "Setting shibboleth2.xml sp.example.org"
+  replace: 
+  args:
+   dest: /etc/shibboleth/shibboleth2.xml 
+   regexp: sp.example.org 
+   replace: "{{ ansible_fqdn }}"
+   backup: yes
+   
+  
+- 
+  name: "Setting shibboleth2.xml handlerSSL"
+  replace: 
+  args:
+   dest: /etc/shibboleth/shibboleth2.xml 
+   regexp: 'handlerSSL="false"' 
+   replace: 'handlerSSL="true"   handlerURL="https://{{ ansible_fqdn }}/Shibboleth.sso"' 
+   
+
+- 
+  name: "Setting shibboleth2.xml supportContact"
+  replace: 
+  args:
+   dest: /etc/shibboleth/shibboleth2.xml 
+   regexp: 'supportContact="root@localhost"' 
+   replace: 'supportContact="{{ admin_email }}"'
+   
+
+- 
+  name: "Enabling MetadataProvider"
+  replace: 
+  args:
+   dest: /etc/shibboleth/shibboleth2.xml 
+   regexp: '<!-- Example of remotely supplied batch of signed metadata. -->\s+<!--\s+<MetadataProvider' 
+   replace: '<!-- Example of remotely supplied batch of signed metadata. -->\n\t<MetadataProvider'
+   
+- 
+  name: "Enabling MetadataProvider"
+  replace: 
+  args:
+   dest: /etc/shibboleth/shibboleth2.xml 
+   regexp: '</MetadataProvider>\s+-->' 
+   replace: '</MetadataProvider>'
+- 
+  name: "Setting shibboleth2.xml Federation URI"
+  replace: 
+  args:
+   dest: /etc/shibboleth/shibboleth2.xml 
+   regexp: 'uri="http://federation.org/federation-metadata.xml"' 
+   replace: 'uri="{{ aaf_federation_url }}/metadata.aaf.signed.complete.xml"'
+   
+- 
+  name: "Setting shibboleth2.xml backingFilePath"
+  replace: 
+  args:
+   dest: /etc/shibboleth/shibboleth2.xml 
+   regexp: 'backingFilePath="federation-metadata.xml"' 
+   replace: 'backingFilePath="metadata.aaf.xml"'
+   
+- 
+  name: "Setting shibboleth2.xml aaf Certificate"
+  replace: 
+  args:
+   dest: /etc/shibboleth/shibboleth2.xml 
+   regexp: 'type="Signature" certificate="fedsigner.pem"' 
+   replace: 'type="Signature" certificate="aaf-metadata-cert.pem"'
+   
+- 
+  name: "Setting shibboleth2.xml AAF Discovery URL"
+  replace: 
+  args:
+   dest: /etc/shibboleth/shibboleth2.xml 
+   regexp: 'discoveryURL="https://ds.example.org/DS/WAYF"' 
+   replace: 'discoveryURL="{{ aaf_discovery_url }}"'
+   
+- 
+  name: "Setting shibboleth2.xml Credential Resolver"
+  replace: 
+  args:
+   dest: /etc/shibboleth/shibboleth2.xml 
+   regexp: '<CredentialResolver type="File" key="sp-key.pem" certificate="sp-cert.pem"/>' 
+   replace: '<CredentialResolver type="File" key="{{ x509_key_file }}" certificate="{{ x509_cert_file }}"/>'
+
+-
+ name: "Templating attribute-map.xml"
+ template:
+ args:
+   src: attribute-map.xml.j2
+   dest: /etc/shibboleth/attribute-map.xml
+-
+ name: "Restarting Apache"
+ service:
+ args:
+  name: apache2
+  state: restarted
+
+-
+ name: "Restarting shibboleth"
+ service:
+ args:
+  name: shibd
+  state: restarted
