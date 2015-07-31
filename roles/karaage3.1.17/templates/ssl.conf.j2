@@ -70,7 +70,8 @@ SSLCryptoDevice builtin
 ## SSL Virtual Host Context
 ##
 
-<VirtualHost {{ ansible_fqdn }}:443>
+### <VirtualHost {{ ansible_fqdn }}:443>
+<VirtualHost {{ ansible_nodename }}.{{ ansible_domain }}:443>
 
 # General setup for the virtual host, inherited from global configuration
 #DocumentRoot "/var/www/html"

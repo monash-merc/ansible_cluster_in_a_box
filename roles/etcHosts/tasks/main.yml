@@ -12,6 +12,7 @@
   shell: source /root/.bash_profile; /tmp/makehosts.py /tmp/groups {{ domain }}
   delegate_to: 127.0.0.1
   run_once: True
+  sudo: true
   register: hosts_data
                
 - name: write hosts file
@@ -22,3 +23,22 @@
     state: present
   sudo: true
   with_items: hosts_data.stdout_lines
+
+- name: set hostname by sysctl
+  shell: sysctl kernel.hostname="{{ ansible_hostname }}"
+  sudo: true
+
+- name: set domainname by sysctl
+  shell: sysctl kernel.domainname="{{ domain }}"
+  sudo: true
+
+- name: set /etc/sysconfig/network on CentOS 6
+  lineinfile: dest=/etc/sysconfig/network line='HOSTNAME={{ ansible_hostname }}' regexp='^HOSTNAME'
+  sudo: true
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "6"  
+
+- name: set /etc/sysctl.conf on Debian 8
+  lineinfile: dest=/etc/sysctl.conf line='kernel.domainname = {{ domain }}' regexp='^#kernel.domainname'
+  sudo: true
+  when: ansible_distribution == "Debian" and ansible_distribution_major_version == "8"
+

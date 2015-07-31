@@ -67,12 +67,21 @@ HTTP_HOST = "{{ x509_common_name }}"
 # exception information. Each member of the tuple should be a tuple of (Full
 # name, email address).
 ADMINS = (
+{% if karaageAdminName is defined and karaageAdminEmail is defined %}
+    ('{{ karaageAdminName }}', '{{ karaageAdminEmail }}'),
+{% else %}
     # ('Your Name', 'your_email@domain.com'),
+{% endif %}
 )
 
 # A tuple in the same format as ADMINS that specifies who should get broken
 # link notifications when BrokenLinkEmailsMiddleware is enabled.
 MANAGERS = ADMINS
+
+{% if defaultProject is defined and defaultMachineCategory is defined %}
+DEFAULT_PROJECT_PID = {{ defaultProject }}
+DEFAULT_MACHINE_CATEGORY_NAME = {{ defaultMachineCategory }}
+{% endif %}
 
 # A dictionary containing the settings for all databases to be used with
 # Django. It is a nested dictionary whose contents maps database aliases to a
@@ -80,10 +89,10 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'karaage',
-        'USER': 'karaage',
-        'PASSWORD': 'imkaraage',
-        'HOST': 'localhost',
+        'NAME': '{{ karaageDbName }}',
+        'USER': '{{ karaageDbUser }}',
+        'PASSWORD': '{{ karaagePassword }}',
+        'HOST': '{{ karaageDbHost }}',
         'PORT': '',
         'ATOMIC_REQUESTS': True,
     }
@@ -92,7 +101,7 @@ DATABASES = {
 LDAP = {
      'default': {
           'ENGINE': 'tldap.backend.fake_transactions',
-          'URI': 'ldaps://{% for host in groups['ldap-server'] %}{{ hostvars[host]['ansible_fqdn'] }}{% endfor %}/',
+          'URI': '{{ ldapURI }}',
           'USER': '{{ ldapManager }}',
           'PASSWORD': '{{ ldapManagerPassword }}',
           'REQUIRE_TLS': True,
@@ -114,8 +123,8 @@ MACHINE_CATEGORY_DATASTORES = {
                 'HOME_DIRECTORY': "/home/%(uid)s",
                 'LOCKED_SHELL': "/usr/local/sbin/locked",
                 'NUMBER_SCHEME': 'default',
-                'LDAP_ACCOUNT_BASE': 'ou=Accounts,dc=monash,dc=edu,dc=au',
-                'LDAP_GROUP_BASE': 'ou=Groups,dc=monash,dc=edu,dc=au',
+                'LDAP_ACCOUNT_BASE': 'ou=Accounts,{{ ldapDomain }}',
+                'LDAP_GROUP_BASE': 'ou=Groups,{{ ldapDomain }}',
           },
     ],
      'dummy': [
@@ -130,13 +139,13 @@ GLOBAL_DATASTORES = [
             'PERSON': 'karaage.datastores.ldap_schemas.openldap_person',
             'GROUP': 'karaage.datastores.ldap_schemas.openldap_person_group',
             'NUMBER_SCHEME': 'global',
-            'LDAP_PERSON_BASE': 'ou=People,dc=monash,dc=edu,dc=au',
-            'LDAP_GROUP_BASE': 'ou=People_Groups,dc=monash,dc=edu,dc=au',
+            'LDAP_PERSON_BASE': 'ou=People,{{ ldapDomain }}',
+            'LDAP_GROUP_BASE': 'ou=Groups,{{ ldapDomain }}',
       },
 ]
 # The email address that error messages come from, such as those sent to ADMINS
 # and MANAGERS.
-SERVER_EMAIL = 'karaage@example.org'
+SERVER_EMAIL = '{{ karaageAdminEmail }}'
 
 # The host to use for sending email.
 EMAIL_HOST = 'localhost'
@@ -258,7 +267,7 @@ LOGGING = {
 
 # Users are advised to contact this address if having problems.
 # This is also used as the from address in outgoing emails.
-ACCOUNTS_EMAIL = 'accounts@example.com'
+ACCOUNTS_EMAIL = '{{ karaageAdminEmail }}'
 
 # This organisation name, used in outgoing emails.
 ACCOUNTS_ORG_NAME = 'Example'

@@ -16,6 +16,7 @@ pkgs:
  - enchant
  - eog
  - evince
+ - finger
  - fftw
  - file-roller
  - firefox
@@ -174,6 +175,7 @@ pkgs:
  - python-babel
  - python-dateutil
  - python-devel
+ - python-ldap
  - python-matplotlib
  - python-nose
  - python-paramiko
@@ -205,6 +207,10 @@ pkgs:
  - unzip
  - util-linux-ng
  - uuid
+ - vim-X11
+ - vim-common 
+ - vim-enhanced
+ - vim-minimal
  - wacomexpresskeys
  - wdaemon
  - wxBase
