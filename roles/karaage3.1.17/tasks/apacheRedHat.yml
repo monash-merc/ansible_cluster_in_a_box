@@ -2,6 +2,7 @@
 
 -
  name: "Installing Apache"
+ sudo: true
  yum: name={{ item }} state=latest
  with_items:
   - mod_ssl
@@ -11,9 +12,11 @@
   - httpd-devel
 -
  name: Setting httpd.conf
+ sudo: true
  replace: dest=/etc/httpd/conf/httpd.conf regexp="^#ServerName www.example.com:80" replace="ServerName {{ ansible_fqdn }}"
 -
  name: Setting ssl.conf
+ sudo: true
  lineinfile: dest=/etc/httpd/conf.d/ssl.conf regexp="{{ item.regexp }}" line="{{ item.line }}" backrefs=yes
  with_items:
   - { regexp : "^SSLCertificateFile", line : "SSLCertificateFile {{ x509_cert_file }}" }
@@ -21,7 +24,9 @@
   - { regexp : "SSLCACertificateFile", line : "SSLCACertificateFile {{ x509_cacert_file }}" }
 -
  name: Templating wsgi.conf
+ sudo: true
  template: src=wsgi.conf.j2 dest=/etc/httpd/conf.d/wsgi.conf owner=root group=root
 -
  name: Restarting Apache
+ sudo: true
  service: name=httpd state=restarted

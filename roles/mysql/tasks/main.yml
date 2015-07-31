@@ -1,0 +1,3 @@
+---
+ - include: mysql_client.yml mysql_type=mysql_client
+ - include: mysql_server.yml mysql_type=mysql_server

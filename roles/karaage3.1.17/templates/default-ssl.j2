@@ -1,6 +1,9 @@
 <IfModule mod_ssl.c>
 <VirtualHost _default_:443>
 	ServerAdmin webmaster@localhost
+    {% if hpcidDomain is defined %}
+    ServerName {{ hpcidDomain }}
+    {% endif %}
 
 	DocumentRoot /var/www
 	<Directory />
@@ -39,8 +42,8 @@
 	#   /usr/share/doc/apache2.2-common/README.Debian.gz for more info.
 	#   If both key and certificate are stored in the same file, only the
 	#   SSLCertificateFile directive is needed.
-	SSLCertificateFile    /etc/ssl/certs/server.crt
-	SSLCertificateKeyFile /etc/ssl/private/server.key
+	SSLCertificateFile    {{ x509_cert_file }}
+	SSLCertificateKeyFile {{ x509_key_file }} 
 	#   Server Certificate Chain:
 	#   Point SSLCertificateChainFile at a file containing the
 	#   concatenation of PEM encoded CA certificates which form the
@@ -56,8 +59,12 @@
 	#   Note: Inside SSLCACertificatePath you need hash symlinks
 	#         to point to the certificate files. Use the provided
 	#         Makefile to update the hash symlinks after changes.
+    {% if x509_cert_path is defined %}
+	SSLCACertificatePath {{ x509_cert_path }} 
+    {% else %}
 	SSLCACertificatePath /etc/ssl/certs/
-	SSLCACertificateFile /etc/ssl/certs/ca.crt
+    {% endif %}
+	SSLCACertificateFile {{ x509_cacert_file }}
 
 	#   Certificate Revocation Lists (CRL):
 	#   Set the CA revocation path where to find CA CRLs for client
