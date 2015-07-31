@@ -5,5 +5,4 @@
    when: ansible_os_family == "Debian"
  - include: apacheRedHat.yml
    when: ansible_os_family == 'RedHat'
- - include: mysql.yml
  - include: karaage.yml

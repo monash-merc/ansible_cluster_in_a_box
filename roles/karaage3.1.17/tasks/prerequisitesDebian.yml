@@ -1,18 +1,24 @@
 ---
 -
   name: "Installing prereq packages"
+  sudo: true
   apt: name={{ item }} update_cache=yes
   with_items:
    - debian-keyring
 - 
   apt_key: "url=http://code.vpac.org/debian/vpac-debian-key.gpg state=present"
   name: "Installing the VPAC Debian Archive signing key"
+  sudo: true
 - 
   apt_repository: "repo='deb     http://code.vpac.org/debian  jessie main' state=present"
   name: "Adding VPAC repository in the source list"
+  sudo: true
 - 
   apt_repository: "repo='deb-src http://code.vpac.org/debian  jessie main' state=present"
   name: "Adding VPAC source repository"
+  sudo: true
 - 
   apt: update_cache=yes
   name: "Upgrading apt..."
+  sudo: true
+

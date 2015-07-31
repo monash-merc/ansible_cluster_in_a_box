@@ -1,0 +1,11 @@
+---
+- name: "Restart MySQL" 
+  service: name=mysql state=restarted
+  sudo: true
+  when: ansible_os_family == "Debian"
+
+- name: "Restart MySQL" 
+  service: name=mysqld state=restarted
+  sudo: true
+  when: ansible_os_family == "RedHat"
+

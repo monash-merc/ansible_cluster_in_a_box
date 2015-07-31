@@ -2,23 +2,32 @@
 -
  name: "Install Apache2"
  apt: name=apache2 state=present
+ sudo: true
 -
  name: "Templating default-ssl site"
  template: src=default-ssl.j2 dest=/etc/apache2/sites-available/default-ssl.conf owner=www-data group=www-data
+ sudo: true
 -
  name: "Templating default site"
  template: src=default.j2 dest=/etc/apache2/sites-available/000-default.conf owner=www-data group=www-data
+ sudo: true
 -
  name: "Templating ssl configuration"
  template: src=ssl.conf.j2 dest=/etc/apache2/mods-available/ssl.conf owner=www-data group=www-data
+ sudo: true
+ notify: restart apache2
 -
  name: "Enable ssl module"
  apache2_module: state=present name=ssl
+ sudo: true
 
 -
  name: "Enable default-ssl site"
  shell: a2ensite default-ssl
+ sudo: true
 
 -
  name: "Restarting Apache2"
- service: name=apache2 state=restarted
+ service: name=apache2 state=started
+ sudo: true
+
