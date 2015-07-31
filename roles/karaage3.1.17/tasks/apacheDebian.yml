@@ -1,16 +1,20 @@
 ---
 -
  name: "Install Apache2"
- apt: name=apache2 state=present
+ apt: name={{ item }} state=present
+ with_items:
+  - apache2
+  - apache2-dev
 -
- name: "Templating default-ssl site"
- template: src=default-ssl.j2 dest=/etc/apache2/sites-available/default-ssl.conf owner=www-data group=www-data
+ name: "Setting default site"
+ lineinfile: dest=/etc/apache2/sites-available/000-default.conf regexp="#ServerName" line="ServerName {{ ansible_nodename }}" backrefs=yes
 -
- name: "Templating default site"
- template: src=default.j2 dest=/etc/apache2/sites-available/000-default.conf owner=www-data group=www-data
--
- name: "Templating ssl configuration"
- template: src=ssl.conf.j2 dest=/etc/apache2/mods-available/ssl.conf owner=www-data group=www-data
+ name: "Setting default-ssl site"
+ lineinfile: dest=/etc/apache2/sites-available/default-ssl.conf  regexp="{{ item.regexp }}" line="{{ item.line }}" backrefs=yes
+ with_items:
+  - { regexp : "^\\s+SSLCertificateFile", line : "		SSLCertificateFile {{ x509_cert_file }}" }
+  - { regexp : "SSLCertificateKeyFile", line : "		SSLCertificateKeyFile {{ x509_key_file }}" }
+  - { regexp : "SSLCACertificateFile", line : "		SSLCACertificateFile {{ x509_cacert_file }}" }
 -
  name: "Enable ssl module"
  apache2_module: state=present name=ssl
