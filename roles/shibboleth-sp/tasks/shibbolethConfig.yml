@@ -2,11 +2,13 @@
 -
  name: "Copying the metadata.aaf.xml and aaf-metadata-cert.pem"
  template: src="{{ item }}.j2" dest="/etc/shibboleth/{{ item }}" mode=0644
+ sudo: true
  with_items:
   - metadata.aaf.xml
   - aaf-metadata-cert.pem
 - 
   name: "Setting shibboleth2.xml sp.example.org"
+  sudo: true
   replace: 
   args:
    dest: /etc/shibboleth/shibboleth2.xml 
@@ -17,6 +19,7 @@
   
 - 
   name: "Setting shibboleth2.xml handlerSSL"
+  sudo: true
   replace: 
   args:
    dest: /etc/shibboleth/shibboleth2.xml 
@@ -26,6 +29,7 @@
 
 - 
   name: "Setting shibboleth2.xml supportContact"
+  sudo: true
   replace: 
   args:
    dest: /etc/shibboleth/shibboleth2.xml 
@@ -35,6 +39,7 @@
 
 - 
   name: "Enabling MetadataProvider"
+  sudo: true
   replace: 
   args:
    dest: /etc/shibboleth/shibboleth2.xml 
@@ -43,6 +48,7 @@
    
 - 
   name: "Enabling MetadataProvider"
+  sudo: true
   replace: 
   args:
    dest: /etc/shibboleth/shibboleth2.xml 
@@ -50,6 +56,7 @@
    replace: '</MetadataProvider>'
 - 
   name: "Setting shibboleth2.xml Federation URI"
+  sudo: true
   replace: 
   args:
    dest: /etc/shibboleth/shibboleth2.xml 
@@ -58,6 +65,7 @@
    
 - 
   name: "Setting shibboleth2.xml backingFilePath"
+  sudo: true
   replace: 
   args:
    dest: /etc/shibboleth/shibboleth2.xml 
@@ -66,6 +74,7 @@
    
 - 
   name: "Setting shibboleth2.xml aaf Certificate"
+  sudo: true
   replace: 
   args:
    dest: /etc/shibboleth/shibboleth2.xml 
@@ -74,6 +83,7 @@
    
 - 
   name: "Setting shibboleth2.xml AAF Discovery URL"
+  sudo: true
   replace: 
   args:
    dest: /etc/shibboleth/shibboleth2.xml 
@@ -82,6 +92,7 @@
    
 - 
   name: "Setting shibboleth2.xml Credential Resolver"
+  sudo: true
   replace: 
   args:
    dest: /etc/shibboleth/shibboleth2.xml 
@@ -90,20 +101,26 @@
 
 -
  name: "Templating attribute-map.xml"
+ sudo: true
  template:
  args:
    src: attribute-map.xml.j2
    dest: /etc/shibboleth/attribute-map.xml
+ notify:
+   - Restarting Apache
+   - Restarting shibboleth
 -
- name: "Restarting Apache"
+ name: "Starting Apache"
+ sudo: true
  service:
  args:
   name: apache2
-  state: restarted
+  state: tarted
 
 -
- name: "Restarting shibboleth"
+ name: "Starting shibboleth"
+ sudo: true
  service:
  args:
   name: shibd
-  state: restarted
+  state: tarted

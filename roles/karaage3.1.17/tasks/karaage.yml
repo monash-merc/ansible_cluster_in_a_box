@@ -134,11 +134,6 @@
     - karaage-usage
     - karaage-cluster-tools
 -
- name: "Set Secret Key"
- lineinfile: dest=/etc/karaage3/settings.py regexp="SECRET_KEY = ''" line="SECRET_KEY = 'imkaraage'" state=present
- sudo: true
-
--
  # TODO: Fix it
  name: "Check DB tables has been created or not"
  shell: ls /root/.karaage_db_init

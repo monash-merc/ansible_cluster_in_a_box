@@ -6,9 +6,7 @@
   - apache2
   - apache2-dev
  sudo: true
--
- name: "Setting default site"
- lineinfile: dest=/etc/apache2/sites-available/000-default.conf regexp="#ServerName" line="ServerName {{ ansible_nodename }}" backrefs=yes
+
 -
  name: "Setting default-ssl site"
  lineinfile: dest=/etc/apache2/sites-available/default-ssl.conf  regexp="{{ item.regexp }}" line="{{ item.line }}" backrefs=yes
@@ -16,6 +14,7 @@
   - { regexp : "^\\s+SSLCertificateFile", line : "		SSLCertificateFile {{ x509_cert_file }}" }
   - { regexp : "SSLCertificateKeyFile", line : "		SSLCertificateKeyFile {{ x509_key_file }}" }
   - { regexp : "SSLCACertificateFile", line : "		SSLCACertificateFile {{ x509_cacert_file }}" }
+ sudo: true
 -
  name: "Templating default-ssl site"
  template: src=default-ssl.j2 dest=/etc/apache2/sites-available/default-ssl.conf owner=www-data group=www-data
@@ -24,11 +23,7 @@
  name: "Templating default site"
  template: src=default.j2 dest=/etc/apache2/sites-available/000-default.conf owner=www-data group=www-data
  sudo: true
--
- name: "Templating ssl configuration"
- template: src=ssl.conf.j2 dest=/etc/apache2/mods-available/ssl.conf owner=www-data group=www-data
- sudo: true
- notify: restart apache2
+
 -
  name: "Enable ssl module"
  apache2_module: state=present name=ssl
@@ -38,6 +33,7 @@
  name: "Enable default-ssl site"
  shell: a2ensite default-ssl
  sudo: true
+ notify: restart apache2
 
 -
  name: "Starting Apache2"
