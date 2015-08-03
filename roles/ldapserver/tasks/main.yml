@@ -44,6 +44,9 @@
 - name: template accounts.ldif
   template: src=accounts_ldif.j2 dest=/tmp/accounts.ldif
 
+- name: template real accounts.ldif
+  template: src=real_accounts_ldif.j2 dest=/tmp/real_accounts.ldif
+
 - name: template groups.ldif
   template: src=groups_ldif.j2 dest=/tmp/groups.ldif
 
@@ -129,6 +132,12 @@
   ignore_errors: true
   register: accountsConfigured
 
+- name: check real Accounts config
+  shell: "ldapsearch -D {{ ldapManager }} -w {{ ldapManagerPassword }} -b {{ ldapAccountBase }} -x -H ldap://localhost objectClass=*"
+  ignore_errors: true
+  register: realAccountsConfigured
+  when: ldapAccountBase is defined
+
 - name: check Groups config
   shell: "ldapsearch -D {{ ldapManager }} -w {{ ldapManagerPassword }} -b {{ ldapGroupBase }} -x -H ldap://localhost objectClass=*"
   ignore_errors: true
@@ -146,7 +155,9 @@
    - ppolicy
    - cosine
    - nis
+   - inetorgperson
   ignore_errors: true
+  sudo: true
   when: ansible_os_family == 'RedHat' and ansible_distribution_major_version >= '7'
 
 - name: initialise server ssl
@@ -180,6 +191,10 @@
 - name: add Accounts OU
   shell: ldapadd -x -D {{ ldapManager }} -w {{ ldapManagerPassword }} -x -H ldap://localhost -f /tmp/accounts.ldif
   when: accountsConfigured|failed
+
+- name: add real Accounts OU
+  shell: ldapadd -x -D {{ ldapManager }} -w {{ ldapManagerPassword }} -x -H ldap://localhost -f /tmp/real_accounts.ldif
+  when: realAccountsConfigured is defined and realAccountsConfigured|failed
 
 - name: add Groups OU
   shell: ldapadd -x -D {{ ldapManager }} -w {{ ldapManagerPassword }} -x -H ldap://localhost -f /tmp/groups.ldif

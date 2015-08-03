@@ -1,0 +1,12 @@
+---
+-
+ name: Install base packages - Debian
+ apt: name={{ item }} state=present
+ with_items:
+  - shibboleth-sp2-schemas 
+  - libshibsp-dev
+  - libapache2-mod-shib2
+  - opensaml2-tools
+  - xmlstarlet
+
+

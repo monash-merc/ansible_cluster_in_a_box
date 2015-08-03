@@ -1,0 +1,18 @@
+---
+- name: "Installing MySQL Debian"
+  apt: name="{{ item }}" update_cache=yes cache_valid_time=3600 state=present
+  with_items:
+    - python
+    - mysql-client
+  sudo: true
+  when: ansible_os_family == "Debian"
+
+- name: Installing MySQL RedHat
+  yum: name="{{ item }}" state=latest
+  with_items:
+    - python
+    - mysql 
+    - mysql-connector-odbc 
+    - MySQL-python
+  sudo: true
+  when: ansible_os_family == "RedHat"
