@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/usr/bin/python
 import sys
 import json
 import socket

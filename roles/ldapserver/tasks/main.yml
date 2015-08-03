@@ -145,6 +145,7 @@
   with_items:
    - ppolicy
    - cosine
+   - nis
   ignore_errors: true
   when: ansible_os_family == 'RedHat' and ansible_distribution_major_version >= '7'
 

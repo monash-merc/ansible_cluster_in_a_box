@@ -1,3 +1,13 @@
+- name: remove all install
+  shell: rm -rf /tmp/slurm-{{ slurm_version }}
+  sudo: true 
+  when: force_slurm_recompile is defined
+
+- name: remove all install
+  shell: rm -rf {{ slurm_dir }}
+  sudo: true 
+  when: force_slurm_recompile is defined
+
 - name: get slurm
   shell: wget https://cvl.massive.org.au/slurm-{{ slurm_version }}.tar.bz2
 #  shell: wget http://www.schedmd.com/download/archive/slurm-{{ slurm_version }}.tar.bz2

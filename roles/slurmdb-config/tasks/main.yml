@@ -13,6 +13,7 @@
   sudo: true
   with_items:
     - mysql-client
+    - libmysqlclient-dev
     - python-mysqldb
   when: ansible_os_family == "Debian"
 
@@ -30,8 +31,4 @@
   template: src=slurmdbd.conf.j2 dest=/etc/slurm/slurmdbd.conf
   sudo: true
   when: slurm_dir is not defined
-
-- name: sanity check slurmdbd service
-  service: "name=slurmdbd enabled=yes state=started"
-  sudo: true
 

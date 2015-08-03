@@ -54,8 +54,6 @@
     - perl
     - perl-DBI
     - openssl-devel
-    - mysql
-    - mysql-devel
     - gcc
     - rpm-build
     - wget
@@ -83,11 +81,9 @@
     - make
     - perl
     - libdbi-perl
-    - mysql-server
-    - mysql-client
-    - python-mysqldb
-    - libmysqlclient-dev
     - lua5.2
+    - hwloc
+    - libhwloc-dev
   when: ansible_os_family == "Debian"
 
 - include: installMungeFromSource.yml

@@ -11,6 +11,7 @@
   sudo: true
   with_items:
     - mysql-server
+    - python-mysqldb
   when: ansible_os_family == "Debian"
 
 - name: "Start the Server"
