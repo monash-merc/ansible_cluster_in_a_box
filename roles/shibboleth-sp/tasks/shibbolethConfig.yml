@@ -115,7 +115,7 @@
  service:
  args:
   name: apache2
-  state: tarted
+  state: started
 
 -
  name: "Starting shibboleth"
@@ -123,4 +123,4 @@
  service:
  args:
   name: shibd
-  state: tarted
+  state: started
