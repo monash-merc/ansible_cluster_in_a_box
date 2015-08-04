@@ -9,7 +9,7 @@
   run_once: True
 
 - name: make hosts data
-  shell: source /root/.bash_profile; /tmp/makehosts.py /tmp/groups {{ domain }}
+  command: /tmp/makehosts.py /tmp/groups {{ domain }}
   delegate_to: 127.0.0.1
   run_once: True
   sudo: true
