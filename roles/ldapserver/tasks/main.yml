@@ -98,6 +98,11 @@
   sudo: true
   when: ansible_os_family == 'RedHat' and ansible_distribution_major_version < '7'
 
+- name: enable ssl centos 7
+  lineinfile: regexp="^SLAPD_URLS=" state=present line="SLAPD_URLS='ldaps:/// ldapi:/// ldap:///'" dest=/etc/sysconfig/slapd
+  sudo: true
+  when: ansible_os_family == 'RedHat' and ansible_distribution_major_version >= '7'
+
 - name: start ldap
   service: name=slapd state=restarted
   sudo: true

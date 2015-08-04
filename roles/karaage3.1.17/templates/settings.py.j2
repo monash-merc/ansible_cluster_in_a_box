@@ -79,8 +79,8 @@ ADMINS = (
 MANAGERS = ADMINS
 
 {% if defaultProject is defined and defaultMachineCategory is defined %}
-DEFAULT_PROJECT_PID = {{ defaultProject }}
-DEFAULT_MACHINE_CATEGORY_NAME = {{ defaultMachineCategory }}
+DEFAULT_PROJECT_PID = "{{ defaultProject }}"
+DEFAULT_MACHINE_CATEGORY_NAME = "{{ defaultMachineCategory }}"
 {% endif %}
 
 # A dictionary containing the settings for all databases to be used with
@@ -168,7 +168,12 @@ LANGUAGE_CODE = 'en-au'
 
 # A secret key for a particular Django installation. This is used to provide
 # cryptographic signing, and should be set to a unique, unpredictable value.
-SECRET_KEY = ''
+{% if karaageSecretKey is defined %}
+SECRET_KEY = '{{ karaageSecretKey }}'
+{% else %}
+SECRET_KEY = 'default_ZT8VsL5CoURmUbui2hDrmEK0AwPvtR5h'
+{% endif %}
+
 
 # A data structure containing configuration information. The contents of this
 # data structure will be passed as the argument to the configuration method
