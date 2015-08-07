@@ -139,11 +139,8 @@
  sudo: true
 
 -
- # TODO: Fix it
- name: "Check DB tables has been created or not"
- shell: ls /root/.karaage_db_init
- ignore_errors: true
- sudo: true
+ name: "Check karaage DB has been initialized or not"
+ shell: mysql -h {{ karaageDbHost }}  -u {{ karaageDbName }} --password={{ mysql_user_password }} -Bse 'use karaage; show tables;' | wc -l 
  register: karaage_db_init
 
 -
@@ -158,9 +155,9 @@
 
 -
  name: " Create DB tables"
- shell: kg-manage migrate && touch /root/.karaage_db_init 
+ shell: kg-manage migrate 
  sudo: true
- when: karaage_db_init is not defined
+ when: karaage_db_init.stdout.find("0") == 0
 
 -
  name: "Restarting Celery"
