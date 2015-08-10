@@ -1,0 +1,95 @@
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 2 (0x2)
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: C=AU, ST=Victoria, L=Melbourne, O=Monash, OU=MeRC, CN=Monash CA/name=EasyRSA/emailAddress=help@massive.org.au
+        Validity
+            Not Before: Aug  5 00:13:05 2015 GMT
+            Not After : Aug  2 00:13:05 2025 GMT
+        Subject: C=AU, ST=Victoria, L=Melbourne, O=Monash, OU=MeRC, CN=hpctest.erc.monash.edu.au/name=EasyRSA/emailAddress=help@massive.org.au
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (2048 bit)
+                Modulus:
+                    00:ce:03:77:db:4a:b0:40:07:06:38:2f:80:1e:87:
+                    48:29:58:7e:50:55:f2:04:4f:1a:96:27:30:a9:dc:
+                    b7:76:6f:6c:e4:e5:08:9f:e0:07:52:8c:5e:7c:00:
+                    0f:12:74:b9:2e:4f:37:52:0b:eb:28:df:3f:87:1a:
+                    84:75:51:c4:22:4d:3c:27:41:f5:6c:44:13:e5:2c:
+                    e1:57:8b:ee:65:b0:a3:54:a4:01:e7:54:fb:ab:28:
+                    b4:47:bd:e2:a8:18:c0:89:ad:19:76:6d:a3:59:00:
+                    79:91:11:9f:c9:92:cf:96:55:2a:a6:cc:8e:dd:36:
+                    b7:79:62:4e:43:af:0c:bc:80:3e:3c:aa:cd:7a:f3:
+                    5e:c7:9f:4b:4e:89:bd:6f:42:8d:23:ca:fd:54:be:
+                    51:16:f7:6e:ee:45:55:55:36:16:c7:98:4e:67:20:
+                    59:d2:27:46:5a:ad:3d:ae:cb:10:e2:49:f6:7a:21:
+                    53:aa:10:ea:93:be:52:6f:07:95:34:e5:e4:05:38:
+                    70:f4:bf:a1:c9:bc:02:0e:2e:a3:d3:85:31:89:1e:
+                    d6:e7:d0:e8:9e:b5:74:c8:8c:14:71:b9:1e:0b:0e:
+                    ce:fe:09:36:6f:88:0f:44:f7:f2:06:73:a7:8f:9a:
+                    4e:c9:e2:04:c2:b1:30:f2:75:6d:99:6a:29:51:86:
+                    2b:0d
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Basic Constraints: 
+                CA:FALSE
+            Netscape Comment: 
+                Easy-RSA Generated Certificate
+            X509v3 Subject Key Identifier: 
+                B0:44:54:C2:24:13:03:24:B6:C9:C5:21:55:DB:D0:A2:70:8E:A6:AE
+            X509v3 Authority Key Identifier: 
+                keyid:5A:5D:FA:95:E7:E9:B3:D1:2C:8B:F9:E9:47:07:F8:7F:5B:D9:7B:B0
+                DirName:/C=AU/ST=Victoria/L=Melbourne/O=Monash/OU=MeRC/CN=Monash CA/name=EasyRSA/emailAddress=help@massive.org.au
+                serial:D9:29:42:7E:68:DB:1F:B5
+
+            X509v3 Extended Key Usage: 
+                TLS Web Client Authentication
+            X509v3 Key Usage: 
+                Digital Signature
+    Signature Algorithm: sha256WithRSAEncryption
+         1a:84:a7:e3:1b:f9:2b:f8:f0:ad:c2:ae:f7:c6:d8:83:8f:f7:
+         2d:7b:4f:22:05:7e:11:3c:3e:af:d7:49:39:36:31:c3:9c:8c:
+         f5:e7:7c:90:04:da:7f:6a:8c:ec:de:2a:4d:55:83:4c:a3:43:
+         60:d2:56:5f:bc:a8:f3:0d:e3:7c:c2:30:20:e0:39:7f:48:27:
+         ad:c4:bc:60:19:b6:98:6e:39:8c:71:4b:b2:15:ca:08:28:43:
+         dd:6e:4d:29:e6:89:58:16:6e:c6:68:ca:16:db:11:61:a9:78:
+         20:d9:76:bb:d1:f9:00:a1:33:ad:1e:34:a5:ae:46:47:d3:56:
+         3c:97:71:ae:ec:b3:dd:1a:48:16:a8:e1:49:44:c5:0a:8c:1e:
+         1c:16:dc:d8:b2:b1:a0:98:9d:9b:11:5a:e3:c1:02:40:20:b9:
+         fa:36:57:ac:09:51:81:d3:82:5f:b2:93:1e:28:7a:c4:00:24:
+         f2:90:a1:ab:23:b5:2b:b6:97:67:df:39:51:5d:66:a6:01:d7:
+         6c:6d:d5:d7:5b:63:66:d6:a2:a7:21:bb:3d:1c:44:07:18:a0:
+         a9:60:77:7a:8c:85:79:47:48:c3:9b:05:05:e7:e9:f3:e3:15:
+         00:25:e4:59:32:eb:36:57:84:2c:30:f3:0d:3b:24:a4:0c:3c:
+         d4:5d:13:4b
+-----BEGIN CERTIFICATE-----
+MIIFIDCCBAigAwIBAgIBAjANBgkqhkiG9w0BAQsFADCBnjELMAkGA1UEBhMCQVUx
+ETAPBgNVBAgTCFZpY3RvcmlhMRIwEAYDVQQHEwlNZWxib3VybmUxDzANBgNVBAoT
+Bk1vbmFzaDENMAsGA1UECxMETWVSQzESMBAGA1UEAxMJTW9uYXNoIENBMRAwDgYD
+VQQpEwdFYXN5UlNBMSIwIAYJKoZIhvcNAQkBFhNoZWxwQG1hc3NpdmUub3JnLmF1
+MB4XDTE1MDgwNTAwMTMwNVoXDTI1MDgwMjAwMTMwNVowga4xCzAJBgNVBAYTAkFV
+MREwDwYDVQQIEwhWaWN0b3JpYTESMBAGA1UEBxMJTWVsYm91cm5lMQ8wDQYDVQQK
+EwZNb25hc2gxDTALBgNVBAsTBE1lUkMxIjAgBgNVBAMTGWhwY3Rlc3QuZXJjLm1v
+bmFzaC5lZHUuYXUxEDAOBgNVBCkTB0Vhc3lSU0ExIjAgBgkqhkiG9w0BCQEWE2hl
+bHBAbWFzc2l2ZS5vcmcuYXUwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIB
+AQDOA3fbSrBABwY4L4Aeh0gpWH5QVfIETxqWJzCp3Ld2b2zk5Qif4AdSjF58AA8S
+dLkuTzdSC+so3z+HGoR1UcQiTTwnQfVsRBPlLOFXi+5lsKNUpAHnVPurKLRHveKo
+GMCJrRl2baNZAHmREZ/Jks+WVSqmzI7dNrd5Yk5Drwy8gD48qs16817Hn0tOib1v
+Qo0jyv1UvlEW927uRVVVNhbHmE5nIFnSJ0ZarT2uyxDiSfZ6IVOqEOqTvlJvB5U0
+5eQFOHD0v6HJvAIOLqPThTGJHtbn0OietXTIjBRxuR4LDs7+CTZviA9E9/IGc6eP
+mk7J4gTCsTDydW2ZailRhisNAgMBAAGjggFVMIIBUTAJBgNVHRMEAjAAMC0GCWCG
+SAGG+EIBDQQgFh5FYXN5LVJTQSBHZW5lcmF0ZWQgQ2VydGlmaWNhdGUwHQYDVR0O
+BBYEFLBEVMIkEwMktsnFIVXb0KJwjqauMIHTBgNVHSMEgcswgciAFFpd+pXn6bPR
+LIv56UcH+H9b2XuwoYGkpIGhMIGeMQswCQYDVQQGEwJBVTERMA8GA1UECBMIVmlj
+dG9yaWExEjAQBgNVBAcTCU1lbGJvdXJuZTEPMA0GA1UEChMGTW9uYXNoMQ0wCwYD
+VQQLEwRNZVJDMRIwEAYDVQQDEwlNb25hc2ggQ0ExEDAOBgNVBCkTB0Vhc3lSU0Ex
+IjAgBgkqhkiG9w0BCQEWE2hlbHBAbWFzc2l2ZS5vcmcuYXWCCQDZKUJ+aNsftTAT
+BgNVHSUEDDAKBggrBgEFBQcDAjALBgNVHQ8EBAMCB4AwDQYJKoZIhvcNAQELBQAD
+ggEBABqEp+Mb+Sv48K3CrvfG2IOP9y17TyIFfhE8Pq/XSTk2McOcjPXnfJAE2n9q
+jOzeKk1Vg0yjQ2DSVl+8qPMN43zCMCDgOX9IJ63EvGAZtphuOYxxS7IVyggoQ91u
+TSnmiVgWbsZoyhbbEWGpeCDZdrvR+QChM60eNKWuRkfTVjyXca7ss90aSBao4UlE
+xQqMHhwW3NiysaCYnZsRWuPBAkAgufo2V6wJUYHTgl+ykx4oesQAJPKQoasjtSu2
+l2ffOVFdZqYB12xt1ddbY2bWoqchuz0cRAcYoKlgd3qMhXlHSMObBQXn6fPjFQAl
+5Fky6zZXhCww8w07JKQMPNRdE0s=
+-----END CERTIFICATE-----
