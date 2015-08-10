@@ -1,11 +1,11 @@
 ---
 -
- name: "Copying the metadata.aaf.xml and aaf-metadata-cert.pem"
- template: src="{{ item }}.j2" dest="/etc/shibboleth/{{ item }}" mode=0644
- sudo: true
+ name: "Check the metadata.aaf.xml and aaf-metadata-cert.pem"
+ shell: ls /etc/shibboleth/*{{ item }}
  with_items:
-  - metadata.aaf.xml
-  - aaf-metadata-cert.pem
+   - metadata.aaf.xml
+   - aaf-metadata-cert.pem
+
 - 
   name: "Setting shibboleth2.xml sp.example.org"
   sudo: true
@@ -112,15 +112,9 @@
 -
  name: "Starting Apache"
  sudo: true
- service:
- args:
-  name: apache2
-  state: started
+ service: name=apache2 state=started
 
 -
  name: "Starting shibboleth"
  sudo: true
- service:
- args:
-  name: shibd
-  state: started
+ service: name=shibd state=started

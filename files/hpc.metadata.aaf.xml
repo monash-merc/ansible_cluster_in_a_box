@@ -1,0 +1,101 @@
+<EntityDescriptor entityID="https://hpc.erc.monash.edu.au/shibboleth" xmlns="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:shibmd="urn:mace:shibboleth:metadata:1.0" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xsi:schemaLocation="urn:oasis:names:tc:SAML:2.0:metadata saml-schema-metadata-2.0.xsd urn:mace:shibboleth:metadata:1.0 shibboleth-metadata-1.0.xsd http://www.w3.org/2000/09/xmldsig# xmldsig-core-schema.xsd">
+  <SPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+    <Extensions>
+      <dsr:DiscoveryResponse xmlns:dsr="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol" Binding="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol" Location="https://hpc.erc.monash.edu.au/Shibboleth.sso/Login" index="0" isDefault="true" />
+    </Extensions>
+    <KeyDescriptor use="encryption">
+      <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+        <ds:X509Data>
+          <ds:X509Certificate>
+MIIFEzCCA/ugAwIBAgIUN+JS0LBsAM/FnwLBPh/yh3MQtnMwDQYJKoZIhvcNAQEL
+BQAwTTELMAkGA1UEBhMCQk0xGTAXBgNVBAoTEFF1b1ZhZGlzIExpbWl0ZWQxIzAh
+BgNVBAMTGlF1b1ZhZGlzIEdsb2JhbCBTU0wgSUNBIEcyMB4XDTE1MDgwNTIzMTM0
+OVoXDTE4MDgwNTIzMTM0NlowgZwxCzAJBgNVBAYTAkFVMQwwCgYDVQQIEwNWSUMx
+EDAOBgNVBAcTB0NsYXl0b24xGjAYBgNVBAoTEU1vbmFzaCBVbml2ZXJzaXR5MQ0w
+CwYDVQQLEwRNZVJDMR4wHAYDVQQDExVocGMuZXJjLm1vbmFzaC5lZHUuYXUxIjAg
+BgkqhkiG9w0BCQEWE2hlbHBAbWFzc2l2ZS5vcmcuYXUwggEiMA0GCSqGSIb3DQEB
+AQUAA4IBDwAwggEKAoIBAQC0e3Qvbch2hd5ldnoA6F8lzhH2h8rS8M5EMfdbyVt+
++bgNOKezHeSTrvWCqZZ/Vf/3Sv59qCCbRXgSViGQ0spd3tGGaLnXilTfNiJxdfQL
+cHY7AY9ly4YZxoCN1PGXRerOoK8U6MPTw0exewS6J09FO+682EAjJIoO4Xbg20Jl
+HumOkYhQMyxfXXKXTyovkRQcbMeRkeqwaLZm7QCSOOxLCX111j1Fler6FxIEvjA8
+gdebrnMs9EFLQ/6Em3mH8cNtkTI4hWgEdIfmi7OytQmY5JXzeb+qAzkV5GaRLaxk
+kp72Mtwrq4ibRxZeuntlF7CSrmQc3muS5WAMAuzaUVnzAgMBAAGjggGZMIIBlTBz
+BggrBgEFBQcBAQRnMGUwKgYIKwYBBQUHMAGGHmh0dHA6Ly9vY3NwLnF1b3ZhZGlz
+Z2xvYmFsLmNvbTA3BggrBgEFBQcwAoYraHR0cDovL3RydXN0LnF1b3ZhZGlzZ2xv
+YmFsLmNvbS9xdnNzbGcyLmNydDAgBgNVHREEGTAXghVocGMuZXJjLm1vbmFzaC5l
+ZHUuYXUwUQYDVR0gBEowSDBGBgwrBgEEAb5YAAJkAQEwNjA0BggrBgEFBQcCARYo
+aHR0cDovL3d3dy5xdW92YWRpc2dsb2JhbC5jb20vcmVwb3NpdG9yeTAOBgNVHQ8B
+Af8EBAMCBaAwHQYDVR0lBBYwFAYIKwYBBQUHAwEGCCsGAQUFBwMCMB8GA1UdIwQY
+MBaAFJEZYq1bF6cw+/DeOSWxvYy5uFEnMDoGA1UdHwQzMDEwL6AtoCuGKWh0dHA6
+Ly9jcmwucXVvdmFkaXNnbG9iYWwuY29tL3F2c3NsZzIuY3JsMB0GA1UdDgQWBBRq
+GtF0XctY00VnSh66rb8+fVJL2DANBgkqhkiG9w0BAQsFAAOCAQEA1yex1Ar4OE5A
+haHeC51rBaI3jRW0eAzu0DpJ3Ne6YHXScDBDhdsr/1txGhCMhPZknlVCEx1bZTpK
+/RT0dGYg+dtNMzRSHmKnqpuMFbvaHbOavYONXkRGNrcp19YXYq+vg+4osq9q1GZ8
+KbaMNF7+w27YgnbkMtmWVdIAZABSv/4a3msydX/Si5AtblaMYYCs0pAdN+TC0pY9
+qZIhAEmHEGcTqb315miP+qNUl+QjKs7gUR1m+ddo3RoPSbhpEibbyHdU0bCntUz4
+/JtmXBYCS8dqKCIVT6FLUpyZQJHkTWCKk6Xn1J/9w8lbXrYG1Z1zIX1NW4LbxkIB
+ANs4+EorZg==
+</ds:X509Certificate>
+        </ds:X509Data>
+      </ds:KeyInfo>
+    </KeyDescriptor>
+    <KeyDescriptor use="signing">
+      <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+        <ds:X509Data>
+          <ds:X509Certificate>
+MIIFEzCCA/ugAwIBAgIUN+JS0LBsAM/FnwLBPh/yh3MQtnMwDQYJKoZIhvcNAQEL
+BQAwTTELMAkGA1UEBhMCQk0xGTAXBgNVBAoTEFF1b1ZhZGlzIExpbWl0ZWQxIzAh
+BgNVBAMTGlF1b1ZhZGlzIEdsb2JhbCBTU0wgSUNBIEcyMB4XDTE1MDgwNTIzMTM0
+OVoXDTE4MDgwNTIzMTM0NlowgZwxCzAJBgNVBAYTAkFVMQwwCgYDVQQIEwNWSUMx
+EDAOBgNVBAcTB0NsYXl0b24xGjAYBgNVBAoTEU1vbmFzaCBVbml2ZXJzaXR5MQ0w
+CwYDVQQLEwRNZVJDMR4wHAYDVQQDExVocGMuZXJjLm1vbmFzaC5lZHUuYXUxIjAg
+BgkqhkiG9w0BCQEWE2hlbHBAbWFzc2l2ZS5vcmcuYXUwggEiMA0GCSqGSIb3DQEB
+AQUAA4IBDwAwggEKAoIBAQC0e3Qvbch2hd5ldnoA6F8lzhH2h8rS8M5EMfdbyVt+
++bgNOKezHeSTrvWCqZZ/Vf/3Sv59qCCbRXgSViGQ0spd3tGGaLnXilTfNiJxdfQL
+cHY7AY9ly4YZxoCN1PGXRerOoK8U6MPTw0exewS6J09FO+682EAjJIoO4Xbg20Jl
+HumOkYhQMyxfXXKXTyovkRQcbMeRkeqwaLZm7QCSOOxLCX111j1Fler6FxIEvjA8
+gdebrnMs9EFLQ/6Em3mH8cNtkTI4hWgEdIfmi7OytQmY5JXzeb+qAzkV5GaRLaxk
+kp72Mtwrq4ibRxZeuntlF7CSrmQc3muS5WAMAuzaUVnzAgMBAAGjggGZMIIBlTBz
+BggrBgEFBQcBAQRnMGUwKgYIKwYBBQUHMAGGHmh0dHA6Ly9vY3NwLnF1b3ZhZGlz
+Z2xvYmFsLmNvbTA3BggrBgEFBQcwAoYraHR0cDovL3RydXN0LnF1b3ZhZGlzZ2xv
+YmFsLmNvbS9xdnNzbGcyLmNydDAgBgNVHREEGTAXghVocGMuZXJjLm1vbmFzaC5l
+ZHUuYXUwUQYDVR0gBEowSDBGBgwrBgEEAb5YAAJkAQEwNjA0BggrBgEFBQcCARYo
+aHR0cDovL3d3dy5xdW92YWRpc2dsb2JhbC5jb20vcmVwb3NpdG9yeTAOBgNVHQ8B
+Af8EBAMCBaAwHQYDVR0lBBYwFAYIKwYBBQUHAwEGCCsGAQUFBwMCMB8GA1UdIwQY
+MBaAFJEZYq1bF6cw+/DeOSWxvYy5uFEnMDoGA1UdHwQzMDEwL6AtoCuGKWh0dHA6
+Ly9jcmwucXVvdmFkaXNnbG9iYWwuY29tL3F2c3NsZzIuY3JsMB0GA1UdDgQWBBRq
+GtF0XctY00VnSh66rb8+fVJL2DANBgkqhkiG9w0BAQsFAAOCAQEA1yex1Ar4OE5A
+haHeC51rBaI3jRW0eAzu0DpJ3Ne6YHXScDBDhdsr/1txGhCMhPZknlVCEx1bZTpK
+/RT0dGYg+dtNMzRSHmKnqpuMFbvaHbOavYONXkRGNrcp19YXYq+vg+4osq9q1GZ8
+KbaMNF7+w27YgnbkMtmWVdIAZABSv/4a3msydX/Si5AtblaMYYCs0pAdN+TC0pY9
+qZIhAEmHEGcTqb315miP+qNUl+QjKs7gUR1m+ddo3RoPSbhpEibbyHdU0bCntUz4
+/JtmXBYCS8dqKCIVT6FLUpyZQJHkTWCKk6Xn1J/9w8lbXrYG1Z1zIX1NW4LbxkIB
+ANs4+EorZg==
+</ds:X509Certificate>
+        </ds:X509Data>
+      </ds:KeyInfo>
+    </KeyDescriptor>
+    <ContactPerson contactType="technical">
+      <Company>Monash University</Company>
+      <GivenName>Jupiter</GivenName>
+      <SurName>Hu</SurName>
+      <EmailAddress>mailto:jupiter.hu@monash.edu</EmailAddress>
+    </ContactPerson>
+    <SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact" Location="https://hpc.erc.monash.edu.au/Shibboleth.sso/SLO/Artifact" />
+    <SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://hpc.erc.monash.edu.au/Shibboleth.sso/SLO/SOAP" />
+    <SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://hpc.erc.monash.edu.au/Shibboleth.sso/SLO/POST" />
+    <SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://hpc.erc.monash.edu.au/Shibboleth.sso/SLO/Redirect" />
+    <ManageNameIDService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://hpc.erc.monash.edu.au/Shibboleth.sso/NIM/Redirect" />
+    <ManageNameIDService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://hpc.erc.monash.edu.au/Shibboleth.sso/NIM/SOAP" />
+    <ManageNameIDService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://hpc.erc.monash.edu.au/Shibboleth.sso/NIM/POST" />
+    <ManageNameIDService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact" Location="https://hpc.erc.monash.edu.au/Shibboleth.sso/NIM/Artifact" />
+    <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</NameIDFormat>
+    <AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://hpc.erc.monash.edu.au/Shibboleth.sso/SAML2/POST" index="1" isDefault="true" />
+    <AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact" Location="https://hpc.erc.monash.edu.au/Shibboleth.sso/SAML2/Artifact" index="3" isDefault="false" />
+  </SPSSODescriptor>
+  <Organization>
+    <OrganizationName xml:lang="en">monash.edu.au</OrganizationName>
+    <OrganizationDisplayName xml:lang="en">Monash University</OrganizationDisplayName>
+    <OrganizationURL xml:lang="en">http://www.monash.edu.au</OrganizationURL>
+  </Organization>
+</EntityDescriptor>
