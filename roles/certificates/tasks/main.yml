@@ -1,16 +1,16 @@
 ---
-- name: "Check shibbolenth directory"
+- name: "Check shibboleth directory"
   file: dest=/etc/shibboleth state=directory mode=0655
   sudo: true
-  when: shibbolenth_file is defined
+  when: shibboleth_file is defined
 
 - name: "Copying the shisbbolenth files"
   template: src=files/{{ item }} dest="/etc/shibboleth/{{ item }}" mode=0644
   sudo: true
   with_items:
-    - "{{ shibbolenth_file.aaf }}"
-    - "{{ shibbolenth_file.cert }}"
-  when: shibbolenth_file is defined
+    - "{{ shibboleth_file.aaf }}"
+    - "{{ shibboleth_file.cert }}"
+  when: shibboleth_file is defined
 
 - name: "Copying the apache key file"
   template: src="files/{{ apache_key_file }}" dest="{{ x509_key_file }}" mode=0644
