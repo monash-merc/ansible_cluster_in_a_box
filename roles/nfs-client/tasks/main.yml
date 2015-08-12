@@ -1,2 +1,11 @@
 ---
+- name: install dependencies
+  yum: name={{ item }} state=installed
+  sudo: true
+  with_items:
+    - libnfsidmap 
+    - nfs-utils
+    - nfs-utils-lib
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "7"
+
 - include: mountFileSystem.yml
