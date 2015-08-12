@@ -7,6 +7,8 @@
     - lua
     - lua-filesystem
     - lua-posix
+    - tcl
+    - rsync
   sudo: true
   when: ansible_os_family == 'RedHat'
 
