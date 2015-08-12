@@ -1,0 +1,6 @@
+- name: "Templating slurm.conf"
+  template: src=slurm.conf.j2 dest=/tmp/slurm.conf owner=root group=root mode=644
+  sudo: true
+
+- name: fetch slurm.conf
+  fetch: src=/tmp/slurm.conf dest=files/slurm.conf flat=yes
