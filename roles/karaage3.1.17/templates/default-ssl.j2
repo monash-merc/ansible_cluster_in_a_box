@@ -59,12 +59,13 @@
 	#   Note: Inside SSLCACertificatePath you need hash symlinks
 	#         to point to the certificate files. Use the provided
 	#         Makefile to update the hash symlinks after changes.
-#    {% if x509_cert_path is defined %}
-#	SSLCACertificatePath {{ x509_cert_path }} 
-#    {% else %}
-#	SSLCACertificatePath /etc/ssl/certs/
-#    {% endif %}
-#	SSLCACertificateFile {{ x509_cacert_file }}
+    {% if ldapCaCertFile is defined and ldapCaCertSrc is defined %}
+	SSLCACertificatePath {{ ldapCaCertSrc }} 
+    SSLCACertificateFile {{ ldapCaCertSrc }}/{{ ldapCaCertFile }}
+    {% else %}
+	SSLCACertificatePath /etc/ssl/certs/
+	SSLCACertificateFile {{ x509_cacert_file }}
+    {% endif %}
 
 	#   Certificate Revocation Lists (CRL):
 	#   Set the CA revocation path where to find CA CRLs for client
