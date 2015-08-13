@@ -1,11 +1,9 @@
 ---
 -
  name: "Copying the shibboleth files"
- template: src=files/{{ item }} dest="/etc/shibboleth/{{ item }}" mode=0644
+ template: src=files/{{ item.src }} dest="/etc/shibboleth/{{ item.dest }}" mode=0644
  sudo: true
- with_items:
-   - "{{ shibboleth_file.aaf }}"
-   - "{{ shibboleth_file.cert }}"
+ with_items: shibboleth_file
  when: shibboleth_file is defined
 
 - 
@@ -15,10 +13,14 @@
   args:
    dest: /etc/shibboleth/shibboleth2.xml 
    regexp: sp.example.org 
-   replace: "{{ ansible_fqdn }}"
+   replace: "{{ ansible_hostname }}.{{ domain }}"
    backup: yes
    
-  
+-
+ name: "Remove SSO entityID"
+ lineinfile: dest=/etc/shibboleth/shibboleth2.xml regexp="^<SSO entityID=" line="<SSO" state=present
+ sudo: true
+
 - 
   name: "Setting shibboleth2.xml handlerSSL"
   sudo: true
