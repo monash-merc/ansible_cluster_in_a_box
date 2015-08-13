@@ -59,12 +59,12 @@
 	#   Note: Inside SSLCACertificatePath you need hash symlinks
 	#         to point to the certificate files. Use the provided
 	#         Makefile to update the hash symlinks after changes.
-    {% if ldapCaCertFile is defined and ldapCaCertSrc is defined %}
-	SSLCACertificatePath {{ ldapCaCertSrc }} 
-    SSLCACertificateFile {{ ldapCaCertSrc }}/{{ ldapCaCertFile }}
+    {% if ldapCaCertFile is defined and ldapCaCertDir is defined %}
+    SSLCACertificatePath {{ ldapCaCertDir }} 
+    SSLCACertificateFile {{ ldapCaCertDir }}/{{ ldapCaCertFile }}
     {% else %}
-	SSLCACertificatePath /etc/ssl/certs/
-	SSLCACertificateFile {{ x509_cacert_file }}
+    SSLCACertificatePath /etc/ssl/certs/
+    SSLCACertificateFile {{ x509_cacert_file }}
     {% endif %}
 
 	#   Certificate Revocation Lists (CRL):

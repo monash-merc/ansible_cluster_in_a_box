@@ -96,7 +96,20 @@
 -
  name: "enabling Karaage configuration"
  shell: cp -rvpf /root/karaage3.1.7/conf/karaage3-wsgi.conf /etc/httpd/conf.d/karaage3-wsgi.conf
+ sudo: true
  when: ansible_os_family == "RedHat"
+-
+ name: "Enable shibboleth, should it be in shibboleth-sp role?"
+ lineinfile: insertafter="{{ item.after }}" line="{{ item.line }}" dest=/etc/{% if ansible_os_family == 'RedHat'  %}httpd{% else %}apache2{% endif %}/conf-available/karaage3-wsgi.conf state=present
+ with_items:
+   - { after: 'EOF', line: '<Location /karaage>' } 
+   - { after: '^<Location /karaage>', line: 'AuthType Shibboleth' }
+   - { after: '^AuthType Shibboleth', line: 'ShibRequireSession On' }
+   - { after: '^ShibRequireSession On', line: 'ShibUseHeaders On' }
+   - { after: '^ShibUseHeaders On', line: 'require valid-user' }
+   - { after: '^require valid-user', line: '</Location>' }
+ sudo: true
+
 -
  name: "Installing other packages Debian"
  apt: name={{ item }} update_cache=yes
