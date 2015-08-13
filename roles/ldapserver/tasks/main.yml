@@ -1,6 +1,7 @@
 ---
 
 - include_vars: "{{ ansible_distribution }}_{{ ansible_distribution_version }}_{{ ansible_architecture }}.yml"
+- include_vars: "{{ ansible_distribution }}.yml"
 - name: install system packages apt
   apt: name={{ item }} state=installed update_cache=true
   sudo: true
@@ -12,6 +13,12 @@
   sudo: true
   with_items: system_packages
   when: ansible_os_family == 'RedHat'
+
+- name: Fixed default configuration 
+  lineinfile: dest=/etc/default/slapd regexp='^SLAPD_SERVICES="ldap:/// ldapi:///"' line='SLAPD_SERVICES="ldaps:/// ldap:/// ldapi:///"'
+  sudo: true
+  when: ansible_os_family == 'Debian'
+
 
 - name: hash password
   command: /usr/sbin/slappasswd -h {SSHA} -s {{ ldapManagerPassword }}
@@ -191,18 +198,22 @@
 
 - name: add DIT root
   shell: ldapadd -x -D {{ ldapManager }} -w {{ ldapManagerPassword }} -x -H ldap://localhost -f /tmp/root.ldif
+  sudo: true
   when: ditConfigured|failed
 
 - name: add Accounts OU
   shell: ldapadd -x -D {{ ldapManager }} -w {{ ldapManagerPassword }} -x -H ldap://localhost -f /tmp/accounts.ldif
+  sudo: true
   when: accountsConfigured|failed
 
 - name: add real Accounts OU
   shell: ldapadd -x -D {{ ldapManager }} -w {{ ldapManagerPassword }} -x -H ldap://localhost -f /tmp/real_accounts.ldif
+  sudo: true
   when: realAccountsConfigured is defined and realAccountsConfigured|failed
 
 - name: add Groups OU
   shell: ldapadd -x -D {{ ldapManager }} -w {{ ldapManagerPassword }} -x -H ldap://localhost -f /tmp/groups.ldif
+  sudo: true
   when: groupsConfigured|failed
 
 - name: add binddn

@@ -1,10 +1,12 @@
 ---
 -
- name: "Check the metadata.aaf.xml and aaf-metadata-cert.pem"
- shell: ls /etc/shibboleth/*{{ item }}
+ name: "Copying the shibboleth files"
+ template: src=files/{{ item }} dest="/etc/shibboleth/{{ item }}" mode=0644
+ sudo: true
  with_items:
-   - metadata.aaf.xml
-   - aaf-metadata-cert.pem
+   - "{{ shibboleth_file.aaf }}"
+   - "{{ shibboleth_file.cert }}"
+ when: shibboleth_file is defined
 
 - 
   name: "Setting shibboleth2.xml sp.example.org"
@@ -109,6 +111,16 @@
  notify:
    - Restarting Apache
    - Restarting shibboleth
+-
+ name: "Copy shib.conf"
+ sudo: true
+ template: src=shib.conf dest="/etc/apache2/conf-available/shib.conf" mode=0644
+-
+ name: "Link shib.conf"
+ sudo: true
+ file: src=/etc/apache2/conf-available/shib.conf path=/etc/apache2/conf-enabled/shib.conf state=link 
+ notify: Restarting Apache
+
 -
  name: "Starting Apache"
  sudo: true
