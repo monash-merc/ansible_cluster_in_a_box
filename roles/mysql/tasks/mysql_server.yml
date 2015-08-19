@@ -33,7 +33,12 @@
 - name: "Starting MySQL"
   service: name=mysqld state=started enabled=true
   sudo: true
-  when: ansible_os_family == "RedHat"
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version < 7
+
+- name: "Starting MySQL"
+  service: name=mariadb state=started enabled=true
+  sudo: true
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version >= 7
 
 - name: make sure mysql conf directory exists
   file: dest=/etc/mysql/conf.d state=directory
@@ -45,45 +50,15 @@
 
 - name: "Adding root"
   sudo: true
-  mysql_user: name=root host="{{ item }}" password="{{ mysql_root_password }}" login_user=root login_password="{{ mysql_root_password }}" check_implicit_admin=yes priv="*.*:ALL,GRANT"
+  mysql_user: name=root host="{{ item }}" password="{{ mysql_root_password }}" login_user=root login_password="{{ mysql_root_password }}" check_implicit_admin=yes
   with_items:
     - "{{ ansible_hostname }}"
     - 127.0.0.1
     - ::1
     - localhost
 
-- name: Setting mysql global variables
-  mysql_variables: variable={{ item.var }} value={{ item.val }} login_user=root login_password="{{ mysql_root_password }}"
-  with_items:
-    - { var : 'character_set_server', val : 'utf8' }
-    - { var : 'storage_engine', val : 'innodb' }
-    - { var : 'sql_mode', val : 'STRICT_ALL_TABLES' }
-  sudo: true
-  when: ansible_os_family == "RedHat"
-
-- name: "Add my.cnf security"
-  lineinfile: dest=/etc/my.cnf line="{{ item }}" insertafter="symbolic-links=0"
-  with_items:
-    - 'log_warnings = 2'
-    - 'log_error = /var/log/mysql/error.log'
-  sudo: true
-  notify: Restart MySQL
-  when: ansible_os_family == "RedHat"
-
-
-- name: "Editing my.cnf"
-  lineinfile: dest=/etc/my.cnf line="{{ item }}"
-  with_items:
-    - '[client]'
-    - 'default-character-set = utf8'
-    - 'log_warnings = 2'
-    - 'log_error = /var/log/mysql/error.log'
-  sudo: true
-  notify: Restart MySQL
-  when: ansible_os_family == "RedHat"
-
 - name: "Adding user database"
   mysql_db: name={{ mysql_user_db_name }} state=present login_user=root login_password={{ mysql_root_password }} 
 
 - name: "Giving priviliges to user"
-  mysql_user: name={{ mysql_user_name }} host={{ mysql_user_host }} password={{ mysql_user_password }} login_user=root login_password={{ mysql_root_password }} priv={{ mysql_user_name }}.*:ALL state=present
+  mysql_user: name={{ mysql_user_name }} host={{ mysql_user_host }} password={{ mysql_user_password }} login_user=root login_password={{ mysql_root_password }} priv={{ mysql_user_db_name }}.*:ALL state=present

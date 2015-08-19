@@ -99,15 +99,11 @@
 - name: install munge key
   template: src=munge_key.j2 dest={{ munge_dir }}/etc/munge/munge.key owner=munge mode=600
   sudo: true
-  notify: restart munge
 
 - name: enable munge on boot
   service: name=munge enabled=yes
   sudo: true
 
-- name: start munge
-  service: name=munge state=started
-  sudo: true
 
 - include: installSlurmFromSource.yml
 
@@ -128,9 +124,8 @@
   when: slurm_gres_list is defined
 
 - name: install slurm.conf
-  template: src=slurm.conf.j2 dest={{ slurm_dir }}/etc/slurm.conf
+  copy: src=files/slurm.conf dest={{ slurm_dir }}/etc/slurm.conf
   sudo: true
-  notify: restart slurm
   when: slurm_use_vpn==False 
 
 - name: install slurm.conf

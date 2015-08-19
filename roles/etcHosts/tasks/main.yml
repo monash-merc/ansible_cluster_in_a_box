@@ -1,28 +1,6 @@
-- name: get_groups_json
-  template: dest=/tmp/groups src=groups.j2
-  run_once: True
-  delegate_to: 127.0.0.1
-
-- name: copy script
-  copy: src=makehosts.py dest=/tmp/makehosts.py mode=755
-  delegate_to: 127.0.0.1
-  run_once: True
-
-- name: make hosts data
-  command: /tmp/makehosts.py /tmp/groups {{ domain }}
-  delegate_to: 127.0.0.1
-  run_once: True
+- name: install hosts file
+  copy: src=files/etcHosts dest=/etc/hosts owner=root mode=644
   sudo: true
-  register: hosts_data
-               
-- name: write hosts file
-  lineinfile:
-  args:
-    dest: /etc/hosts
-    line: "{{ item }}"
-    state: present
-  sudo: true
-  with_items: hosts_data.stdout_lines
 
 - name: set hostname by sysctl
   shell: sysctl kernel.hostname="{{ ansible_hostname }}"

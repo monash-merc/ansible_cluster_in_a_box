@@ -29,3 +29,13 @@
   sudo: true
   register: edit2
 
+- name: edit passwd file
+  lineinfile:
+  args:
+    dest: /etc/passwd
+    regexp: "{{ ansible_ssh_user }}:x:1000:1000::/home/{{ ansible_ssh_user }}:.*"
+    line: "{{ ansible_ssh_user }}:x:1000:1000::/local_home/{{ ansible_ssh_user }}:/bin/bash"
+    backrefs: yes
+  sudo: true
+  register: edit3
+

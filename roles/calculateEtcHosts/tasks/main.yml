@@ -1,0 +1,16 @@
+- name: get_groups_json
+  template: dest=/tmp/groups src=groups.j2
+
+- name: copy script
+  copy: src=makehosts.py dest=/tmp/makehosts.py mode=755
+
+- name: make hosts data
+  command: /tmp/makehosts.py /tmp/groups {{ domain }}
+  register: hosts_data
+               
+- name: write hosts file
+  template: dest=/tmp/etcHosts src=etcHosts.j2
+
+
+- name: fetch hosts file
+  fetch: src=/tmp/etcHosts dest=files/etcHosts flat=yes

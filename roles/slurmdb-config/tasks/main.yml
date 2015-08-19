@@ -17,11 +17,11 @@
     - python-mysqldb
   when: ansible_os_family == "Debian"
 
-- name: install slurmdbd init
-  template: src=slurmdbd.initd.j2 dest=/etc/init.d/slurmdbd mode=755
+- name: make sure config dir exists
+  file: path="{{ slurm_dir }}/etc" state=directory
   sudo: true
 
-- name: install slurmdb.conf init
+- name: install slurmdb.conf
   template: src=slurmdbd.conf.j2 dest={{ slurm_dir }}/etc/slurmdbd.conf
   sudo: true
   when: slurm_dir is defined

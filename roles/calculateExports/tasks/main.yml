@@ -1,0 +1,6 @@
+- name: "Templating /etc/exports"
+  template: src=exports.j2 dest=/tmp/exports owner=root group=root mode=644
+  sudo: true
+
+- name: "Fetch etcExports"
+  fetch: src=/tmp/exports dest=files/etcExports flat=yes

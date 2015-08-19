@@ -1,0 +1,13 @@
+
+[Unit]
+Description=Slurm DBD accounting daemon
+After=network.target
+ConditionPathExists={{ slurm_dir }}/etc/slurmdbd.conf
+
+[Service]
+Type=forking
+ExecStart={{ slurm_dir }}/sbin/slurmdbd
+PIDFile=/var/run/slurmdbd.pid
+
+[Install]
+WantedBy=multi-user.target
