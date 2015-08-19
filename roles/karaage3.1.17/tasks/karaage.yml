@@ -135,7 +135,7 @@
     - karaage-cluster-tools
 -
  name: "Set Secret Key"
- lineinfile: dest=/etc/karaage3/settings.py regexp="SECRET_KEY = ''" line="SECRET_KEY = 'imkaraage'" state=present
+ lineinfile: dest=/etc/karaage3/settings.py regexp="SECRET_KEY = ''" line="SECRET_KEY = '{{ karaageSecretKey }}'" state=present
  sudo: true
 
 -

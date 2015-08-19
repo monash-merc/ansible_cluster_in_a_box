@@ -79,8 +79,8 @@ ADMINS = (
 MANAGERS = ADMINS
 
 {% if defaultProject is defined and defaultMachineCategory is defined %}
-DEFAULT_PROJECT_PID = {{ defaultProject }}
-DEFAULT_MACHINE_CATEGORY_NAME = {{ defaultMachineCategory }}
+DEFAULT_PROJECT_PID = "{{ defaultProject }}"
+DEFAULT_MACHINE_CATEGORY_NAME = "{{ defaultMachineCategory }}"
 {% endif %}
 
 # A dictionary containing the settings for all databases to be used with
@@ -270,7 +270,7 @@ LOGGING = {
 ACCOUNTS_EMAIL = '{{ karaageAdminEmail }}'
 
 # This organisation name, used in outgoing emails.
-ACCOUNTS_ORG_NAME = 'Example'
+ACCOUNTS_ORG_NAME = '{{ karaageAcountName }}' 
 
 # Registration base URL - Used in email templates
 # Uncomment to override default
