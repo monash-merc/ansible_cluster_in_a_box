@@ -1,13 +1,60 @@
 ---
+- name: set use_systemd
+  set_fact: 
+    use_systemd: True
+  when: (ansible_distribution == "CentOS" or ansible_distribution == "RedHat") and
+          ( ansible_distribution_major_version == "7") 
+
+- name: install slurmdbd init
+  template: src=slurmdbd.initd.j2 dest=/etc/init.d/slurmdbd mode=755
+  sudo: true
+  when: use_systemd is not defined and start_slurmdbd is defined
+
+- name:  copy slurmdbd init script if OS contains systemd
+  template: dest=/etc/systemd/system/slurmdbd.service src=slurmdbd.service.j2 mode=755
+  sudo: true
+  when: use_systemd is defined and start_slurmdbd is defined
+
+- name: copy slurm init script
+  template: dest=/etc/init.d/slurm src=slurm.initd.j2  mode=755
+  sudo: true
+  when: use_systemd is not defined
+
+- name:  copy slurmd.service
+  template: dest=/etc/systemd/system/slurmd.service src=slurmd.service.j2 mode=755
+  sudo: true
+  when: use_systemd is defined and start_slurmd is defined
+
+- name: slurmctld.service
+  template: dest=/etc/systemd/system/slurmctld.service src=slurmctld.service.j2 mode=755
+  sudo: true
+  when: use_systemd is defined and start_slurmctld is defined
+
+- name: reload systemd
+  shell: systemctl daemon-reload
+  sudo: true
+  when: use_systemd is defined
+
 - name: start munge
   service: name=munge state=started
   sudo: true
 
 - name: start slurmdbd
-  service: name=slurmdbd state=started
+  service: name=slurmdbd state=started enabled=yes
   sudo: true
-  ignore_errors: true
+  when: start_slurmdbd is defined
+
+- name: start slurmctl
+  service: name=slurmctld state=started enabled=yes
+  sudo: true
+  when: use_systemd is defined and start_slurmctld is defined
+
+- name: start slurmd
+  service: name=slurmd state=started enabled=yes
+  sudo: true
+  when: use_systemd is defined and start_slurmd is defined
 
 - name: start slurm
-  service: name=slurm state=started
+  service: name=slurm state=started enabled=yes
   sudo: true
+  when: use_systemd is not defined and ( start_slurmd is defined or start_slurmctld is defined )

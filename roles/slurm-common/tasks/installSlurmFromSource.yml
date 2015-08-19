@@ -32,8 +32,3 @@
   args:
     chdir: /tmp/slurm-{{ slurm_version }}
     creates: "{{ slurm_dir }}/bin/srun"
-
-- name: copy init script
-  template: dest=/etc/init.d/slurm src=slurm.initd.j2  mode=755
-  sudo: true   
-
