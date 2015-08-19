@@ -1,6 +1,17 @@
 ---
 - include_vars: "{{ ansible_os_family }}.yml"
 
+- name: add epel on CentOS 7
+  shell: rpm -iUvh http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm
+  sudo: true
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+  ignore_errors: true
+
+#- name: add epel on CentOS 7
+#  shell: yum -y update
+#  sudo: true
+#  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+
 - name: install lua
   yum: name={{ item }} state=installed
   with_items:
@@ -9,6 +20,8 @@
     - lua-posix
     - tcl
     - rsync
+    - gcc
+    - lua-devel
   sudo: true
   when: ansible_os_family == 'RedHat'
 
