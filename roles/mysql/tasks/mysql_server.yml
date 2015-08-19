@@ -33,7 +33,12 @@
 - name: "Starting MySQL"
   service: name=mysqld state=started enabled=true
   sudo: true
-  when: ansible_os_family == "RedHat"
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version < 7
+
+- name: "Starting MySQL"
+  service: name=mariadb state=started enabled=true
+  sudo: true
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version >= 7
 
 - name: make sure mysql conf directory exists
   file: dest=/etc/mysql/conf.d state=directory
@@ -56,4 +61,4 @@
   mysql_db: name={{ mysql_user_db_name }} state=present login_user=root login_password={{ mysql_root_password }} 
 
 - name: "Giving priviliges to user"
-  mysql_user: name={{ mysql_user_name }} host={{ mysql_user_host }} password={{ mysql_user_password }} login_user=root login_password={{ mysql_root_password }} priv={{ mysql_user_name }}.*:ALL state=present
+  mysql_user: name={{ mysql_user_name }} host={{ mysql_user_host }} password={{ mysql_user_password }} login_user=root login_password={{ mysql_root_password }} priv={{ mysql_user_db_name }}.*:ALL state=present
