@@ -96,7 +96,21 @@
 -
  name: "enabling Karaage configuration"
  shell: cp -rvpf /root/karaage3.1.7/conf/karaage3-wsgi.conf /etc/httpd/conf.d/karaage3-wsgi.conf
+ sudo: true
  when: ansible_os_family == "RedHat"
+-
+ name: "Enable shibboleth, should it be in shibboleth-sp role?"
+ lineinfile: insertafter="{{ item.after }}" line="{{ item.line }}" dest=/etc/{% if ansible_os_family == 'RedHat'  %}httpd{% else %}apache2{% endif %}/conf-available/karaage3-wsgi.conf state=present
+ with_items:
+   - { after: 'EOF', line: '<Location /karaage>' } 
+   - { after: '^<Location /karaage>', line: 'AuthType Shibboleth' }
+   - { after: '^AuthType Shibboleth', line: 'ShibRequireSession On' }
+   - { after: '^ShibRequireSession On', line: 'ShibUseHeaders On' }
+   - { after: '^ShibUseHeaders On', line: 'require valid-user' }
+   - { after: 'EOF', line: '</Location>' }
+#   - { after: '^require valid-user', line: '</Location>' }
+ sudo: true
+
 -
  name: "Installing other packages Debian"
  apt: name={{ item }} update_cache=yes
@@ -139,11 +153,8 @@
  sudo: true
 
 -
- # TODO: Fix it
- name: "Check DB tables has been created or not"
- shell: ls /root/.karaage_db_init
- ignore_errors: true
- sudo: true
+ name: "Check karaage DB has been initialized or not"
+ shell: mysql -h {{ karaageDbHost }}  -u {{ karaageDbName }} --password={{ mysql_user_password }} -Bse 'use karaage; show tables;' | wc -l 
  register: karaage_db_init
 
 -
@@ -158,9 +169,9 @@
 
 -
  name: " Create DB tables"
- shell: kg-manage migrate && touch /root/.karaage_db_init 
+ shell: kg-manage migrate 
  sudo: true
- when: karaage_db_init is not defined
+ when: karaage_db_init.stdout.find("0") == 0
 
 -
  name: "Restarting Celery"

@@ -1,0 +1,5 @@
+---
+  ldapcert: /etc/ldap/certs/ldapcert.pem
+  ldapkey: /etc/ldap/certs/ldapkey.pem
+  cacert: /etc/ldap/certs/cacert.pem
+  module_path: "/usr/lib/ldap"

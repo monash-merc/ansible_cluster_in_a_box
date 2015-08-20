@@ -1,4 +1,14 @@
 ---
+ - name: "Copying the apache key file"
+   template: src="files/{{ apache_key_file }}" dest="{{ x509_key_file }}" mode=0644
+   sudo: true
+   when: apache_key_file is defined
+ 
+ - name: "Copying the apache cert file"
+   template: src="files/{{ apache_cert_file }}" dest="{{ x509_cert_file }}" mode=0644
+   sudo: true
+   when: apache_cert_file is defined
+
  - include: prerequisitesDebian.yml
    when: ansible_os_family == "Debian"
  - include: apacheDebian.yml
