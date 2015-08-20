@@ -4,7 +4,6 @@ mysql_type: mysql_client | mysql_server
 mysql_user_db_name: "my_database" 
 mysql_user_name: "my_database" 
 mysql_user_host: "localhost"
-mysql_config_file_name: "mysql_config"
 mysql_root_password: "secret"
 mysql_user_password: "secret"
 

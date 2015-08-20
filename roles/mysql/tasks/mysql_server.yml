@@ -45,7 +45,7 @@
   sudo: true
 
 - name: "Templating mysql configure file"
-  template: src="mysql.cnf.j2" dest=/etc/mysql/conf.d/{{ mysql_config_file_name }}.cnf owner=root group=root
+  template: src="mysql.cnf.j2" dest=/etc/mysql/conf.d/mysqld_safe_syslog.cnf owner=root group=root
   sudo: true
 
 - name: "Adding root"
