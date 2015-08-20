@@ -2,3 +2,4 @@
   ldapcert: /etc/openldap/certs/ldapcert.pem
   ldapkey: /etc/openldap/certs/ldapkey.pem
   cacert: /etc/openldap/certs/cacert.pem
+  module_path: "/usr/lib64/openldap/"

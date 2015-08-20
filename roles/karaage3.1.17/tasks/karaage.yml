@@ -107,7 +107,8 @@
    - { after: '^AuthType Shibboleth', line: 'ShibRequireSession On' }
    - { after: '^ShibRequireSession On', line: 'ShibUseHeaders On' }
    - { after: '^ShibUseHeaders On', line: 'require valid-user' }
-   - { after: '^require valid-user', line: '</Location>' }
+   - { after: 'EOF', line: '</Location>' }
+#   - { after: '^require valid-user', line: '</Location>' }
  sudo: true
 
 -

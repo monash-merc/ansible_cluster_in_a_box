@@ -1,10 +1,9 @@
 ---
 -
  name: "Copying the shibboleth files"
- template: src=files/{{ item.src }} dest="/etc/shibboleth/{{ item.dest }}" mode=0644
- sudo: true
+ template: src=files/{{ item.src }} dest="{{ item.dest }}" mode=0644
  with_items: shibboleth_file
- when: shibboleth_file is defined
+ sudo: true
 
 - 
   name: "Setting shibboleth2.xml sp.example.org"
@@ -28,7 +27,7 @@
   args:
    dest: /etc/shibboleth/shibboleth2.xml 
    regexp: 'handlerSSL="false"' 
-   replace: 'handlerSSL="true"   handlerURL="https://{{ ansible_fqdn }}/Shibboleth.sso"' 
+   replace: 'handlerSSL="true"   handlerURL="https://{{ ansible_hostname }}.{{ domain }}/Shibboleth.sso"' 
    
 
 - 
@@ -101,7 +100,16 @@
   args:
    dest: /etc/shibboleth/shibboleth2.xml 
    regexp: '<CredentialResolver type="File" key="sp-key.pem" certificate="sp-cert.pem"/>' 
-   replace: '<CredentialResolver type="File" key="{{ x509_key_file }}" certificate="{{ x509_cert_file }}"/>'
+   replace: '<CredentialResolver type="File" key="{{ x509_key_file }}" certificate="{{ x509_cert_path }}/{{ x509_common_name }}.cert"/>'
+
+- 
+ name: "fix directory access permission"
+ file: path={{ x509_key_file | dirname }} owner=root group=_shibd state=directory mode=750
+ sudo: true
+- 
+ name: "fix key access permission"
+ file: path={{ x509_key_file }} owner=root group=_shibd mode=644
+ sudo: true
 
 -
  name: "Templating attribute-map.xml"
