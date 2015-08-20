@@ -75,8 +75,12 @@
    regexp: 'backingFilePath="federation-metadata.xml"' 
    replace: 'backingFilePath="metadata.aaf.xml"'
    
-- 
-  name: "Setting shibboleth2.xml aaf Certificate"
+- name: copy AAF metadata cert
+  copy: src=files/{{ shib_metadata_cert }} dest=/dev/shibboleth/aaf-metadata-cert.pem mode=644
+  sudo: true
+
+
+- name: "Setting shibboleth2.xml aaf Certificate"
   sudo: true
   replace: 
   args:
@@ -93,6 +97,22 @@
    regexp: 'discoveryURL="https://ds.example.org/DS/WAYF"' 
    replace: 'discoveryURL="{{ aaf_discovery_url }}"'
    
+- name: make shib private directory
+  file: path=/etc/shibboleth/private, state=directory, mode=700, owner=_shibd
+  sudo: true
+
+- name: copy shib key:
+  sudo: true
+  copy: src=files/{{ shib_key }} dest=/etc/shibboleth/private/{{ shib_key }} owner=_shibd, mode=600
+
+- name: make shib certs directory
+  file: path=/etc/shibboleth/certs, state=directory, mode=755, owner=_shibd
+  sudo: true
+
+- name: copy shib cert:
+  sudo: true
+  copy: src=files/{{ shib_cert }} dest=/etc/shibboleth/certs/{{ shib_cert }} owner=_shibd, mode=644
+
 - 
   name: "Setting shibboleth2.xml Credential Resolver"
   sudo: true
@@ -100,16 +120,7 @@
   args:
    dest: /etc/shibboleth/shibboleth2.xml 
    regexp: '<CredentialResolver type="File" key="sp-key.pem" certificate="sp-cert.pem"/>' 
-   replace: '<CredentialResolver type="File" key="{{ x509_key_file }}" certificate="{{ x509_cert_path }}/{{ x509_common_name }}.cert"/>'
-
-- 
- name: "fix directory access permission"
- file: path={{ x509_key_file | dirname }} owner=root group=_shibd state=directory mode=750
- sudo: true
-- 
- name: "fix key access permission"
- file: path={{ x509_key_file }} owner=root group=_shibd mode=644
- sudo: true
+   replace: '<CredentialResolver type="File" key="/etc/shibboleth/private/{{ shib_key }}" certificate="/etc/shibbolet/certs/{{ shib_cert }}"/>'
 
 -
  name: "Templating attribute-map.xml"
