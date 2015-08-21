@@ -35,8 +35,10 @@
   sudo: true
   when: ansible_os_family == "RedHat" and ansible_distribution_major_version < 7
 
+# We are not using mariadb, are we???
 - name: "Starting MySQL"
-  service: name=mariadb state=started enabled=true
+  service: name=mysqld state=started enabled=true
+#  service: name=mariadb state=started enabled=true
   sudo: true
   when: ansible_os_family == "RedHat" and ansible_distribution_major_version >= 7
 

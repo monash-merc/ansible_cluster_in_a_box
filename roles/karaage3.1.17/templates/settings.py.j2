@@ -40,7 +40,7 @@ STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 #
 # default: HTTP_HOST = FQDN hostname
 #
-HTTP_HOST = "{{ x509_common_name }}"
+HTTP_HOST = "{{ inventory_hostname }}.{{ domain }}"
 
 # A list of strings representing the host/domain names that this Django site
 # can serve. This is a security measure to prevent an attacker from poisoning
@@ -106,7 +106,7 @@ LDAP = {
           'PASSWORD': '{{ ldapManagerPassword }}',
           'REQUIRE_TLS': True,
           'START_TLS': True,
-          'TLS_CA': '{{ x509_cacert_file }}',
+          'TLS_CA': '{{ ldapCaCertDir }}/{{ ldapCaCertFile }}',
      }
 }
 

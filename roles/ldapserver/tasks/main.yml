@@ -3,7 +3,7 @@
 - include_vars: "{{ ansible_distribution }}_{{ ansible_distribution_version }}_{{ ansible_architecture }}.yml"
 - include_vars: "{{ ansible_distribution }}.yml"
 - name: install system packages apt
-  apt: name={{ item }} state=installed update_cache=true
+  apt: name={{ item }} state=latest update_cache=yes
   sudo: true
   with_items: system_packages
   when: ansible_os_family == 'Debian'
@@ -166,6 +166,18 @@
   sudo: true
   when: ansible_os_family == 'RedHat' and ansible_distribution_major_version >= '7'
 
+- name: Initialise cosine and ppolicy debian 8
+  shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/ldap/schema/{{ item }}.ldif -D cn=config
+  with_items:
+   - ppolicy
+   - cosine
+   - nis
+   - inetorgperson
+  ignore_errors: true
+  sudo: true
+  when: ansible_os_family == 'Debian' and ansible_distribution_major_version >= '8'
+
+
 - name: initialise server ssl
   shell: ldapmodify -Y EXTERNAL -H ldapi:/// -f /tmp/ssl.ldif -D cn=config 
   sudo: true
@@ -251,6 +263,7 @@
 
 - name: add pwpolicies
   shell: ldapadd -x -D cn=Manager,{{ ldapDomain }} -w {{ ldapManagerPassword }} -f /tmp/pwpolicies.ldif
+  ignore_errors: true
   when: pwpoliciesConfigured|failed
 
 - name: check defaultPwpolicy config
@@ -260,5 +273,6 @@
 
 - name: add defaultPwpolicy
   shell: ldapadd -x -D cn=Manager,{{ ldapDomain }} -w {{ ldapManagerPassword }} -f /tmp/default_ppolicy.ldif
+  ignore_errors: true
   when: defaultPpolicyConfigured|failed
 

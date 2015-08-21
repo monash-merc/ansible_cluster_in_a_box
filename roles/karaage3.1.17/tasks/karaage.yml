@@ -102,13 +102,12 @@
  name: "Enable shibboleth, should it be in shibboleth-sp role?"
  lineinfile: insertafter="{{ item.after }}" line="{{ item.line }}" dest=/etc/{% if ansible_os_family == 'RedHat'  %}httpd{% else %}apache2{% endif %}/conf-available/karaage3-wsgi.conf state=present
  with_items:
-   - { after: 'EOF', line: '<Location /karaage>' } 
-   - { after: '^<Location /karaage>', line: 'AuthType Shibboleth' }
-   - { after: '^AuthType Shibboleth', line: 'ShibRequireSession On' }
-   - { after: '^ShibRequireSession On', line: 'ShibUseHeaders On' }
-   - { after: '^ShibUseHeaders On', line: 'require valid-user' }
-   - { after: 'EOF', line: '</Location>' }
-#   - { after: '^require valid-user', line: '</Location>' }
+   - { after: 'EOF', line: '#<Location /karaage>' } 
+   - { after: '^#<Location /karaage>', line: '#AuthType Shibboleth' }
+   - { after: '^#AuthType Shibboleth', line: '#ShibRequireSession On' }
+   - { after: '^#ShibRequireSession On', line: '#ShibUseHeaders On' }
+   - { after: '^#ShibUseHeaders On', line: '#require valid-user' }
+   - { after: '^#require valid-user', line: '#</Location>' }
  sudo: true
 
 -

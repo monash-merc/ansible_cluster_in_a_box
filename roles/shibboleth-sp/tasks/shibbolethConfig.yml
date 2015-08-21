@@ -1,10 +1,4 @@
 ---
--
- name: "Copying the shibboleth files"
- template: src=files/{{ item.src }} dest="{{ item.dest }}" mode=0644
- with_items: shibboleth_file
- sudo: true
-
 - 
   name: "Setting shibboleth2.xml sp.example.org"
   sudo: true
@@ -76,7 +70,7 @@
    replace: 'backingFilePath="metadata.aaf.xml"'
    
 - name: copy AAF metadata cert
-  copy: src=files/{{ shib_metadata_cert }} dest=/dev/shibboleth/aaf-metadata-cert.pem mode=644
+  copy: src=files/{{ shib_metadata_cert }} dest=/etc/shibboleth/aaf-metadata-cert.pem mode=644
   sudo: true
 
 
@@ -98,20 +92,20 @@
    replace: 'discoveryURL="{{ aaf_discovery_url }}"'
    
 - name: make shib private directory
-  file: path=/etc/shibboleth/private, state=directory, mode=700, owner=_shibd
+  file: path=/etc/shibboleth/private state=directory mode=700 owner=_shibd
   sudo: true
 
 - name: copy shib key
   sudo: true
-  copy: src=files/{{ shib_key }} dest=/etc/shibboleth/private/{{ shib_key }} owner=_shibd, mode=600
+  copy: src=files/{{ shib_key }} dest=/etc/shibboleth/private/{{ shib_key }} owner=_shibd mode=600
 
 - name: make shib certs directory
-  file: path=/etc/shibboleth/certs, state=directory, mode=755, owner=_shibd
+  file: path=/etc/shibboleth/certs state=directory mode=755 owner=_shibd
   sudo: true
 
 - name: copy shib cert
   sudo: true
-  copy: src=files/{{ shib_cert }} dest=/etc/shibboleth/certs/{{ shib_cert }} owner=_shibd, mode=644
+  copy: src=files/{{ shib_cert }} dest=/etc/shibboleth/certs/{{ shib_cert }} owner=_shibd mode=644
 
 - 
   name: "Setting shibboleth2.xml Credential Resolver"
@@ -140,6 +134,18 @@
  name: "Link shib.conf"
  sudo: true
  file: src=/etc/apache2/conf-available/shib.conf path=/etc/apache2/conf-enabled/shib.conf state=link 
+
+-
+ name: "Enable shibboleth"
+ lineinfile: regexp="{{ item.regex }}" line="{{ item.line }}" dest=/etc/{% if ansible_os_family == 'RedHat'  %}httpd{% else %}apache2{% endif %}/conf-available/karaage3-wsgi.conf state=present
+ with_items:
+ - { regex: '#<Location /karaage>', line: '<Location /karaage>' }
+ - { regex: '^#AuthType Shibboleth', line: 'AuthType Shibboleth' }
+ - { regex: '^#ShibRequireSession On', line: 'ShibRequireSession On' }
+ - { regex: '^#ShibUseHeaders On', line: 'ShibUseHeaders On' }
+ - { regex: '^#require valid-user', line: 'require valid-user' }
+ - { regex: '#</Location>', line: '</Location>' }
+ sudo: true
  notify: Restarting Apache
 
 -
