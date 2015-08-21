@@ -13,7 +13,16 @@
   - python-cracklib
   - git
   - apache2-dev
+  - python-mysqldb
+  - python-pip
+  - python-pyasn1
+  - libapache2-mod-wsgi
+  - gcc
+  - libmysqlclient-dev
+  - python-dev
+  - python-matplotlib
  when: ansible_os_family == "Debian"
+
 -
  name: "Installing prerequisites Redhat"
  yum: name={{ item }} state=latest
@@ -34,10 +43,10 @@
   - blas-devel
   - libffi-devel
  when: ansible_os_family == "RedHat" 
--
- name: Install the latest pip
- shell: easy_install pip
- when: ansible_os_family == "RedHat"
+     #-
+     # name: Install the latest pip
+     # shell: easy_install pip
+     # when: ansible_os_family == "RedHat"
 
 -
  name: "Getting Karaage from Github"
@@ -60,7 +69,9 @@
   - ply
   - cython
   - django-celery
-  - mod_wsgi
+  - pyasn1
+  - ldap3
+#  - mod_wsgi
 -
  name: "Restrict Django version to 1.7.8"
  sudo: true
@@ -108,15 +119,23 @@
    - { after: '^ShibRequireSession On', line: 'ShibUseHeaders On' }
    - { after: '^ShibUseHeaders On', line: 'require valid-user' }
    - { after: 'EOF', line: '</Location>' }
-#   - { after: '^require valid-user', line: '</Location>' }
+   - { after: '^require valid-user', line: '</Location>' }
  sudo: true
 
+#- name: "Make sure python-pyasn1 is definitly not installed"
+#  apt: name=python-pyasn1 state=removed
+#  sudo: true
+#
+#- name: "Install python-ldap3 but not python-pyasn1"
+#  apt: name=python-ldap3 state=present dpkg_options="ignore-depends=python-pyasn1"
+#  sudo: true
+#
 -
  name: "Installing other packages Debian"
  apt: name={{ item }} update_cache=yes
  with_items:
-  - python-kgusage
-  - karaage-cluster-tools
+#  - python-kgusage
+#  - karaage-cluster-tools
   - karaage3-celery
  sudo: true
  when: ansible_os_family == "Debian"
@@ -125,13 +144,13 @@
  git: repo={{ item.repo }} dest={{ item.dest }}
  with_items:
   - { repo : 'https://github.com/numpy/numpy.git', dest : '/root/numpy' }
-  - { repo : 'https://github.com/matplotlib/matplotlib.git', dest : '/root/matplotlib' }
+#  - { repo : 'https://github.com/matplotlib/matplotlib.git', dest : '/root/matplotlib' }
   - { repo : 'https://github.com/Karaage-Cluster/karaage-software.git', dest : '/root/karaage-software' }
   - { repo : 'https://github.com/Karaage-Cluster/karaage-usage.git', dest : '/root/karaage-usage' }
   - { repo : 'https://github.com/Karaage-Cluster/karaage-applications.git', dest : '/root/karaage-applications' }
   - { repo : 'https://github.com/Karaage-Cluster/karaage-cluster-tools.git', dest : '/root/karaage-cluster-tools' }
  sudo: true
- when: ansible_os_family == "RedHat"
+# when: ansible_os_family == "RedHat"
 - 
   args: 
     chdir: "/root/{{ item }}"
@@ -139,10 +158,10 @@
   name: "Installing other packages RedHat"
   sudo: true
   shell: "env python setup.py install"
-  when: ansible_os_family == "RedHat"
+#  when: ansible_os_family == "RedHat"
   with_items: 
     - numpy
-    - matplotlib
+#    - matplotlib
     - karaage-applications
     - karaage-software
     - karaage-usage
@@ -154,7 +173,7 @@
 
 -
  name: "Check karaage DB has been initialized or not"
- shell: mysql -h {{ karaageDbHost }}  -u {{ karaageDbName }} --password={{ mysql_user_password }} -Bse 'use karaage; show tables;' | wc -l 
+ shell: mysql -h {{ karaageDbHost }}  -u {{ karaageDbName }} --password={{ karaagePassword }} -Bse 'use karaage; show tables;' | wc -l 
  register: karaage_db_init
 
 -
@@ -167,11 +186,25 @@
  file: src=/etc/apache2/mods-available/wsgi.load path=/etc/apache2/mods-enabled/wsgi.load state=link 
  sudo: true
 
+- name: enable shibboleth
+  shell: a2enmod shib2
+  sudo: true
+
 -
  name: " Create DB tables"
  shell: kg-manage migrate 
  sudo: true
  when: karaage_db_init.stdout.find("0") == 0
+
+- name: install postfix
+  apt: name=postfix state=present
+  sudo: true
+
+- name: configure postfix
+  template: src=main_cf.j2 dest=/etc/postfix/main.cf
+  sudo: true
+  notify: restart postfix
+
 
 -
  name: "Restarting Celery"

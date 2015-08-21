@@ -9,6 +9,16 @@
    sudo: true
    when: apache_cert_file is defined
 
+ - name: "Copying the ldap ca cert file"
+   template: src="files/{{ ldap_TLSCARoot }}" dest="{{ ldapCaCertFile }}" mode=0644
+   sudo: true
+   when: apache_cert_file is defined
+
+# - name: "Copying the apache cert file"
+#   template: src="files/{{ apache_cert_chain_file }}" dest="{{ x509_cert_chain }}" mode=0644
+#   sudo: true
+#   when: apache_cert_file is defined
+
  - include: prerequisitesDebian.yml
    when: ansible_os_family == "Debian"
  - include: apacheDebian.yml
