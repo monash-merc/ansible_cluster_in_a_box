@@ -109,32 +109,28 @@
  shell: cp -rvpf /root/karaage3.1.7/conf/karaage3-wsgi.conf /etc/httpd/conf.d/karaage3-wsgi.conf
  sudo: true
  when: ansible_os_family == "RedHat"
--
- name: "Enable shibboleth, should it be in shibboleth-sp role?"
- lineinfile: insertafter="{{ item.after }}" line="{{ item.line }}" dest=/etc/{% if ansible_os_family == 'RedHat'  %}httpd{% else %}apache2{% endif %}/conf-available/karaage3-wsgi.conf state=present
- with_items:
-   - { after: 'EOF', line: '<Location /karaage>' } 
-   - { after: '^<Location /karaage>', line: 'AuthType Shibboleth' }
-   - { after: '^AuthType Shibboleth', line: 'ShibRequireSession On' }
-   - { after: '^ShibRequireSession On', line: 'ShibUseHeaders On' }
-   - { after: '^ShibUseHeaders On', line: 'require valid-user' }
-   - { after: 'EOF', line: '</Location>' }
-   - { after: '^require valid-user', line: '</Location>' }
- sudo: true
 
-#- name: "Make sure python-pyasn1 is definitly not installed"
-#  apt: name=python-pyasn1 state=removed
-#  sudo: true
-#
-#- name: "Install python-ldap3 but not python-pyasn1"
-#  apt: name=python-ldap3 state=present dpkg_options="ignore-depends=python-pyasn1"
-#  sudo: true
-#
+- name: "Configure karaage3-wsgi.conf"
+  template: src=karaage3-wsgi.conf.j2 dest=/etc/{% if ansible_os_family == 'RedHat'  %}httpd{% else %}apache2{% endif %}/conf-available/karaage3-wsgi.conf 
+  sudo: true
+
+     #-
+     # name: "Enable shibboleth, should it be in shibboleth-sp role?"
+     # lineinfile: insertafter="{{ item.after }}" line="{{ item.line }}" dest=/etc/{% if ansible_os_family == 'RedHat'  %}httpd{% else %}apache2{% endif %}/conf-available/karaage3-wsgi.conf state=present
+     # with_items:
+     #   - { after: 'EOF', line: '<Location /karaage>' } 
+     #   - { after: '^<Location /karaage>', line: 'AuthType Shibboleth' }
+     #   - { after: '^AuthType Shibboleth', line: 'ShibRequireSession On' }
+     #   - { after: '^ShibRequireSession On', line: 'ShibUseHeaders On' }
+     #   - { after: '^ShibUseHeaders On', line: 'require valid-user' }
+     #   - { after: '^require valid-user', line: '</Location>' }
+     # sudo: true
+
 -
  name: "Installing other packages Debian"
  apt: name={{ item }} update_cache=yes
  with_items:
-#  - python-kgusage
+  - python-kgusage
 #  - karaage-cluster-tools
   - karaage3-celery
  sudo: true
