@@ -1,0 +1,13 @@
+---
+
+- name: "update cache centos"
+  shell: yum update -y
+  sudo: true
+  when: ansible_os_family == 'RedHat'
+
+- name: "update cache debian"
+  shell: apt-get update -y
+  sudo: true
+  when: ansible_os_family == 'Debian'
+
+

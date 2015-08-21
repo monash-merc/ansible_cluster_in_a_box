@@ -1,13 +1,18 @@
 ---
  - name: "Copying the apache key file"
-   template: src="files/{{ apache_key_file }}" dest="{{ x509_key_file }}" mode=0644
+   template: src="files/{{ apache_key_file }}" dest="/etc/ssl/private/{{ apache_key_file }}" mode=0600 owner=www-data group=www-data
    sudo: true
    when: apache_key_file is defined
  
  - name: "Copying the apache cert file"
-   template: src="files/{{ apache_cert_file }}" dest="{{ x509_cert_file }}" mode=0644
+   template: src="files/{{ apache_cert_file }}" dest="/etc/ssl/certs/{{ apache_cert_file }}" mode=0644 owner=www-data group=www-data
    sudo: true
    when: apache_cert_file is defined
+ 
+ - name: "Copying the apache cert chain file"
+   template: src="files/{{ apache_chain_file }}" dest="/etc/ssl/certs/{{ apache_chain_file }}" mode=0644 owner=www-data group=www-data
+   sudo: true
+   when: apache_chain_file is defined
 
  - include: prerequisitesDebian.yml
    when: ansible_os_family == "Debian"
