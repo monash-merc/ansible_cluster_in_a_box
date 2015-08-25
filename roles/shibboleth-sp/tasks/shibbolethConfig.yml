@@ -101,7 +101,7 @@
   file: path=/etc/shibboleth/private, state=directory, mode=700, owner=_shibd
   sudo: true
 
-- name: copy shib key:
+- name: copy shib key
   sudo: true
   copy: src=files/{{ shib_key }} dest=/etc/shibboleth/private/{{ shib_key }} owner=_shibd, mode=600
 
@@ -109,7 +109,7 @@
   file: path=/etc/shibboleth/certs, state=directory, mode=755, owner=_shibd
   sudo: true
 
-- name: copy shib cert:
+- name: copy shib cert
   sudo: true
   copy: src=files/{{ shib_cert }} dest=/etc/shibboleth/certs/{{ shib_cert }} owner=_shibd, mode=644
 

@@ -83,6 +83,16 @@
   file: path={{ cacert | dirname }} state=directory owner={{ ldapuser }} group={{ ldapgroup }}
   sudo: true
 
+- name: make ldap certs dir
+  file: path={{ ldapCertDir }} state=directory owner={{ ldapuser }} group={{ ldapgroup }}
+  sudo: true
+  when: ldapCertDir is defined
+
+- name: make ldap private dir
+  file: path={{ ldapPrivateDir }} state=directory owner={{ ldapuser }} group={{ ldapgroup }}
+  sudo: true
+  when: ldapPrivateDir is defined
+
 # Change to remove easy-rsa and to use fixed key and certs
 - name: copy fixed keys and certs from files directory
   template: src=files/{{ item.src }} dest="{{ item.dest }}" mode={{ item.mode }} owner=root group=root
