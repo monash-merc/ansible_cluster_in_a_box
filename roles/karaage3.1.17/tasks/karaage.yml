@@ -13,6 +13,8 @@
   - python-cracklib
   - git
   - apache2-dev
+  - mysql-client
+  - python-dev
  when: ansible_os_family == "Debian"
 -
  name: "Installing prerequisites Redhat"
@@ -55,7 +57,6 @@
  sudo: true
  with_items:
   - six
-  - MySQL-python
   - slimit
   - ply
   - cython

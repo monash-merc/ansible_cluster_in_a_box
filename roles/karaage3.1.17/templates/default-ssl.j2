@@ -50,7 +50,7 @@
 	#   certificate chain for the server certificate. Alternatively
 	#   when the CA certificates are directly appended to the server
 	#   certificate for convinience.
-	#SSLCertificateChainFile /etc/apache2/ssl.crt/server-ca.crt
+	SSLCertificateChainFile {{ x509_cert_chain }} 
 
 	#   Certificate Authority (CA):
 	#   Set the CA certificate verification path where to find CA
@@ -59,13 +59,6 @@
 	#   Note: Inside SSLCACertificatePath you need hash symlinks
 	#         to point to the certificate files. Use the provided
 	#         Makefile to update the hash symlinks after changes.
-    {% if ldapCaCertFile is defined and ldapCaCertDir is defined %}
-    SSLCACertificatePath {{ ldapCaCertDir }} 
-    SSLCACertificateFile {{ ldapCaCertDir }}/{{ ldapCaCertFile }}
-    {% else %}
-    SSLCACertificatePath /etc/ssl/certs/
-    SSLCACertificateFile {{ x509_cacert_file }}
-    {% endif %}
 
 	#   Certificate Revocation Lists (CRL):
 	#   Set the CA revocation path where to find CA CRLs for client

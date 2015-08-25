@@ -8,14 +8,6 @@
  sudo: true
 
 -
- name: "Setting default-ssl site"
- lineinfile: dest=/etc/apache2/sites-available/default-ssl.conf  regexp="{{ item.regexp }}" line="{{ item.line }}" backrefs=yes
- with_items:
-  - { regexp : "^\\s+SSLCertificateFile", line : "		SSLCertificateFile {{ x509_cert_file }}" }
-  - { regexp : "SSLCertificateKeyFile", line : "		SSLCertificateKeyFile {{ x509_key_file }}" }
-  - { regexp : "SSLCACertificateFile", line : "		SSLCACertificateFile {{ x509_cacert_file }}" }
- sudo: true
--
  name: "Templating default-ssl site"
  template: src=default-ssl.j2 dest=/etc/apache2/sites-available/default-ssl.conf owner=www-data group=www-data
  sudo: true

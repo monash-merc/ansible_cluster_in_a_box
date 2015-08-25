@@ -14,14 +14,12 @@
  name: Setting httpd.conf
  sudo: true
  replace: dest=/etc/httpd/conf/httpd.conf regexp="^#ServerName www.example.com:80" replace="ServerName {{ ansible_fqdn }}"
+
 -
- name: Setting ssl.conf
+ name: "Templating default-ssl site"
+ template: src=default-ssl.j2 dest=/etc/httpd/conf.d/ssl.conf owner=apache group=apache
  sudo: true
- lineinfile: dest=/etc/httpd/conf.d/ssl.conf regexp="{{ item.regexp }}" line="{{ item.line }}" backrefs=yes
- with_items:
-  - { regexp : "^SSLCertificateFile", line : "SSLCertificateFile {{ x509_cert_file }}" }
-  - { regexp : "SSLCertificateKeyFile", line : "SSLCertificateKeyFile {{ x509_key_file }}" }
-  - { regexp : "SSLCACertificateFile", line : "SSLCACertificateFile {{ x509_cacert_file }}" }
+
 -
  name: Templating wsgi.conf
  sudo: true

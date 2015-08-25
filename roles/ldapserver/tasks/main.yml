@@ -99,21 +99,21 @@
   with_items: ldapCertFiles 
   sudo: true
   
-- name: copy cert
-  command: cp /etc/ssl/certs/server.crt {{ ldapcert }}
-  sudo: true
+#- name: copy cert
+#  command: cp /etc/ssl/certs/server.crt {{ ldapcert }}
+#  sudo: true
 
-- name: copy cacert
-  command: cp /etc/ssl/certs/ca.crt {{ cacert }}
-  sudo: true
+#- name: copy cacert
+#  command: cp /etc/ssl/certs/ca.crt {{ cacert }}
+#  sudo: true
 
-- name: copy key
-  command: cp /etc/ssl/private/server.key {{ ldapkey }}
-  sudo: true
+#- name: copy key
+#  command: cp /etc/ssl/private/server.key {{ ldapkey }}
+#  sudo: true
 
-- name: chmod key
-  file: path={{ ldapkey }} owner={{ ldapuser }} group={{ ldapgroup }} mode=600
-  sudo: true
+#- name: chmod key
+#  file: path={{ ldapkey }} owner={{ ldapuser }} group={{ ldapgroup }} mode=600
+#  sudo: true
 
 - name: enable ssl centos
   lineinfile: regexp="SLAPD_LDAPS=no" state=present line="SLAPD_LDAPS=yes" dest=/etc/sysconfig/ldap
