@@ -8,3 +8,6 @@ server_packages:
   - mysql-server
   - python-mysqldb
 
+client_packages:
+  - mysql-client
+  - python

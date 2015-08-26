@@ -6,4 +6,7 @@ server_packages:
   - MySQL-python
   - mysql-community-server
 
-
+client_packages:
+  - mysql-community-client
+  - python
+  - MySQL-python
