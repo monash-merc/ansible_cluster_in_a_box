@@ -23,9 +23,34 @@
   command: /usr/sbin/slappasswd -h {SSHA} -s {{ ldapManagerPassword }}
   register: ldapManagerHash
 
-- name: hash binddn password
-  command: /usr/sbin/slappasswd -h {SSHA} -s {{ ldapBindDNPassword }}
-  register: ldapBindDNHash
+
+
+
+
+- name: template root.ldif
+  template: src=root_ldif.j2 dest=/tmp/root.ldif
+
+- name: template accounts.ldif
+  template: src=accounts_ldif.j2 dest=/tmp/accounts.ldif
+
+- name: template real accounts.ldif
+  template: src=real_accounts_ldif.j2 dest=/tmp/real_accounts.ldif
+
+- name: template groups.ldif
+  template: src=groups_ldif.j2 dest=/tmp/groups.ldif
+
+
+- name: template load_modules.ldif
+  template: src=load_modules_ldif.j2 dest=/tmp/load_modules.ldif
+
+- name: template ppolicy_overlay.ldif
+  template: src=ppolicy_overlay_ldif.j2 dest=/tmp/ppolicy_overlay.ldif
+
+- name: template pwpolices.ldif
+  template: src=pwpolicies_ldif.j2 dest=/tmp/pwpolicies.ldif
+
+- name: template default_ppolicy.ldif
+  template: src=default_ppolicy_ldif.j2 dest=/tmp/default_ppolicy.ldif
 
 - name: template ssl.ldif
   template: src=ssl_ldif.j2 dest=/tmp/ssl.ldif mode=600
@@ -40,43 +65,13 @@
   template: src=manager_ldif3.j2 dest=/tmp/manager3.ldif mode=600
   sudo: true
 
-- name: template binddn.ldif
-  template: src=binddn_ldif.j2 dest=/tmp/binddn.ldif mode=600
-  sudo: true
-
-- name: template root.ldif
-  template: src=root_ldif.j2 dest=/tmp/root.ldif
-
-- name: template accounts.ldif
-  template: src=accounts_ldif.j2 dest=/tmp/accounts.ldif
-
-- name: template real accounts.ldif
-  template: src=real_accounts_ldif.j2 dest=/tmp/real_accounts.ldif
-
-- name: template groups.ldif
-  template: src=groups_ldif.j2 dest=/tmp/groups.ldif
-
-- name: template acls.ldif
-  template: src=acls_ldif.j2 dest=/tmp/acls.ldif
-
-- name: template load_modules.ldif
-  template: src=load_modules_ldif.j2 dest=/tmp/load_modules.ldif
-
-- name: template ppolicy_overlay.ldif
-  template: src=ppolicy_overlay_ldif.j2 dest=/tmp/ppolicy_overlay.ldif
-
-- name: template pwpolices.ldif
-  template: src=pwpolicies_ldif.j2 dest=/tmp/pwpolicies.ldif
-
-- name: template default_ppolicy.ldif
-  template: src=default_ppolicy_ldif.j2 dest=/tmp/default_ppolicy.ldif
 
 - name: make cert dir
   file: path={{ ldapcert | dirname }} state=directory owner={{ ldapuser }} group={{ ldapgroup }}
   sudo: true
 
 - name: make key dir
-  file: path={{ ldapkey | dirname }} state=directory owner={{ ldapuser }} group={{ ldapgroup }}
+  file: path={{ ldapkey | dirname }} state=directory owner={{ ldapuser }} group={{ ldapgroup }} mode=700
   sudo: true
 
 - name: make ca dir
@@ -100,20 +95,17 @@
   sudo: true
   
 - name: copy cert
-  command: cp /etc/ssl/certs/server.crt {{ ldapcert }}
+  copy: src="files/{{ ldap_TLSCert }}" dest="{{ ldapcert }}"
   sudo: true
 
 - name: copy cacert
-  command: cp /etc/ssl/certs/ca.crt {{ cacert }}
+  copy: src="files/{{ ldap_TLSCAChain }}" dest="{{ cacert }}"
   sudo: true
 
 - name: copy key
-  command: cp /etc/ssl/private/server.key {{ ldapkey }}
+  copy: src="files/{{ ldap_TLSKey }}" dest="{{ ldapkey }}" mode=600 owner={{ ldapuser }} group={{ ldapgroup }}
   sudo: true
 
-- name: chmod key
-  file: path={{ ldapkey }} owner={{ ldapuser }} group={{ ldapgroup }} mode=600
-  sudo: true
 
 - name: enable ssl centos
   lineinfile: regexp="SLAPD_LDAPS=no" state=present line="SLAPD_LDAPS=yes" dest=/etc/sysconfig/ldap
@@ -125,45 +117,21 @@
   sudo: true
   when: ansible_os_family == 'RedHat' and ansible_distribution_major_version >= '7'
 
-- name: start ldap
-  service: name=slapd state=restarted
-  sudo: true
-
 - name: check TLS config
   shell: "slapcat -b cn=config | grep 'olcTLSCertificateKeyFile: {{ ldapkey }}'"
   ignore_errors: true
   sudo: true
   register: tlsConfigured
 
-- name: check Manager config
-  shell: "slapcat -b cn=config | grep 'olcRootDN: {{ ldapManager }}'"
-  ignore_errors: true
+
+- name: start ldap
+  service: name=slapd state=restarted
   sudo: true
-  register: managerConfigured
 
-# slapcat does a line wrap at character 78. Don't attempt to match on {{ ldapManager }} as it will cross two lines
-- name: check ACL config
-  shell: "slapcat -b cn=config | grep 'olcAccess:' | grep 'cn=Manager'"
-  ignore_errors: true
+- name: initialise server ssl
+  shell: ldapmodify -Y EXTERNAL -H ldapi:/// -f /tmp/ssl.ldif -D cn=config 
   sudo: true
-  register: aclConfigured
-
-
-- name: check real Accounts config
-  shell: "ldapsearch -D {{ ldapManager }} -w {{ ldapManagerPassword }} -b {{ ldapAccountBase }} -x -H ldap://localhost objectClass=*"
-  ignore_errors: true
-  register: realAccountsConfigured
-  when: ldapAccountBase is defined
-
-- name: check Groups config
-  shell: "ldapsearch -D {{ ldapManager }} -w {{ ldapManagerPassword }} -b {{ ldapGroupBase }} -x -H ldap://localhost objectClass=*"
-  ignore_errors: true
-  register: groupsConfigured
-
-- name: check binddn config
-  shell: "ldapsearch -D {{ ldapBindDN }} -w {{ ldapBindDNPassword }} -b {{ ldapDomain }} -x -H ldap://localhost objectClass=dcObject"
-  ignore_errors: true
-  register: binddnConfigured
+  when: tlsConfigured|failed
 
 - name: Initialise cosine and ppolicy
   shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/{{ item }}.ldif -D cn=config
@@ -175,62 +143,6 @@
   ignore_errors: true
   sudo: true
   when: ansible_os_family == 'RedHat' and ansible_distribution_major_version >= '7'
-
-- name: initialise server ssl
-  shell: ldapmodify -Y EXTERNAL -H ldapi:/// -f /tmp/ssl.ldif -D cn=config 
-  sudo: true
-  when: tlsConfigured|failed
-
-- name: check DIT config
-  shell: "ldapsearch -D {{ ldapManager }} -w {{ ldapManagerPassword }} -b {{ ldapBase }} -x -H ldap://localhost objectClass=dcObject"
-  ignore_errors: true
-  register: ditConfigured
-
-- name: check Accounts config
-  shell: "ldapsearch -D {{ ldapManager }} -w {{ ldapManagerPassword }} -b {{ ldapUserBase }} -x -H ldap://localhost objectClass=*"
-  ignore_errors: true
-  register: accountsConfigured
-
-- name: initialise server manager
-  shell:  ldapmodify -Y EXTERNAL -H ldapi:/// -f /tmp/manager.ldif -D cn=config
-  sudo: true
-  when: managerConfigured|failed
-
-- name: initialise server manager
-  shell: ldapmodify -Y EXTERNAL -H ldapi:/// -f /tmp/manager2.ldif -D cn=config 
-  sudo: true
-  ignore_errors: true
-  when: managerConfigured|failed
-- name: initialise server manager
-  shell: ldapmodify -Y EXTERNAL -H ldapi:/// -f /tmp/manager3.ldif -D cn=config 
-  sudo: true
-  when: managerConfigured|failed
-
-- name: initialise server acls
-  shell: ldapmodify -Y EXTERNAL -H ldapi:/// -f /tmp/acls.ldif -D cn=config
-  sudo: true
-  when: aclConfigured|failed
-
-- name: add DIT root
-  shell: ldapadd -x -D {{ ldapManager }} -w {{ ldapManagerPassword }} -x -H ldap://localhost -f /tmp/root.ldif
-  when: ditConfigured|failed
-
-- name: add Accounts OU
-  shell: ldapadd -x -D {{ ldapManager }} -w {{ ldapManagerPassword }} -x -H ldap://localhost -f /tmp/accounts.ldif
-  when: accountsConfigured|failed
-
-- name: add real Accounts OU
-  shell: ldapadd -x -D {{ ldapManager }} -w {{ ldapManagerPassword }} -x -H ldap://localhost -f /tmp/real_accounts.ldif
-  when: realAccountsConfigured is defined and realAccountsConfigured|failed
-
-- name: add Groups OU
-  shell: ldapadd -x -D {{ ldapManager }} -w {{ ldapManagerPassword }} -x -H ldap://localhost -f /tmp/groups.ldif
-  when: groupsConfigured|failed
-
-- name: add binddn
-  shell: ldapadd -x -D {{ ldapManager }} -w {{ ldapManagerPassword }} -x -H ldap://localhost -f /tmp/binddn.ldif
-  sudo: true
-  when: binddnConfigured|failed
       
 - name: check ppolicy module loaded
   shell: slapcat -b cn=config | grep "olcModuleLoad. {.*}ppolicy"
@@ -254,21 +166,116 @@
   sudo: true
   when: ppolicyOverlayConfigured|failed
 
+
+- name: check Manager config
+  shell: "slapcat -b cn=config | grep 'olcRootDN: {{ ldapManager }}'"
+  ignore_errors: true
+  sudo: true
+  register: managerConfigured
+
+- name: initialise server manager
+  shell:  ldapmodify -Y EXTERNAL -H ldapi:/// -f /tmp/manager.ldif -D cn=config
+  sudo: true
+  when: managerConfigured|failed
+- name: initialise server manager
+  shell: ldapmodify -Y EXTERNAL -H ldapi:/// -f /tmp/manager2.ldif -D cn=config 
+  sudo: true
+  ignore_errors: true
+  when: managerConfigured|failed
+- name: initialise server manager
+  shell: ldapmodify -Y EXTERNAL -H ldapi:/// -f /tmp/manager3.ldif -D cn=config 
+  sudo: true
+  when: managerConfigured|failed
+
+# slapcat does a line wrap at character 78. Don't attempt to match on {{ ldapManager }} as it will cross two lines
+- name: check ACL config
+  shell: "slapcat -b cn=config | grep 'olcAccess:' | grep 'cn=Manager'"
+  ignore_errors: true
+  sudo: true
+  register: aclConfigured
+
+- name: template acls.ldif
+  template: src=acls_ldif.j2 dest=/tmp/acls.ldif
+
+- name: initialise server acls
+  shell: ldapmodify -Y EXTERNAL -H ldapi:/// -f /tmp/acls.ldif -D cn=config
+  sudo: true
+  when: aclConfigured|failed
+
+
+
+- name: check DIT config
+  shell: "ldapsearch -D {{ ldapManager }} -w {{ ldapManagerPassword }} -b {{ ldapBase }} -x -H ldap://localhost objectClass=dcObject"
+  ignore_errors: true
+  register: ditConfigured
+
+- name: add DIT root
+  shell: ldapadd -x -D {{ ldapManager }} -w {{ ldapManagerPassword }} -x -H ldap://localhost -f /tmp/root.ldif
+  when: ditConfigured|failed
+
+
+- name: check real Accounts config
+  shell: "ldapsearch -D {{ ldapManager }} -w {{ ldapManagerPassword }} -b {{ ldapAccountBase }} -x -H ldap://localhost objectClass=*"
+  ignore_errors: true
+  register: realAccountsConfigured
+  when: ldapAccountBase is defined
+
+- name: add real Accounts OU
+  shell: ldapadd -x -D {{ ldapManager }} -w {{ ldapManagerPassword }} -x -H ldap://localhost -f /tmp/real_accounts.ldif
+  when: realAccountsConfigured is defined and realAccountsConfigured|failed
+
+- name: check Groups config
+  shell: "ldapsearch -D {{ ldapManager }} -w {{ ldapManagerPassword }} -b {{ ldapGroupBase }} -x -H ldap://localhost objectClass=*"
+  ignore_errors: true
+  register: groupsConfigured
+
+- name: add Groups OU
+  shell: ldapadd -x -D {{ ldapManager }} -w {{ ldapManagerPassword }} -x -H ldap://localhost -f /tmp/groups.ldif
+  when: groupsConfigured|failed
+
+- name: check Accounts config
+  shell: "ldapsearch -D {{ ldapManager }} -w {{ ldapManagerPassword }} -b {{ ldapUserBase }} -x -H ldap://localhost objectClass=*"
+  ignore_errors: true
+  register: accountsConfigured
+
+- name: add Accounts OU
+  shell: ldapadd -x -D {{ ldapManager }} -w {{ ldapManagerPassword }} -x -H ldap://localhost -f /tmp/accounts.ldif
+  when: accountsConfigured|failed
+
+- name: check binddn config
+  shell: "ldapsearch -D {{ ldapBindDN }} -w {{ ldapBindDNPassword }} -b {{ ldapDomain }} -x -H ldap://localhost objectClass=dcObject"
+  ignore_errors: true
+  register: binddnConfigured
+
+- name: hash binddn password
+  command: /usr/sbin/slappasswd -h {SSHA} -s {{ ldapBindDNPassword }}
+  register: ldapBindDNHash
+
+- name: template binddn.ldif
+  template: src=binddn_ldif.j2 dest=/tmp/binddn.ldif mode=600
+  sudo: true
+
+- name: add binddn
+  shell: ldapadd -x -D {{ ldapManager }} -w {{ ldapManagerPassword }} -x -H ldap://localhost -f /tmp/binddn.ldif
+  sudo: true
+  when: binddnConfigured|failed
+
+
 - name: check pwpolicies config
-  shell: ldapsearch -D cn=binddn,ou=Accounts,{{ ldapDomain }} -w {{ ldapBindDNPassword }} -b ou=pwpolicies,{{ ldapDomain }} objectClass=*
+  shell: ldapsearch -D {{ ldapBindDN }} -w {{ ldapBindDNPassword }} -b ou=pwpolicies,{{ ldapDomain }} objectClass=*
   ignore_errors: true
   register: pwpoliciesConfigured
 
 - name: add pwpolicies
-  shell: ldapadd -x -D cn=Manager,{{ ldapDomain }} -w {{ ldapManagerPassword }} -f /tmp/pwpolicies.ldif
+  shell: ldapadd -x -D {{ ldapManager }} -w {{ ldapManagerPassword }} -f /tmp/pwpolicies.ldif
   when: pwpoliciesConfigured|failed
 
 - name: check defaultPwpolicy config
-  shell: ldapsearch -D cn=binddn,ou=Accounts,{{ ldapDomain }} -w {{ ldapBindDNPassword }} -b cn=default,ou=pwpolicies,{{ ldapDomain }} objectClass=*
+  shell: ldapsearch -D {{ ldapBindDN }} -w {{ ldapBindDNPassword }} -b cn=default,ou=pwpolicies,{{ ldapDomain }} objectClass=*
   ignore_errors: true
   register: defaultPpolicyConfigured
 
 - name: add defaultPwpolicy
-  shell: ldapadd -x -D cn=Manager,{{ ldapDomain }} -w {{ ldapManagerPassword }} -f /tmp/default_ppolicy.ldif
+  shell: ldapadd -x -D {{ ldapManager }} -w {{ ldapManagerPassword }} -f /tmp/default_ppolicy.ldif
   when: defaultPpolicyConfigured|failed
 
