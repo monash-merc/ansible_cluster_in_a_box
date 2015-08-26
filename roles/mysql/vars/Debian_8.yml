@@ -1,0 +1,10 @@
+server_packages:
+  - python
+  - python-dev
+  - libmysqlclient-dev
+  - python-pip
+  - libapache2-mod-wsgi
+  - python-mysql.connector
+  - mysql-server
+  - python-mysqldb
+

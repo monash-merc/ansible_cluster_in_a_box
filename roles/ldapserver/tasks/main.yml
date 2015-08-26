@@ -78,12 +78,20 @@
   file: path={{ cacert | dirname }} state=directory owner={{ ldapuser }} group={{ ldapgroup }}
   sudo: true
 
-- name: make destination directories for certs 
-  file: path=/etc/ldap/certs state=directory mode=755 owner={{ ldapuser }} group={{ ldapgroup }}
+- name: make ldap certs dir
+  file: path={{ ldapCertDir }} state=directory owner={{ ldapuser }} group={{ ldapgroup }}
   sudo: true
+  when: ldapCertDir is defined
 
-- name: make destination directories for keys
-  file: path=/etc/ldap/private state=directory mode=700 owner={{ ldapuser }} group={{ ldapgroup }}
+- name: make ldap private dir
+  file: path={{ ldapPrivateDir }} state=directory owner={{ ldapuser }} group={{ ldapgroup }}
+  sudo: true
+  when: ldapPrivateDir is defined
+
+# Change to remove easy-rsa and to use fixed key and certs
+- name: copy fixed keys and certs from files directory
+  template: src=files/{{ item.src }} dest="{{ item.dest }}" mode={{ item.mode }} owner=root group=root
+  with_items: ldapCertFiles 
   sudo: true
   
 - name: copy cert
@@ -97,7 +105,6 @@
 - name: copy key
   copy: src="files/{{ ldap_TLSKey }}" dest="{{ ldapkey }}" mode=600 owner={{ ldapuser }} group={{ ldapgroup }}
   sudo: true
-
 
 - name: enable ssl centos
   lineinfile: regexp="SLAPD_LDAPS=no" state=present line="SLAPD_LDAPS=yes" dest=/etc/sysconfig/ldap

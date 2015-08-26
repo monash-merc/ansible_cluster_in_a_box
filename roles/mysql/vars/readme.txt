@@ -6,4 +6,4 @@ mysql_user_name: "my_database"
 mysql_user_host: "localhost"
 mysql_root_password: "secret"
 mysql_user_password: "secret"
-
+mysql_config_file_name: mysql_config
