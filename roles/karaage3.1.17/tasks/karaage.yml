@@ -64,7 +64,6 @@
  sudo: true
  with_items:
   - six
-  - MySQL-python
   - slimit
   - ply
   - cython

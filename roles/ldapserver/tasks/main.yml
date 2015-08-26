@@ -106,7 +106,6 @@
   copy: src="files/{{ ldap_TLSKey }}" dest="{{ ldapkey }}" mode=600 owner={{ ldapuser }} group={{ ldapgroup }}
   sudo: true
 
-
 - name: enable ssl centos
   lineinfile: regexp="SLAPD_LDAPS=no" state=present line="SLAPD_LDAPS=yes" dest=/etc/sysconfig/ldap
   sudo: true

@@ -1,0 +1,9 @@
+rpm_package: "http://dev.mysql.com/get/mysql-community-release-el7-5.noarch.rpm"
+
+server_packages:
+  - python
+  - python-devel
+  - MySQL-python
+  - mysql-community-server
+
+

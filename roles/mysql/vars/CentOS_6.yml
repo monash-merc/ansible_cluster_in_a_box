@@ -1,0 +1,9 @@
+server_packages:
+  - python
+  - python-devel
+  - mysql-devel
+  - mysql-libs
+  - MySQL-python
+  - mysql-server
+
+
