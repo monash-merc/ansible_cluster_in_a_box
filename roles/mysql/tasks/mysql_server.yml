@@ -5,21 +5,10 @@
   sudo: true
   when: ansible_os_family == "Debian"
 
-- name: "Remove rdo repo"
+- name: "Remove rdo repo, it's broken"
   file: path=/etc/yum.repos.d/rdo-release.repo state=absent
   sudo: true
   when: ansible_os_family == "RedHat" and ansible_distribution_major_version >= 7
-
-- name: "Check RPM packages"
-  shell: ls /etc/yum.repos.d/mysql-community.repo
-  register: mysql_repo
-  ignore_errors: true
-  when: rpm_package is defined
-
-- name: "Add RPM packages"
-  shell: rpm -iUvh {{ rpm_package }} 
-  sudo: true
-  when: mysql_repo | failed
 
 - name: Installing MySQL RedHat
   yum: name={{ item }}
@@ -28,26 +17,11 @@
   when: ansible_os_family == "RedHat"
 
 - name: "Starting MySQL"
-  service: name=mysql state=started enabled=true
+  service: name={{ sqlServiceName }} state=started enabled=true
   sudo: true
-  when: ansible_os_family == "Debian"
-
-- name: "Starting MySQL"
-  service: name=mysqld state=started enabled=true
-  sudo: true
-  when: ansible_os_family == "RedHat" and ansible_distribution_major_version < 7
-
-- name: "Starting MySQL"
-  service: name=mysqld state=started enabled=true
-  sudo: true
-  when: ansible_os_family == "RedHat" and ansible_distribution_major_version >= 7
 
 - name: make sure mysql conf directory exists
   file: dest=/etc/mysql/conf.d state=directory
-  sudo: true
-
-- name: "Templating mysql configure file"
-  template: src="mysql.cnf.j2" dest=/etc/mysql/conf.d/mysqld_safe_syslog.cnf owner=root group=root
   sudo: true
 
 - name: "Adding root"
