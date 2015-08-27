@@ -6,4 +6,10 @@ server_packages:
   - MySQL-python
   - mysql-server
 
+client_packages:
+  - python
+  - mysql
+  - mysql-connector-odbc
+  - MySQL-python
 
+sqlServiceName: mysqld
