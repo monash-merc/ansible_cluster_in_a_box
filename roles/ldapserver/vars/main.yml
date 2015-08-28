@@ -1,4 +1,4 @@
 ---
-ldapCertDest: "{{ ldapDir }}/ssl/certs/hpcldap0.erc.monash.edu.au.cert.pem"
-ldapKeyDest: "{{ ldapDir }}/ssl/private/hpcldao0.erc.monash.edu.au.key.pem"
-ldapCAChainDest: "{{ ldapDir }}/ssl/certs/MeRC_HPC_CaChain.cert.pem"
+ldapCertDest: "{{ ldapDir }}/ssl/certs/ldapcert.pem"
+ldapKeyDest: "{{ ldapDir }}/ssl/private/ldapkey.pem"
+ldapCAChainDest: "{{ ldapDir }}/ssl/certs/cacert.pem

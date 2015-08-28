@@ -1,5 +1,0 @@
----
-ldapKey: "hpcldap0.erc.monash.edu.au.key.pem"
-ldapCert: "hpcldap0.erc.monash.edu.au.cert.pem"
-ldapCAChain: "MeRC_HPC_CA_Chain.cert.pem"
-

@@ -61,10 +61,6 @@
   template: src=manager_ldif3.j2 dest=/tmp/manager3.ldif mode=600
   sudo: true
 
-- name: make ca dir
-  file: path={{ ldapCAChainDest | dirname }} state=directory owner={{ ldapuser }} group={{ ldapgroup }}
-  sudo: true
-
 - name: make ldap certs dir
   file: path={{ ldapCertDest | dirname }} state=directory owner={{ ldapuser }} group={{ ldapgroup }}
   sudo: true
@@ -77,9 +73,10 @@
   copy: src="files/{{ ldapCert }}" dest="{{ ldapCertDest }}"
   sudo: true
 
-- name: copy cacert
+- name: copy ca cert
   copy: src="files/{{ ldapCAChain }}" dest="{{ ldapCAChainDest }}"
   sudo: true
+
 
 - name: copy key
   copy: src="files/{{ ldapKey }}" dest="{{ ldapKeyDest }}" mode=600 owner={{ ldapuser }} group={{ ldapgroup }} 
