@@ -106,7 +106,7 @@ LDAP = {
           'PASSWORD': '{{ ldapManagerPassword }}',
           'REQUIRE_TLS': True,
           'START_TLS': True,
-          'TLS_CA': '{{ ldapCaCertFile }}',
+          'TLS_CA': '{{ apache_config }}/ssl/certs/ldap_ca.cert.pem',
      }
 }
 

@@ -1,0 +1,6 @@
+---
+ apache_user: "{% if ansible_os_family == 'RedHat'  %}apache{% else %}www-data{% endif %}"
+ apache_group: "{% if ansible_os_family == 'RedHat'  %}apache{% else %}www-data{% endif %}"
+ apache_config: "/etc/{% if ansible_os_family == 'RedHat' %}httpd{% else %}apache2{% endif %}"
+ x509_cert: "{{ apache_config }}/ssl/certs/server.cert.pem"
+ x509_key: "{{ apache_config }}/ssl/private/server.key.pem"
