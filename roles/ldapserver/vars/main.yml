@@ -1,4 +1,4 @@
 ---
 ldapCertDest: "{{ ldapDir }}/ssl/certs/ldapcert.pem"
 ldapKeyDest: "{{ ldapDir }}/ssl/private/ldapkey.pem"
-ldapCAChainDest: "{{ ldapDir }}/ssl/certs/cacert.pem
+ldapCAChainDest: "{{ ldapDir }}/ssl/certs/cacert.pem"
