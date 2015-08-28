@@ -21,6 +21,7 @@
   - libmysqlclient-dev
   - python-dev
   - python-matplotlib
+  - python-numpy
  when: ansible_os_family == "Debian"
 
 -
@@ -51,11 +52,6 @@
 -
  name: "Getting Karaage from Github"
  git: repo="https://github.com/monash-merc/karaage.git" dest="/root/karaage3.1.7" force=yes
- sudo: true
-
--
- name: "Create log directory, start aoacge will have errors without it"
- file: dest=/etc/apache2/logs state=directory
  sudo: true
 
 -
@@ -94,10 +90,11 @@
   - /var/lib/karaage3
   - /var/cache/karaage3
  sudo: true
--
- name: "Change permissions for /var/www"
- file: path=/var/www state=directory owner=root group={{ apache_user }} mode=0775
- sudo: true
+
+- name: install karaage3-wsgi.conf
+  template: src=karaage3-wsgi.conf.j2 dest=/etc/apache2/conf-available/karaage3-wsgi.conf
+  sudo: true
+
 -
  name: "enabling Karaage configuration"
  shell: a2enconf karaage3-wsgi
@@ -118,11 +115,12 @@
   - karaage3-celery
  sudo: true
  when: ansible_os_family == "Debian"
+
 -
- name: Downloading other packages RedHat
+ name: "Downloading other packages RedHat"
  git: repo={{ item.repo }} dest={{ item.dest }}
  with_items:
-  - { repo : 'https://github.com/numpy/numpy.git', dest : '/root/numpy' }
+#  - { repo : 'https://github.com/numpy/numpy.git', dest : '/root/numpy' }
 #  - { repo : 'https://github.com/matplotlib/matplotlib.git', dest : '/root/matplotlib' }
   - { repo : 'https://github.com/Karaage-Cluster/karaage-software.git', dest : '/root/karaage-software' }
   - { repo : 'https://github.com/Karaage-Cluster/karaage-usage.git', dest : '/root/karaage-usage' }
@@ -130,21 +128,23 @@
   - { repo : 'https://github.com/Karaage-Cluster/karaage-cluster-tools.git', dest : '/root/karaage-cluster-tools' }
  sudo: true
 # when: ansible_os_family == "RedHat"
+
 - 
+  name: "Installing other packages RedHat"
   args: 
     chdir: "/root/{{ item }}"
     creates: "/root/{{ item }}/build/bdist.linux-x86_64"
-  name: "Installing other packages RedHat"
   sudo: true
   shell: "env python setup.py install"
-#  when: ansible_os_family == "RedHat"
   with_items: 
-    - numpy
+#    - numpy
 #    - matplotlib
     - karaage-applications
     - karaage-software
     - karaage-usage
     - karaage-cluster-tools
+#  when: ansible_os_family == "RedHat"
+
 -
  name: "Set Secret Key"
  lineinfile: dest=/etc/karaage3/settings.py regexp="SECRET_KEY = ''" line="SECRET_KEY = '{{ karaageSecretKey }}'" state=present
@@ -155,15 +155,9 @@
  shell: mysql -h {{ karaageDbHost }}  -u {{ karaageDbName }} --password={{ karaagePassword }} -Bse 'use karaage; show tables;' | wc -l 
  register: karaage_db_init
 
--
- name: "Enable wsgi config"
- file: src=/etc/apache2/mods-available/wsgi.conf path=/etc/apache2/mods-enabled/wsgi.conf state=link 
- sudo: true
-
--
- name: "Enable wsgi load"
- file: src=/etc/apache2/mods-available/wsgi.load path=/etc/apache2/mods-enabled/wsgi.load state=link 
- sudo: true
+- name: enable wsgi
+  shell: a2enmod wsgi
+  sudo: true
 
 - name: enable shibboleth
   shell: a2enmod shib2
@@ -202,15 +196,4 @@
  sudo: true
  when: ansible_os_family == "RedHat"
 
-- 
- name: "Enable shibboleth (ansible-galaxy install yaegashi.blockinfile)"
- blockinfile:
-   dest: /etc/apache2/conf-available/karaage3-wsgi.conf
-   block: |
-     <Location /karaage>
-     AuthType Shibboleth
-     ShibRequireSession On
-     ShibUseHeaders On
-     require valid-user
-     </Location>
 

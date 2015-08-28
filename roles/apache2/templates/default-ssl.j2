@@ -42,8 +42,8 @@
 	#   /usr/share/doc/apache2.2-common/README.Debian.gz for more info.
 	#   If both key and certificate are stored in the same file, only the
 	#   SSLCertificateFile directive is needed.
-	SSLCertificateFile    /etc/ssl/certs/{{ apache_cert_file }}
-	SSLCertificateKeyFile /etc/ssl/private/{{ apache_key_file }} 
+	SSLCertificateFile    {{ x509_cert }}
+	SSLCertificateKeyFile {{ x509_key }}
 
 	#   Server Certificate Chain:
 	#   Point SSLCertificateChainFile at a file containing the
@@ -51,7 +51,7 @@
 	#   certificate chain for the server certificate. Alternatively
 	#   when the CA certificates are directly appended to the server
 	#   certificate for convinience.
-	SSLCertificateChainFile {{ x509_cert_chain }} 
+	# SSLCertificateChainFile {{ x509_cert_chain }} 
 
 	#   Certificate Authority (CA):
 	#   Set the CA certificate verification path where to find CA
