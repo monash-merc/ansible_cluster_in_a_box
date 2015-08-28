@@ -2,6 +2,7 @@
 
 - include_vars: "{{ ansible_distribution }}_{{ ansible_distribution_version }}_{{ ansible_architecture }}.yml"
 - include_vars: "{{ ansible_distribution }}.yml"
+
 - name: install system packages apt
   apt: name={{ item }} state=installed update_cache=true
   sudo: true
@@ -23,10 +24,6 @@
   command: /usr/sbin/slappasswd -h {SSHA} -s {{ ldapManagerPassword }}
   register: ldapManagerHash
 
-
-
-
-
 - name: template root.ldif
   template: src=root_ldif.j2 dest=/tmp/root.ldif
 
@@ -38,7 +35,6 @@
 
 - name: template groups.ldif
   template: src=groups_ldif.j2 dest=/tmp/groups.ldif
-
 
 - name: template load_modules.ldif
   template: src=load_modules_ldif.j2 dest=/tmp/load_modules.ldif
@@ -65,45 +61,25 @@
   template: src=manager_ldif3.j2 dest=/tmp/manager3.ldif mode=600
   sudo: true
 
-
-- name: make cert dir
-  file: path={{ ldapcert | dirname }} state=directory owner={{ ldapuser }} group={{ ldapgroup }}
-  sudo: true
-
-- name: make key dir
-  file: path={{ ldapkey | dirname }} state=directory owner={{ ldapuser }} group={{ ldapgroup }} mode=700
-  sudo: true
-
-- name: make ca dir
-  file: path={{ cacert | dirname }} state=directory owner={{ ldapuser }} group={{ ldapgroup }}
-  sudo: true
-
 - name: make ldap certs dir
-  file: path={{ ldapCertDir }} state=directory owner={{ ldapuser }} group={{ ldapgroup }}
+  file: path={{ ldapCertDest | dirname }} state=directory owner={{ ldapuser }} group={{ ldapgroup }}
   sudo: true
-  when: ldapCertDir is defined
 
 - name: make ldap private dir
-  file: path={{ ldapPrivateDir }} state=directory owner={{ ldapuser }} group={{ ldapgroup }}
+  file: path={{ ldapKeyDest | dirname }} state=directory owner={{ ldapuser }} group={{ ldapgroup }} mode=700
   sudo: true
-  when: ldapPrivateDir is defined
 
-# Change to remove easy-rsa and to use fixed key and certs
-- name: copy fixed keys and certs from files directory
-  template: src=files/{{ item.src }} dest="{{ item.dest }}" mode={{ item.mode }} owner=root group=root
-  with_items: ldapCertFiles 
-  sudo: true
-  
 - name: copy cert
-  copy: src="files/{{ ldap_TLSCert }}" dest="{{ ldapcert }}"
+  copy: src="files/{{ ldapCert }}" dest="{{ ldapCertDest }}"
   sudo: true
 
-- name: copy cacert
-  copy: src="files/{{ ldap_TLSCAChain }}" dest="{{ cacert }}"
+- name: copy ca cert
+  copy: src="files/{{ ldapCAChain }}" dest="{{ ldapCAChainDest }}"
   sudo: true
+
 
 - name: copy key
-  copy: src="files/{{ ldap_TLSKey }}" dest="{{ ldapkey }}" mode=600 owner={{ ldapuser }} group={{ ldapgroup }}
+  copy: src="files/{{ ldapKey }}" dest="{{ ldapKeyDest }}" mode=600 owner={{ ldapuser }} group={{ ldapgroup }} 
   sudo: true
 
 - name: enable ssl centos
@@ -117,11 +93,10 @@
   when: ansible_os_family == 'RedHat' and ansible_distribution_major_version >= '7'
 
 - name: check TLS config
-  shell: "slapcat -b cn=config | grep 'olcTLSCertificateKeyFile: {{ ldapkey }}'"
+  shell: "slapcat -b cn=config | grep 'olcTLSCertificateKeyFile: {{ ldapKeyDest }}'"
   ignore_errors: true
   sudo: true
   register: tlsConfigured
-
 
 - name: start ldap
   service: name=slapd state=restarted
@@ -133,7 +108,7 @@
   when: tlsConfigured|failed
 
 - name: Initialise cosine and ppolicy
-  shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/{{ item }}.ldif -D cn=config
+  shell: ldapadd -Y EXTERNAL -H ldapi:/// -f {{ ldapDir }}/schema/{{ item }}.ldif -D cn=config
   with_items:
    - ppolicy
    - cosine
@@ -141,7 +116,6 @@
    - inetorgperson
   ignore_errors: true
   sudo: true
-  when: ansible_os_family == 'RedHat' and ansible_distribution_major_version >= '7'
       
 - name: check ppolicy module loaded
   shell: slapcat -b cn=config | grep "olcModuleLoad. {.*}ppolicy"
@@ -164,7 +138,6 @@
   shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /tmp/ppolicy_overlay.ldif -D cn=config 
   sudo: true
   when: ppolicyOverlayConfigured|failed
-
 
 - name: check Manager config
   shell: "slapcat -b cn=config | grep 'olcRootDN: {{ ldapManager }}'"
@@ -201,8 +174,6 @@
   sudo: true
   when: aclConfigured|failed
 
-
-
 - name: check DIT config
   shell: "ldapsearch -D {{ ldapManager }} -w {{ ldapManagerPassword }} -b {{ ldapBase }} -x -H ldap://localhost objectClass=dcObject"
   ignore_errors: true
@@ -211,7 +182,6 @@
 - name: add DIT root
   shell: ldapadd -x -D {{ ldapManager }} -w {{ ldapManagerPassword }} -x -H ldap://localhost -f /tmp/root.ldif
   when: ditConfigured|failed
-
 
 - name: check real Accounts config
   shell: "ldapsearch -D {{ ldapManager }} -w {{ ldapManagerPassword }} -b {{ ldapAccountBase }} -x -H ldap://localhost objectClass=*"
@@ -258,7 +228,6 @@
   shell: ldapadd -x -D {{ ldapManager }} -w {{ ldapManagerPassword }} -x -H ldap://localhost -f /tmp/binddn.ldif
   sudo: true
   when: binddnConfigured|failed
-
 
 - name: check pwpolicies config
   shell: ldapsearch -D {{ ldapBindDN }} -w {{ ldapBindDNPassword }} -b ou=pwpolicies,{{ ldapDomain }} objectClass=*
