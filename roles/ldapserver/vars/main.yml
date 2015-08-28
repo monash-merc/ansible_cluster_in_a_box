@@ -1,9 +1,4 @@
 ---
-ldapCertDest: "/etc/{{ ldapDir }}/ssl/certs/hpcldap0.erc.monash.edu.au.cert.pem"
-ldapKeyDest: "/etc/{{ ldapDir }}/ssl/private/hpcldao0.erc.monash.edu.au.key.pem"
-ldapCAChainDest: "/etc/{{ ldapDir }}/ssl/certs/MeRC_HPC_CaChain.cert.pem"
-
-ldapKeySrc: "hpcldap0.erc.monash.edu.au.key.pem"
-ldapCertSrc: "hpcldap0.erc.monash.edu.au.cert.pem"                         
-ldapCAChainSrc: "MeRC_HPC_CA_Chain.cert.pem"
-
+ldapCertDest: "{{ ldapDir }}/ssl/certs/hpcldap0.erc.monash.edu.au.cert.pem"
+ldapKeyDest: "{{ ldapDir }}/ssl/private/hpcldao0.erc.monash.edu.au.key.pem"
+ldapCAChainDest: "{{ ldapDir }}/ssl/certs/MeRC_HPC_CaChain.cert.pem"

@@ -70,19 +70,19 @@
   sudo: true
 
 - name: make ldap private dir
-  file: path={{ ldapKeyDest | dirname }} state=directory owner={{ ldapuser }} group={{ ldapgroup }}
+  file: path={{ ldapKeyDest | dirname }} state=directory owner={{ ldapuser }} group={{ ldapgroup }} mode=700
   sudo: true
 
 - name: copy cert
-  copy: src="files/{{ ldapCertSrc }}" dest="{{ ldapCertDest }}"
+  copy: src="files/{{ ldapCert }}" dest="{{ ldapCertDest }}"
   sudo: true
 
 - name: copy cacert
-  copy: src="files/{{ ldapCAChainSrc }}" dest="{{ ldapCAChainDest }}"
+  copy: src="files/{{ ldapCAChain }}" dest="{{ ldapCAChainDest }}"
   sudo: true
 
 - name: copy key
-  copy: src="files/{{ ldapKeySrc }}" dest="{{ ldapKeyDest }}" mode=600 owner={{ ldapuser }} group={{ ldapgroup }}
+  copy: src="files/{{ ldapKey }}" dest="{{ ldapKeyDest }}" mode=600 owner={{ ldapuser }} group={{ ldapgroup }} 
   sudo: true
 
 - name: enable ssl centos
@@ -111,7 +111,7 @@
   when: tlsConfigured|failed
 
 - name: Initialise cosine and ppolicy
-  shell: ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/{{ ldapDir }}/schema/{{ item }}.ldif -D cn=config
+  shell: ldapadd -Y EXTERNAL -H ldapi:/// -f {{ ldapDir }}/schema/{{ item }}.ldif -D cn=config
   with_items:
    - ppolicy
    - cosine
