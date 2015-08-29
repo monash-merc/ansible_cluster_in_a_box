@@ -1,7 +1,7 @@
 ---
 
  - name: "Copying the ldap ca cert file"
-   template: src="files/{{ ldap_TLSCARoot }}" dest="{{ apache_config }}/ssl/certs/ldap_ca.cert.pem" mode=0644
+   template: src="files/{{ ldap_TLSCARoot }}" dest="/etc/apache2/ssl/certs/ldap_ca.cert.pem" mode=0644
    sudo: true
    when: apache_cert_file is defined
 
