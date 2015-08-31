@@ -106,44 +106,6 @@
  sudo: true
  when: ansible_os_family == "RedHat"
 
--
- name: "Installing other packages Debian"
- apt: name={{ item }} update_cache=yes
- with_items:
-  - python-kgusage
-#  - karaage-cluster-tools
-  - karaage3-celery
- sudo: true
- when: ansible_os_family == "Debian"
-
--
- name: "Downloading other packages RedHat"
- git: repo={{ item.repo }} dest={{ item.dest }}
- with_items:
-#  - { repo : 'https://github.com/numpy/numpy.git', dest : '/root/numpy' }
-#  - { repo : 'https://github.com/matplotlib/matplotlib.git', dest : '/root/matplotlib' }
-  - { repo : 'https://github.com/Karaage-Cluster/karaage-software.git', dest : '/root/karaage-software' }
-  - { repo : 'https://github.com/Karaage-Cluster/karaage-usage.git', dest : '/root/karaage-usage' }
-  - { repo : 'https://github.com/Karaage-Cluster/karaage-applications.git', dest : '/root/karaage-applications' }
-  - { repo : 'https://github.com/Karaage-Cluster/karaage-cluster-tools.git', dest : '/root/karaage-cluster-tools' }
- sudo: true
-# when: ansible_os_family == "RedHat"
-
-- 
-  name: "Installing other packages RedHat"
-  args: 
-    chdir: "/root/{{ item }}"
-    creates: "/root/{{ item }}/build/bdist.linux-x86_64"
-  sudo: true
-  shell: "env python setup.py install"
-  with_items: 
-#    - numpy
-#    - matplotlib
-    - karaage-applications
-    - karaage-software
-    - karaage-usage
-    - karaage-cluster-tools
-#  when: ansible_os_family == "RedHat"
 
 -
  name: "Set Secret Key"
@@ -178,12 +140,6 @@
   sudo: true
   notify: restart postfix
 
-
--
- name: "Restarting Celery"
- service: name=karaage3-celery state=restarted
- sudo: true
- when: ansible_os_family == "Debian"
 -
  name: "Reloading apache"
  service: name=apache2 state=reloaded
