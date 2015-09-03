@@ -95,6 +95,13 @@
   template: src=karaage3-wsgi.conf.j2 dest=/etc/apache2/conf-available/karaage3-wsgi.conf
   sudo: true
 
+- name: install karaage3-wsgi.conf
+  template: src=index.html.j2 dest=/var/www/index.html
+  sudo: true
+
+- name: install karaage3-wsgi.conf
+  template: src=kg-idps.j2 dest=/usr/bin/kg-idps
+  sudo: true
 -
  name: "enabling Karaage configuration"
  shell: a2enconf karaage3-wsgi
@@ -152,4 +159,7 @@
  sudo: true
  when: ansible_os_family == "RedHat"
 
+- name: "Start cron job for creating idps"
+  cron: name=idps job=/usr/bin/kg-idps user=root day=*/1 state=present
+  sudo: true
 
