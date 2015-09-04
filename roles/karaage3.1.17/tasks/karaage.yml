@@ -138,10 +138,10 @@
  sudo: true
  when: karaage_db_init.stdout.find("0") == 0
 
--
- name: "Create IDP institutes"
- shell: kg-idps  
- sudo: true
+#-
+# name: "Create IDP institutes (disable it as cache is not available)"
+# shell: kg-idps  
+# sudo: true
 
 - name: install postfix
   apt: name=postfix state=present
