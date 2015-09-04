@@ -100,7 +100,7 @@
   sudo: true
 
 - name: install karaage3-wsgi.conf
-  template: src=kg-idps.j2 dest=/usr/bin/kg-idps
+  template: src=kg-idps.j2 dest=/usr/bin/kg-idps mode=755
   sudo: true
 -
  name: "enabling Karaage configuration"
@@ -137,6 +137,11 @@
  shell: kg-manage migrate 
  sudo: true
  when: karaage_db_init.stdout.find("0") == 0
+
+-
+ name: "Create IDP institutes"
+ shell: kg-idps  
+ sudo: true
 
 - name: install postfix
   apt: name=postfix state=present
