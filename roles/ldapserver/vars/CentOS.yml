@@ -1,0 +1,4 @@
+---
+  ldapDir: "/etc/openldap"
+  module_path: "/usr/lib64/openldap/"
+  

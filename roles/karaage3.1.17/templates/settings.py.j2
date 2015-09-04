@@ -106,7 +106,7 @@ LDAP = {
           'PASSWORD': '{{ ldapManagerPassword }}',
           'REQUIRE_TLS': True,
           'START_TLS': True,
-          'TLS_CA': '{{ x509_cacert_file }}',
+          'TLS_CA': '{{ apache_config }}/ssl/certs/ldap_ca.cert.pem',
      }
 }
 
@@ -294,7 +294,8 @@ ACCOUNTS_ORG_NAME = '{{ karaageAcountName }}'
 #
 # default: SHIB_SUPPORTED = False
 #
-# SHIB_SUPPORTED = True
+# TODO: Should we add a variable to use shibboleth or not???
+SHIB_SUPPORTED = True
 
 # Path to AUP policy. Note that setting this will not disable the Karaage
 # default page, it might be better to replace the AUP with a file in
@@ -335,5 +336,5 @@ PLUGINS = [
      'karaage.plugins.kgapplications.plugin',
      'karaage.plugins.kgsoftware.plugin',
      'karaage.plugins.kgsoftware.applications.plugin',
-     'karaage.plugins.kgusage.plugin',
+#     'karaage.plugins.kgusage.plugin',
  ]

@@ -6,14 +6,8 @@
     - nsswitch.conf
   sudo: true
 
-- name: "get cert dir"
-  shell: "dirname {{ ldapCaCertFile }}"
-  delegate_to: localhost
-  run_once: true
-  register: ldapCaCertDir
-
 - name: "make basedir"
-  file: path={{ ldapCaCertDir.stdout }} state=directory owner=root
+  file: path="{{ ldapCaCertFile | dirname }}" state=directory owner=root
   sudo: true
   ignore_errors: true
 

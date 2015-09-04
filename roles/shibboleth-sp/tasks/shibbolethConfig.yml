@@ -1,11 +1,10 @@
 ---
--
- name: "Copying the metadata.aaf.xml and aaf-metadata-cert.pem"
- template: src="{{ item }}.j2" dest="/etc/shibboleth/{{ item }}" mode=0644
- sudo: true
- with_items:
-  - metadata.aaf.xml
-  - aaf-metadata-cert.pem
+#-
+# name: "Copying the shibboleth files"
+# template: src=files/{{ item.src }} dest="{{ item.dest }}" mode=0644
+# with_items: shibboleth_file
+# sudo: true
+
 - 
   name: "Setting shibboleth2.xml sp.example.org"
   sudo: true
@@ -13,10 +12,19 @@
   args:
    dest: /etc/shibboleth/shibboleth2.xml 
    regexp: sp.example.org 
-   replace: "{{ ansible_fqdn }}"
+   replace: "{{ ansible_hostname }}.{{ domain }}"
    backup: yes
    
-  
+-
+ name: "Remove SSO entityID"
+ lineinfile: 
+ args:
+   dest: /etc/shibboleth/shibboleth2.xml
+   regexp: '^(\s*)<SSO entityID="https://idp.example.org/idp/shibboleth"'
+   line: '\1<SSO'
+   backrefs: true
+ sudo: true
+
 - 
   name: "Setting shibboleth2.xml handlerSSL"
   sudo: true
@@ -24,7 +32,7 @@
   args:
    dest: /etc/shibboleth/shibboleth2.xml 
    regexp: 'handlerSSL="false"' 
-   replace: 'handlerSSL="true"   handlerURL="https://{{ ansible_fqdn }}/Shibboleth.sso"' 
+   replace: 'handlerSSL="true"   handlerURL="https://{{ ansible_hostname }}.{{ domain }}/Shibboleth.sso"' 
    
 
 - 
@@ -72,8 +80,12 @@
    regexp: 'backingFilePath="federation-metadata.xml"' 
    replace: 'backingFilePath="metadata.aaf.xml"'
    
-- 
-  name: "Setting shibboleth2.xml aaf Certificate"
+- name: copy AAF metadata cert
+  copy: src=files/{{ shib_metadata_cert }} dest=/etc/shibboleth/aaf-metadata-cert.pem mode=644
+  sudo: true
+
+
+- name: "Setting shibboleth2.xml aaf Certificate"
   sudo: true
   replace: 
   args:
@@ -87,17 +99,33 @@
   replace: 
   args:
    dest: /etc/shibboleth/shibboleth2.xml 
-   regexp: 'discoveryURL="https://ds.example.org/DS/WAYF"' 
+   regexp: 'discoveryURL=".*"' 
    replace: 'discoveryURL="{{ aaf_discovery_url }}"'
    
+- name: make shib private directory
+  file: path=/etc/shibboleth/private state=directory mode=700 owner="_shibd"
+  sudo: true
+
+- name: copy shib key
+  sudo: true
+  copy: src=files/{{ shib_key }} dest=/etc/shibboleth/private/{{ shib_key }} owner="_shibd" mode=600
+
+- name: make shib certs directory
+  file: path=/etc/shibboleth/certs state=directory mode=755 owner="_shibd"
+  sudo: true
+
+- name: copy shib cert
+  sudo: true
+  copy: src=files/{{ shib_cert }} dest=/etc/shibboleth/certs/{{ shib_cert }} owner="_shibd" mode=644
+
 - 
   name: "Setting shibboleth2.xml Credential Resolver"
   sudo: true
   replace: 
   args:
    dest: /etc/shibboleth/shibboleth2.xml 
-   regexp: '<CredentialResolver type="File" key="sp-key.pem" certificate="sp-cert.pem"/>' 
-   replace: '<CredentialResolver type="File" key="{{ x509_key_file }}" certificate="{{ x509_cert_file }}"/>'
+   regexp: '<CredentialResolver type="File" key=".*" certificate=".*"/>' 
+   replace: '<CredentialResolver type="File" key="/etc/shibboleth/private/{{ shib_key }}" certificate="/etc/shibboleth/certs/{{ shib_cert }}"/>'
 
 -
  name: "Templating attribute-map.xml"
@@ -110,17 +138,6 @@
    - Restarting Apache
    - Restarting shibboleth
 -
- name: "Starting Apache"
- sudo: true
- service:
- args:
-  name: apache2
-  state: started
-
--
  name: "Starting shibboleth"
  sudo: true
- service:
- args:
-  name: shibd
-  state: started
+ service: name=shibd state=started

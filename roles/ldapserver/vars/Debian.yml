@@ -1,0 +1,3 @@
+---
+  ldapDir: "/etc/ldap"
+  module_path: "/usr/lib/ldap"
