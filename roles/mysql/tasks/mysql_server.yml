@@ -24,12 +24,6 @@
   sudo: true
   when: ansible_os_family == "RedHat" and ansible_distribution_major_version >= 7
 
-
-- name: "Starting MySQL"
-  service: name=mysql state=started enabled=true
-  sudo: true
-  when: ansible_os_family == "RedHat" and ansible_distribution_major_version >= 7
-
 - name: Installing MySQL RedHat
   yum: name={{ item }}
   with_items: server_packages
