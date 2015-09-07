@@ -7,7 +7,7 @@ import keystoneclient.v2_0.client as ksclient
 from joblib import Parallel, delayed
 from multiprocessing import Process, Manager, Pool
 
-def gatherInfo(tenantName, tenantID, userName, passwd, authUrl, inventoryList):
+def gatherInfo(tenantName, tenantID, userName, passwd, authUrl, inventory):
 	
 	## Fetch the Nova Object
 	projectName = os.path.basename(sys.argv[0])
@@ -18,13 +18,13 @@ def gatherInfo(tenantName, tenantID, userName, passwd, authUrl, inventoryList):
 		tenant_id=tenantID,
 		service_type="compute"
 		)
-	inventory = {}
-	#inventory['_meta'] = { 'hostvars': {} }
 	for server in nc.servers.list():
 		if server.metadata and \
 		'ansible_host_groups' in server.metadata and \
 		server.metadata['project_name'] == projectName.strip():
-			ansible_groups = server.metadata['ansible_host_groups'].split(',')
+			unwantedChars = """][")("""
+			rgx = re.compile('[%s]' % unwantedChars)
+			ansible_groups = rgx.sub('', server.metadata['ansible_host_groups']).split(',')
 			hostname = socket.gethostbyaddr(server.networks.values()[0][0])[0]
 			closed=True
 			while closed:
@@ -34,19 +34,25 @@ def gatherInfo(tenantName, tenantID, userName, passwd, authUrl, inventoryList):
 					break
 				time.sleep(5)
 				hostSocket.close()
+			badChars = '[] '
 			# Set Ansible Host Group
 			for group in ansible_groups:
 				groupName = group.strip()
 				if groupName not in inventory: inventory[groupName] = []
 				inventory[groupName].append(hostname)
+			# Add other metadata
+			for key, value in server.metadata.iteritems():
+				if key not in ('project_name','ansible_host_groups'):
+					inventory['_meta']['hostvars'][hostname] = { key:value }
 		else:
 			continue
-	inventoryList.append(inventory)
+	#print inventory
+	#inventoryList.append(inventory)
 	#print json.dumps(inventory)
 
 if __name__ == "__main__":
-	inventoryList = []
-	jsonInventory = {}
+	inventory = {}
+	inventory['_meta'] = { 'hostvars': {} }
 	try:
 		authUrl = os.environ['OS_AUTH_URL']
 		userName = os.environ['OS_USERNAME']
@@ -57,13 +63,12 @@ if __name__ == "__main__":
 	kc = ksclient.Client(auth_url=authUrl, username=userName, password=passwd)
 	tenancies = kc.tenants.list()
 	Parallel(n_jobs=len(tenancies), backend="threading")(delayed(gatherInfo)
-	(tenant.name, tenant.id, userName, passwd, authUrl, inventoryList)
+	(tenant.name, tenant.id, userName, passwd, authUrl, inventory)
 	for tenant in tenancies)
-	for inventory in inventoryList: jsonInventory.update(inventory)
-	if not jsonInventory:
+	if not inventory:
 		print "I could not find any project called ", os.path.basename(sys.argv[0]), "in any of "
 		for tenancy in tenancies: print tenancy.name
 		print "\nYou can select a project by symlinking to it, for example if you have a project called myProject do ln -s dynamicInventory-mcc2 myProject\n and then run ./myProject"
 		sys.exit()
 	else:
-		print json.dumps(jsonInventory)
+		print json.dumps(inventory)
