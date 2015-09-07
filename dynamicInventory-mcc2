@@ -64,10 +64,12 @@ if __name__ == "__main__":
 	Parallel(n_jobs=len(tenancies), backend="threading")(delayed(gatherInfo)
 	(tenant.name, tenant.id, userName, passwd, authUrl, inventory)
 	for tenant in tenancies)
-	if not inventory:
+	if not inventory['_meta']['hostvars']:
 		print "I could not find any project called ", os.path.basename(sys.argv[0]), "in any of "
 		for tenancy in tenancies: print tenancy.name
-		print "\nYou can select a project by symlinking to it, for example if you have a project called myProject do ln -s dynamicInventory-mcc2 myProject\n and then run ./myProject"
+		print "\n1. You can select a project by symlinking to it, for example if you have a project called myProject do ln -s dynamicInventory-mcc2 myProject\n and then run ./myProject"
+		print "2. It is also possible that none of your VMs are allocated to myProject, please add them to the project: e.g. by running"
+		print 'nova --os-tenant-name TF_NNF --os-tenant-id 033asdda60d7046b6affdf31d14asdasb meta nodex set project_name="myProject"'
 		sys.exit()
 	else:
 		print json.dumps(inventory)
