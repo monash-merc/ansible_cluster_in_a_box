@@ -34,7 +34,6 @@ def gatherInfo(tenantName, tenantID, userName, passwd, authUrl, inventory):
 					break
 				time.sleep(5)
 				hostSocket.close()
-			badChars = '[] '
 			# Set Ansible Host Group
 			for group in ansible_groups:
 				groupName = group.strip()
