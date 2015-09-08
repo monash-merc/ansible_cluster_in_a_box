@@ -21,7 +21,8 @@ def gatherInfo(tenantName, tenantID, userName, passwd, authUrl, inventory):
 	for server in nc.servers.list():
 		if server.metadata and \
 		'ansible_host_groups' in server.metadata and \
-		server.metadata['project_name'] == projectName.strip():
+		'project_name' in  server.metadata:
+			if server.metadata['project_name'] != projectName.strip(): continue
 			unwantedChars = """][")("""
 			rgx = re.compile('[%s]' % unwantedChars)
 			ansible_groups = rgx.sub('', server.metadata['ansible_host_groups']).split(',')
@@ -46,8 +47,6 @@ def gatherInfo(tenantName, tenantID, userName, passwd, authUrl, inventory):
 		else:
 			continue
 	#print inventory
-	#inventoryList.append(inventory)
-	#print json.dumps(inventory)
 
 if __name__ == "__main__":
 	inventory = {}
