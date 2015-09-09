@@ -106,13 +106,6 @@
 - name: install shibboleth cache file 
   template: src=metadata.aaf.xml.j2 dest=/tmp/metadata.aaf.xml 
 
-- name: install karaage projects init setting file 
-  template: src=kg_init.txt.j2 dest=/tmp/kg_init.txt 
-
-- name: install karaage init script 
-  template: src=kg_init.j2 dest=/usr/bin/kg_init mode=755
-  sudo: true
-
 -
  name: "enabling Karaage configuration"
  shell: a2enconf karaage3-wsgi
@@ -152,6 +145,12 @@
 -
  name: "Create IDP institutes (disable it as cache is not available)"
  shell: kg-idps /tmp/metadata.aaf.xml 
+ sudo: true
+ when: karaage_db_init.stdout.find("0") == 0
+
+-
+ name: "Create default projects"
+ shell: kg_init /tmp/kg_init.txt 
  sudo: true
  when: karaage_db_init.stdout.find("0") == 0
 
