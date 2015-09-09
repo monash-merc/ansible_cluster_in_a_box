@@ -1,6 +1,6 @@
 [sssd]
 config_file_version = 2
-domains = {{ ansible_domain }}
+domains = {{ ldapDomain }}
 services = nss, pam, autofs
 
 [nss]
@@ -9,7 +9,7 @@ filter_groups = slurm, munge
 
 [pam]
 
-[domain/{{ ansible_domain }}]
+[domain/{{ ldapDomain }}]
 ldap_referrals = false
 cache_credentials = false
 entry_cache_timeout=3600
