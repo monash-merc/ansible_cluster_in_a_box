@@ -16,10 +16,11 @@ hosts={}
 for group in d['groups'].keys():
     i=0
     for h in d['groups'][group]:
+      name = d['hostsvars'][h]['ansible_hostname']
       if not domain:
-        hosts[h] = [h]
+        hosts[h] = [name]
       else:
-        hosts[h] = ['%s.%s %s'%(h,domain,h)]
+        hosts[h] = ['%s.%s %s'%(name,domain,name)]
 
 for h in hosts.keys():
     if d['hostvars'].has_key(h):
