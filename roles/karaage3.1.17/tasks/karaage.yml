@@ -148,12 +148,6 @@
  sudo: true
  when: karaage_db_init.stdout.find("0") == 0
 
--
- name: "Create default projects"
- shell: kg_init /tmp/kg_init.txt 
- sudo: true
- when: karaage_db_init.stdout.find("0") == 0
-
 - name: install postfix
   apt: name=postfix state=present
   sudo: true
