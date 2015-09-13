@@ -38,6 +38,13 @@ ShibUseHeaders On
 require valid-user
 </Location>
 
+<Location /karaage/projects/joinprojects/>
+AuthType Shibboleth
+ShibRequireSession On
+ShibUseHeaders On
+require valid-user
+</Location>
+
 <Location /karaage/profile/slogin>
 AuthType Shibboleth
 ShibRequireSession On
