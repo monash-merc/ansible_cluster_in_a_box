@@ -12,7 +12,8 @@ filter_groups = slurm, munge
 [domain/{{ ldapDomain }}]
 ldap_referrals = false
 cache_credentials = false
-entry_cache_timeout=3600
+entry_cache_timeout=60480
+memcache_timeout=60480
 entry_cache_nowait_percentage=50
 enumerate = true
 

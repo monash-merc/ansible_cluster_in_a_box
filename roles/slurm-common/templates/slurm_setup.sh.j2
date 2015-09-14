@@ -4,3 +4,5 @@ export PATH={{ munge_dir }}/bin:{{ slurm_dir }}/bin:{{ slurm_dir }}/sbin:{{ nhc_
 export LD_LIBRARY_PATH={{ munge_dir }}/lib:{{ slurm_dir }}/lib:{{ slurm_dir }}/lib/slurm:$LD_LIBRARY_PATH
 
 export SLURM_SERVER_HOME={{ slurm_dir }}
+
+export MANPATH={{ slurm_dir }}/share/man:$MANPATH

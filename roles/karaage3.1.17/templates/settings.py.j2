@@ -78,18 +78,6 @@ ADMINS = (
 # link notifications when BrokenLinkEmailsMiddleware is enabled.
 MANAGERS = ADMINS
 
-{% if defaultProject is defined and defaultMachineCategory is defined %}
-DEFAULT_PROJECT_PID = "{{ defaultProject }}"
-DEFAULT_MACHINE_CATEGORY_NAME = "{{ defaultMachineCategory }}"
-{% endif %}
-DEFAULT_INSTITUTE_NAME = "Monash University"
-DEFAULT_PROJECTS = [
-{"project_name": "MCC2", "pid": "pMcc2", "institute_name": "Monash University"},
-{"project_name": "MCC3", "pid": "pMcc3", "institute_name": "Monash University"},
-{"project_name": "MASSIVE", "pid": "pMassive", "institute_name": "Monash University"},
-{"project_name": "CVL", "pid": "pCvl", "institute_name": "Monash University"}
-]
-
 # A dictionary containing the settings for all databases to be used with
 # Django. It is a nested dictionary whose contents maps database aliases to a
 # dictionary containing the options for an individual database.
@@ -316,7 +304,7 @@ SHIB_SUPPORTED = True
 #
 # default:  ALLOW_REGISTRATIONS = False
 #
-# ALLOW_REGISTRATIONS = True
+ALLOW_REGISTRATIONS = True
 
 # Do we allow any logged in user to access all usage information?
 #

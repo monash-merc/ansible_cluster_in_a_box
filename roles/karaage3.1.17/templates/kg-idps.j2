@@ -1,12 +1,14 @@
 #!/usr/bin/python
 
-import os
+import os, sys, re, traceback
 import django
 os.environ['DJANGO_SETTINGS_MODULE'] = "karaage.conf.settings"
 
-def get_idps_from_metadata():
+DEFAULT_CACHE_FILE = "/var/cache/shibboleth/metadata.aaf.xml"
+
+def get_idps_from_metadata(cache_path):
     import xml.etree.ElementTree as ET
-    tree = ET.parse('/var/cache/shibboleth/metadata.aaf.xml')
+    tree = ET.parse(cache_path)
     root=tree.getroot()
     idps=[]
     for entity in root.findall("{urn:oasis:names:tc:SAML:2.0:metadata}EntityDescriptor"):
@@ -21,56 +23,37 @@ def get_idps_from_metadata():
         
     return idps
 
-def get_next_idp_group():
-    from karaage.people.models import Group
-    i=-1
-    available=False
-    nextgroup=None
-    groupname='idpgroup{idx}'
-    while not available:
-        i=i+1
-        try:
-            group =Group.objects.get(name=groupname.format(idx=i))
-        except Group.DoesNotExist:
-            available=True
-            nextgroup=groupname.format(idx=i)
-    return nextgroup
-
+def get_group_name(groupname):
+    return re.sub('[!@#=$\s+]', "", groupname).lower()
 
 def get_or_create_idp(entityID,name):
-    print "get_or_create %s"%name
     from karaage.institutes.forms import InstituteForm
     from karaage.institutes.models import Institute
     from karaage.people.models import Group
     try:
-        Institute.objects.get(saml_entityid=entityID)
+        institute = Institute.objects.get(saml_entityid=entityID)
         return
     except Institute.DoesNotExist:
-        print "does not exists, creating"
-        groupname=get_next_idp_group()
-        group, _ =Group.objects.get_or_create(name=groupname)
-        institute=Institute(name=name,group=group,saml_entityid=entityID,is_active=True)
-        institute.save()
-#
-#        d={}
-#        d['name']=name
-#        d['group_id']=group
-#        d['saml_entityid']=entityID
-#        d['is_active']=True
-#        form=InstituteForm(d)
-#        if form.is_valid():
-#            print "tying to save"
-#            form.save()
-#        else:
-#            print "form not valid"
-#            print dir(form)
-#            #print "not actually saving my form"
+        try:
+            groupname = get_group_name(name)
+            group, _ =Group.objects.get_or_create(name = groupname)
+            if group:
+                institute = Institute(name = name, group = group, saml_entityid = entityID, is_active = True)
+                if institute:
+                    institute.save()
+        except:
+            print "Exception: %s" %(traceback.format_exc())
 
-django.setup()
-idps = get_idps_from_metadata()
-for idp in idps:
-    try:
+def main(argv):
+    if len(sys.argv) > 1:
+        cache_path = argv[0]
+    else:
+        cache_path = DEFAULT_CACHE_FILE 
+    django.setup()
+    idps = get_idps_from_metadata(cache_path)
+    for idp in idps:
         get_or_create_idp(entityID=idp['entityID'],name=idp['name'])
-    except:
-        pass
+
+if __name__ == '__main__':
+    main(sys.argv[1:])
 
