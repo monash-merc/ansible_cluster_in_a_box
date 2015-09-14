@@ -23,31 +23,24 @@ def get_idps_from_metadata(cache_path):
         
     return idps
 
+def get_group_name(groupname):
+    return re.sub('[!@#=$\s+]', "", groupName).lower()
+
 def get_or_create_idp(entityID,name):
     from karaage.institutes.forms import InstituteForm
     from karaage.institutes.models import Institute
     from karaage.people.models import Group
     try:
-        print "Check institute name = '%s', entityID = '%s'" %(name, entityID)
         institute = Institute.objects.get(saml_entityid=entityID)
-        if institute:
-            print "Find institute name = '%s', saml_entityid = '%s', group name = '%s'" %(institute.name, institute.saml_entityid, institute.group.name)
-        else: 
-            print "Institute name = '%s', entityID = '%s' not found" %(name, entityID)
         return
     except Institute.DoesNotExist:
         try:
-            group, _ =Group.objects.get_or_create(name = name)
+            groupname = get_group_name(name)
+            group, _ =Group.objects.get_or_create(name = groupname)
             if group:
-                print "Get group name = '%s'" %(group.name)
                 institute = Institute(name = name, group = group, saml_entityid = entityID, is_active = True)
                 if institute:
-                    print "Create institute OK: name = '%s', saml_entityid = '%s', group nane = '%s'" %(institute.name, institute.saml_entityid, institute.group.name)
                     institute.save()
-                else:
-                    print "Create institute name = '%s', entityID = '%s' failed" %(name, entityID)
-            else:
-                print "Get group name = '%s' failed" %(group.name)
         except:
             print "Exception: %s" %(traceback.format_exc())
 
