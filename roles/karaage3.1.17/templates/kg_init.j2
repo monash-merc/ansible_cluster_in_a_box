@@ -1,0 +1,211 @@
+#!/usr/bin/python
+
+import os, sys
+os.environ['DJANGO_SETTINGS_MODULE'] = "karaage.conf.settings"
+from django.conf import settings
+from karaage.projects.models import Project
+from karaage.institutes.models import Institute
+from karaage.machines.models import MachineCategory
+from karaage.people.models import Person, Group
+
+DEBUG = False
+class HpcIdInit():
+    import django
+    django.setup()
+
+    def __init__(self, configfile, password, debug = True):
+        import json
+        self.path = configfile 
+        self.password = password
+        self.debug = debug
+        if self.path and os.path.exists(self.path):
+            with open(self.path) as data:
+                config_data = json.load(data)
+                self.project = config_data["project"]
+                self.mc = config_data["machine_category"]
+                self.user = config_data["superuser"]
+        else:
+            log("Invalid input data")    
+
+    def log(self, message):
+        if self.debug:
+            print message
+        else:
+            pass
+
+    def getGroup(self, name):
+        group = None
+        try:
+            group =Group.objects.get(name = name)
+            if group:
+                self.log("Find group %s" %(name))
+        except:
+            self.log("Group %s not found" %(name))
+        finally:
+            return group
+    
+    def getProject(self, name):
+
+        self.log("Get Project 1 %s" %(name))
+        project = None
+        try:
+            project = Project.objects.get(name = name)
+            if project:
+                self.log("Find project %s" %(project.name))
+                group = project.group
+                if group:
+                    self.log("Group name = %s" %(group.name))
+            else:
+                self.log("Project %s not found" %(project.name))
+        except Project.DoesNotExist:
+            self.log("project %s does not exists" %(name))
+        except:
+            self.log("Exception: ", traceback.format_exc())
+        finally:
+            return project
+
+    def createProject(self, pid, name, institute_name, superuser):
+        project = None
+        try:
+            institute = self.getInstitute(institute_name)
+            if institute:
+                self.log("Find insititute %s" %(institute.name))
+                project = Project.objects.create(pid = pid, name = name, institute = institute, group = institute.group, is_active = True, is_approved = True, approved_by = superuser)
+                if project:
+                    self.log("Create project OK")
+                else:
+                    self.log("Create project failed")
+
+            else:
+                self.log("Insititute %s does not exist" %(institute_name))
+        except:
+            self.log("Exception: ", traceback.format_exc())
+        finally:
+            return project
+    
+    def getInstitute(self, name):
+        institute = None
+        try:
+            institute = Institute.objects.get(name = name)
+            if institute:
+                self.log("Institute %s exist" %(institute.name))
+                group = institute.group
+                if group:
+                    self.log("Group name = %s" %(group.name))
+            else:
+                self.log("Institute %s not found" %(name))
+        except Institute.DoesNotExist:
+                self.log("Institute %s not found" %(name))
+        finally:
+            return institute
+
+    def getDefaultDatastore(self):
+        for key, value in settings.MACHINE_CATEGORY_DATASTORES.items():
+            if value:
+                return key
+        return None
+
+    def getMachineCategory(self, name):
+        mc = None
+        self.log("Running getMachineGategory %s" %(name))
+        try:
+            mc = MachineCategory.objects.get(name = name)
+            if mc:
+                self.log("Find machine category %s" %(mc.name))
+            else:
+                slef.log("Not found machine category %s" %(name))
+
+        except MachineCategory.DoesNotExist:
+            self.log("Machine category %s dose not exist" %(name))
+        except:
+            self.log("Except to create machine category %s" %(traceback.format_exc()))
+        finally:
+            return mc
+  
+    def getOrCreateMachineCategory(self, name):
+        mc = None
+        try:
+            self.log("getOrCreateMachineCategory %s" %(name))
+            mc = self.getMachineCategory(name)
+            if not mc:
+                datastore = self.getDefaultDatastore()
+                self.log("datastore = '%s'" %(datastore))
+                mc = MachineCategory.objects.get_or_create(name = name, datastore = datastore)
+                self.log("after create machine catetory '%s'" %(name))
+                if mc:
+                    self.log("Create MachineCategory %s OK" %(mc.name))
+                else:
+                    self.log("Create MachineCategory failed")
+        except:
+            self.log("Except to create machine category %s" %(traceback.format_exc()))
+        finally:
+            return mc
+
+    def getUser(self, username):
+        person = None
+        try:
+            person = Person.objects.get(username__exact=username)
+        except Person.DoesNotExist:
+            log("Person %s not found" %(username))
+        finally:
+            return person
+
+    def createSuperUser(self, user):
+        person = None
+        try:
+            institute = Institute.objects.get(name = user["institute_name"])
+            if institute:
+                person = Person.objects.create(username = user["username"], email = user["email"], password = self.password, short_name = user["short_name"], full_name = user["full_name"], is_admin = True, is_active = True, institute = institute)    
+                person.full_clean()
+        except:
+            log("Create super user exception: %s" %(traceback.format_exc()))
+        finally:
+            return person
+
+    def setup(self):
+        self.log("Password = %s, debug = %s" %(self.password, self.debug))
+        su = self.getUser(self.user["username"])
+        if su:
+            self.log("Find super user %s" %(su.username))
+        else:
+            su = self.createSuperUser(self.user) 
+            if su:
+                self.log("Create super user %s OK" %(su.username))
+            else:
+                self.log("Create super user %s failed" %(self.user["username"]))
+        if self.mc:
+            mc = self.getOrCreateMachineCategory(self.mc)
+            if mc:
+                self.log("Get machine category = '%s'" %(mc.name))
+            else:    
+                self.log("Failed to get machine category = '%s'" %(self.mc))
+        if su:
+            for p in self.project:
+                project = self.getProject(p["project_name"])
+                if project:
+                    self.log("Find project %s" %(project.name))
+                else:
+                    self.log("Create project name = %s, pid = %s, institute name = %s" %(p["project_name"], p["pid"], p["institute_name"]))
+                    project = self.createProject(p["pid"], p["project_name"], p["institute_name"], su)
+                    if project:
+                        self.log("Create project %s OK." %(project.name))
+                    else:
+                        self.log("Create project %s failed." %(p["project_name"]))
+                        break
+
+def main(argv):
+    config_path = None
+    if len(sys.argv) > 2:
+        config_path = argv[0]
+        password = argv[1]
+        debug = DEBUG 
+        if len(sys.argv) > 3:
+            debug = argv[2]
+        init = HpcIdInit(config_path, password, debug)
+        init.log("Password = %s, debug = %s" %(password, debug))
+        init.setup()
+    else:
+        print "Usage: kg_init <config file> <superuser password> <option: debug True | False>"
+if __name__ == '__main__':
+    main(sys.argv[1:])
+

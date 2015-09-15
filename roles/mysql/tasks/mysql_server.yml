@@ -5,24 +5,10 @@
   sudo: true
   when: ansible_os_family == "Debian"
 
-- name: Installing MySQL RedHat
-  yum: name="{{ item }}" state=latest
-  with_items:
-    - python
-    - python-devel
-    - mysql-devel
-    - mysql-libs
-    - MySQL-python
-    - mysql-server
+- name: "Remove rdo repo broken in RH"
+  file: path=/etc/yum.repos.d/rdo-release.repo state=absent
   sudo: true
-  when: ansible_os_family == "RedHat" and ansible_distribution_major_version < 7
-
-- name: Installing MySQL RedHat
-  yum: name="{{ item }}" state=latest
-  with_items:
-    - mariadb-server
-  sudo: true
-  when: ansible_os_family == "RedHat" and ansible_distribution_major_version >= 7
+  when: ansible_os_family == "RedHat"
 
 - name: Installing MySQL RedHat
   yum: name={{ item }}
