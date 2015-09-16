@@ -5,11 +5,6 @@
   sudo: true
   when: ansible_os_family == "Debian"
 
-- name: "Remove rdo repo broken in RH"
-  file: path=/etc/yum.repos.d/rdo-release.repo state=absent
-  sudo: true
-  when: ansible_os_family == "RedHat"
-
 - name: Installing MySQL RedHat
   yum: name={{ item }}
   with_items: server_packages
