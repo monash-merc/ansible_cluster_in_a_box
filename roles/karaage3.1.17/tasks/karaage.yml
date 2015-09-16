@@ -83,6 +83,18 @@
  template: src=settings.py.j2 dest=/etc/karaage3/settings.py owner=root group={{ apache_user }} mode=0640
  sudo: true
 -
+ name: "Templating project conf"
+ template: src=kginit.conf.j2 dest=/etc/karaage3/kginit.conf owner=root group={{ apache_user }} mode=0640
+ sudo: true
+-
+ name: "Templating project init script"
+ template: src=kg_init.j2 dest=/usr/bin/kg_init owner=root mode=755
+ sudo: true
+-
+ name: "Templating adding admin role script"
+ template: src=kg_add_admin.j2 dest=/usr/bin/kg_add_admin owner=root mode=755
+ sudo: true
+-
  name: "Creating karaage3 in /var directories log, lib "
  file: path={{ item }} state=directory owner=root group={{ apache_user }} mode=0775
  with_items:
@@ -147,6 +159,13 @@
  shell: kg-idps /tmp/metadata.aaf.xml 
  sudo: true
  when: karaage_db_init.stdout.find("0") == 0
+
+-
+ name: "Create projects"
+ shell: kg_init /etc/karaage3/kginit.conf {{ admin_password }}
+ sudo: true
+ when: karaage_db_init.stdout.find("0") == 0
+
 
 - name: install postfix
   apt: name=postfix state=present

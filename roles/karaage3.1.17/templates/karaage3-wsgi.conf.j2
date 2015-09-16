@@ -31,6 +31,13 @@ Alias /kgfiles "/var/cache/karaage3/files"
     </IfVersion>
 </Location>
 
+<Location /karaage/samlredirect>
+AuthType Shibboleth
+ShibRequireSession On
+ShibUseHeaders On
+require valid-user
+</Location>
+
 <Location /karaage/aafbootstrap>
 AuthType Shibboleth
 ShibRequireSession On
@@ -38,7 +45,7 @@ ShibUseHeaders On
 require valid-user
 </Location>
 
-<Location /karaage/projects/joinprojects/>
+<Location /karaage/profile/saml>
 AuthType Shibboleth
 ShibRequireSession On
 ShibUseHeaders On
