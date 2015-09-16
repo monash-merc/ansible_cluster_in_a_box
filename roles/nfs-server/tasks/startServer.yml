@@ -1,4 +1,9 @@
 --- 
+- name: "Create exports if necessary"
+  file: dest={{ item.src }} state=directory mode=755 owner=root group=root
+  sudo: true
+  with_items: exportList
+
 - name: "Starting rpcbind"
   service: "name=rpcbind state=started"
   sudo: true
