@@ -8,7 +8,6 @@ from karaage.institutes.models import Institute
 from karaage.machines.models import MachineCategory
 from karaage.people.models import Person, Group
 
-DEBUG = False
 class HpcIdInit():
     import django
     django.setup()
@@ -30,8 +29,6 @@ class HpcIdInit():
     def log(self, message):
         if self.debug:
             print message
-        else:
-            pass
 
     def getGroup(self, name):
         group = None
@@ -72,6 +69,7 @@ class HpcIdInit():
                 self.log("Find insititute %s" %(institute.name))
                 project = Project.objects.create(pid = pid, name = name, institute = institute, group = institute.group, is_active = True, is_approved = True, approved_by = superuser)
                 if project:
+                    project.leaders.add(superuser)
                     self.log("Create project OK")
                 else:
                     self.log("Create project failed")
@@ -156,11 +154,31 @@ class HpcIdInit():
             institute = Institute.objects.get(name = user["institute_name"])
             if institute:
                 person = Person.objects.create(username = user["username"], email = user["email"], password = self.password, short_name = user["short_name"], full_name = user["full_name"], is_admin = True, is_active = True, institute = institute)    
-                person.full_clean()
+                if person:
+                    person.set_password(self.password)
+                    person.save()
+                    result = self.addInstituteDelegate(person, institute)
+                    if result:
+                        log("Add super user %s to institute %s delegate" %(person.username, institute.name))
+                    else:
+                        log("Faired to add super user %s to institute %s delegate" %(person.username, institute.name))
+                    person.full_clean()
         except:
             log("Create super user exception: %s" %(traceback.format_exc()))
         finally:
             return person
+    
+    def addInstituteDelegate(self, su, institute):
+        result = True 
+        try:
+            delegates = institute.delegates.all().filter(username = su.username)
+            if len(delegates) == 0:
+                institute.delegates.add(su)
+        except:
+            result = False 
+            self.log("Create institution delegate exception: %s" %(traceback.format_exc()))
+        finally:
+            return result 
 
     def setup(self):
         self.log("Password = %s, debug = %s" %(self.password, self.debug))
@@ -176,7 +194,7 @@ class HpcIdInit():
         if self.mc:
             mc = self.getOrCreateMachineCategory(self.mc)
             if mc:
-                self.log("Get machine category = '%s'" %(mc.name))
+                self.log("Get machine category = '%s'" %(self.mc))
             else:    
                 self.log("Failed to get machine category = '%s'" %(self.mc))
         if su:
@@ -198,7 +216,7 @@ def main(argv):
     if len(sys.argv) > 2:
         config_path = argv[0]
         password = argv[1]
-        debug = DEBUG 
+        debug = True 
         if len(sys.argv) > 3:
             debug = argv[2]
         init = HpcIdInit(config_path, password, debug)
