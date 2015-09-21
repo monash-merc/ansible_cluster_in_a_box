@@ -13,13 +13,13 @@
  size=5M 
  create 640 slurm root 
 {% if slurmctrl == inventory_hostname %}
-{% if ansible_os_family == 'RedHat' and ansible_distribution_version >= 7 %}
+{% if ansible_os_family == 'RedHat' and ansible_distribution_version >= '7' %}
   systemctl restart slurmdbd
 {% else %}
  postrotate /etc/init.d/slurmdbd reconfig 
 {% endif %}
 {% endif %}
-{% if ansible_os_family == 'RedHat' and ansible_distribution_version >= 7 %}
+{% if ansible_os_family == 'RedHat' and ansible_distribution_version >= '7' %}
   systemctl restart slurmd
 {% else %}
  postrotate /etc/init.d/slurm reconfig 
