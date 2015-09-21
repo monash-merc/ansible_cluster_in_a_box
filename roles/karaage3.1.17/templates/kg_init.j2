@@ -154,7 +154,6 @@ class HpcIdInit():
             institute = Institute.objects.get(name = user["institute_name"])
             if institute:
                 person = Person.objects.create(username = user["username"], email = user["email"], password = self.password, short_name = user["short_name"], full_name = user["full_name"], is_admin = True, is_active = True, institute = institute)    
-                person.full_clean()
                 if person:
                     person.set_password(self.password)
                     person.save()
@@ -163,6 +162,7 @@ class HpcIdInit():
                         log("Add super user %s to institute %s delegate" %(person.username, institute.name))
                     else:
                         log("Faired to add super user %s to institute %s delegate" %(person.username, institute.name))
+                    person.full_clean()
         except:
             log("Create super user exception: %s" %(traceback.format_exc()))
         finally:
@@ -194,7 +194,7 @@ class HpcIdInit():
         if self.mc:
             mc = self.getOrCreateMachineCategory(self.mc)
             if mc:
-                self.log("Get machine category = '%s'" %(mc.name))
+                self.log("Get machine category = '%s'" %(self.mc))
             else:    
                 self.log("Failed to get machine category = '%s'" %(self.mc))
         if su:
