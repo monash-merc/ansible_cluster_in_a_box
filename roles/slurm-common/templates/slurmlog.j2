@@ -20,7 +20,7 @@
 {% endif %}
 {% endif %}
 {% if ansible_os_family == 'RedHat' and ansible_distribution_version >= '7' %}
-  systemctl restart slurmd
+  systemctl restart slurmctld 
 {% else %}
  postrotate /etc/init.d/slurm reconfig 
 {% endif %}
