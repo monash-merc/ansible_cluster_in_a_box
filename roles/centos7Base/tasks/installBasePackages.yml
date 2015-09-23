@@ -4,20 +4,26 @@
  file: path=/etc/yum.repos.d/rdo-release.repo state=absent
  sudo: true
 -
+ name: Install epel-release
+ yum: name=epel-release-7-5.noarch state=present
+ sudo: true
+-
+ name: Enable epel
+ command: yum-config-manager --enable epel
+ sudo: true
+-
  name: Installing Base Packages
  yum: name={{ item }} state=present
  with_items:
   - environment-modules-3.2.10-8.el7.x86_64 
-  - epel-release-7-5.noarch
   - yum-utils
   - deltarpm-3.6-3.el7.x86_64
   - yum-plugin-versionlock
--
- name: Enable epel
- command: yum-config-manager --enable epel
+ sudo: true
 -
  name: Template the Modules path
  template: src=.modulespath.j2 dest=/usr/share/Modules/init/.modulespath owner=root mode=0644 
+ sudo: true
 -
  name: Installing Core packages
  yum: name="{{ item.software }}-{{ item.version }}.{{ item.arch }}" state=present
