@@ -8,6 +8,8 @@ from karaage.institutes.models import Institute
 from karaage.machines.models import MachineCategory
 from karaage.people.models import Person, Group
 
+CONSOLE_DEBUG = False
+
 class HpcIdInit():
     import django
     django.setup()
@@ -17,6 +19,9 @@ class HpcIdInit():
         self.path = configfile 
         self.password = password
         self.debug = debug
+        if not debug:
+            self.logfile = open("/tmp/kg_init.log", "w") 
+
         if self.path and os.path.exists(self.path):
             with open(self.path) as data:
                 config_data = json.load(data)
@@ -26,9 +31,14 @@ class HpcIdInit():
         else:
             log("Invalid input data")    
 
+    def __del__(self):
+        self.logfile.close()
+
     def log(self, message):
         if self.debug:
             print message
+        else:
+            self.logfile.write(message + "\n") 
 
     def getGroup(self, name):
         group = None
@@ -173,6 +183,7 @@ class HpcIdInit():
         try:
             delegates = institute.delegates.all().filter(username = su.username)
             if len(delegates) == 0:
+                self.log("Create institution delegate %s"%(su.username))
                 institute.delegates.add(su)
         except:
             result = False 
@@ -216,7 +227,7 @@ def main(argv):
     if len(sys.argv) > 2:
         config_path = argv[0]
         password = argv[1]
-        debug = True 
+        debug = CONSOLE_DEBUG 
         if len(sys.argv) > 3:
             debug = argv[2]
         init = HpcIdInit(config_path, password, debug)
