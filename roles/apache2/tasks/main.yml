@@ -1,0 +1,32 @@
+---
+- include: apacheDebian.yml
+  when: ansible_os_family == "Debian"
+- include: apacheRedHat.yml
+  when: ansible_os_family == 'RedHat'
+
+- name: "Create apache key directory"
+  file: path={{ x509_key | dirname }} state=directory owner={{ apache_user }} mode=700
+  sudo: true
+
+- name: "Create apache cert directory"
+  file: path={{ x509_cert | dirname }} state=directory owner={{ apache_user }} mode=755
+  sudo: true
+
+- name: "Copying the apache key file"
+  template: src="files/{{ apache_key_file }}" dest="{{ x509_key }}" mode=0600 owner={{ apache_user }} group={{ apache_group }}
+  sudo: true
+  when: apache_key_file is defined
+
+- name: "Copying the apache cert file"
+  template: src="files/{{ apache_cert_file }}" dest="{{ x509_cert }}" mode=0644 owner={{ apache_user }} group={{ apache_group }}
+  sudo: true
+  when: apache_cert_file is defined
+
+- name: "Create log directory, start aoacge will have errors without it"
+  file: dest=/etc/apache2/logs state=directory
+  sudo: true
+
+-
+ name: "Change permissions for /var/www"
+ file: path=/var/www state=directory owner=root group={{ apache_user }} mode=0775
+ sudo: true

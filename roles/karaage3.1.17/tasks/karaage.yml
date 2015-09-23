@@ -13,7 +13,17 @@
   - python-cracklib
   - git
   - apache2-dev
+  - python-mysqldb
+  - python-pip
+  - python-pyasn1
+  - libapache2-mod-wsgi
+  - gcc
+  - libmysqlclient-dev
+  - python-dev
+  - python-matplotlib
+  - python-numpy
  when: ansible_os_family == "Debian"
+
 -
  name: "Installing prerequisites Redhat"
  yum: name={{ item }} state=latest
@@ -34,19 +44,14 @@
   - blas-devel
   - libffi-devel
  when: ansible_os_family == "RedHat" 
--
- name: Install the latest pip
- shell: easy_install pip
- when: ansible_os_family == "RedHat"
+     #-
+     # name: Install the latest pip
+     # shell: easy_install pip
+     # when: ansible_os_family == "RedHat"
 
 -
  name: "Getting Karaage from Github"
  git: repo="https://github.com/monash-merc/karaage.git" dest="/root/karaage3.1.7" force=yes
- sudo: true
-
--
- name: "Create log directory, start aoacge will have errors without it"
- file: dest=/etc/apache2/logs state=directory
  sudo: true
 
 -
@@ -55,12 +60,13 @@
  sudo: true
  with_items:
   - six
-  - MySQL-python
   - slimit
   - ply
   - cython
   - django-celery
-  - mod_wsgi
+  - pyasn1
+  - ldap3
+#  - mod_wsgi
 -
  name: "Restrict Django version to 1.7.8"
  sudo: true
@@ -77,6 +83,18 @@
  template: src=settings.py.j2 dest=/etc/karaage3/settings.py owner=root group={{ apache_user }} mode=0640
  sudo: true
 -
+ name: "Templating project conf"
+ template: src=kginit.conf.j2 dest=/etc/karaage3/kginit.conf owner=root group={{ apache_user }} mode=0640
+ sudo: true
+-
+ name: "Templating project init script"
+ template: src=kg_init.j2 dest=/usr/bin/kg_init owner=root mode=755
+ sudo: true
+-
+ name: "Templating adding admin role script"
+ template: src=kg_add_admin.j2 dest=/usr/bin/kg_add_admin owner=root mode=755
+ sudo: true
+-
  name: "Creating karaage3 in /var directories log, lib "
  file: path={{ item }} state=directory owner=root group={{ apache_user }} mode=0775
  with_items:
@@ -84,10 +102,22 @@
   - /var/lib/karaage3
   - /var/cache/karaage3
  sudo: true
--
- name: "Change permissions for /var/www"
- file: path=/var/www state=directory owner=root group={{ apache_user }} mode=0775
- sudo: true
+
+- name: install karaage3-wsgi.conf
+  template: src=karaage3-wsgi.conf.j2 dest=/etc/apache2/conf-available/karaage3-wsgi.conf
+  sudo: true
+
+- name: install karaage3-wsgi.conf
+  template: src=index.html.j2 dest=/var/www/index.html
+  sudo: true
+
+- name: install karaage3-wsgi.conf
+  template: src=kg-idps.j2 dest=/usr/bin/kg-idps mode=755
+  sudo: true
+
+- name: install shibboleth cache file 
+  template: src=metadata.aaf.xml.j2 dest=/tmp/metadata.aaf.xml 
+
 -
  name: "enabling Karaage configuration"
  shell: a2enconf karaage3-wsgi
@@ -96,77 +126,55 @@
 -
  name: "enabling Karaage configuration"
  shell: cp -rvpf /root/karaage3.1.7/conf/karaage3-wsgi.conf /etc/httpd/conf.d/karaage3-wsgi.conf
- when: ansible_os_family == "RedHat"
--
- name: "Installing other packages Debian"
- apt: name={{ item }} update_cache=yes
- with_items:
-  - python-kgusage
-  - karaage-cluster-tools
-  - karaage3-celery
- sudo: true
- when: ansible_os_family == "Debian"
--
- name: Downloading other packages RedHat
- git: repo={{ item.repo }} dest={{ item.dest }}
- with_items:
-  - { repo : 'https://github.com/numpy/numpy.git', dest : '/root/numpy' }
-  - { repo : 'https://github.com/matplotlib/matplotlib.git', dest : '/root/matplotlib' }
-  - { repo : 'https://github.com/Karaage-Cluster/karaage-software.git', dest : '/root/karaage-software' }
-  - { repo : 'https://github.com/Karaage-Cluster/karaage-usage.git', dest : '/root/karaage-usage' }
-  - { repo : 'https://github.com/Karaage-Cluster/karaage-applications.git', dest : '/root/karaage-applications' }
-  - { repo : 'https://github.com/Karaage-Cluster/karaage-cluster-tools.git', dest : '/root/karaage-cluster-tools' }
  sudo: true
  when: ansible_os_family == "RedHat"
-- 
-  args: 
-    chdir: "/root/{{ item }}"
-    creates: "/root/{{ item }}/build/bdist.linux-x86_64"
-  name: "Installing other packages RedHat"
-  sudo: true
-  shell: "env python setup.py install"
-  when: ansible_os_family == "RedHat"
-  with_items: 
-    - numpy
-    - matplotlib
-    - karaage-applications
-    - karaage-software
-    - karaage-usage
-    - karaage-cluster-tools
+
+
 -
  name: "Set Secret Key"
  lineinfile: dest=/etc/karaage3/settings.py regexp="SECRET_KEY = ''" line="SECRET_KEY = '{{ karaageSecretKey }}'" state=present
  sudo: true
 
 -
- # TODO: Fix it
- name: "Check DB tables has been created or not"
- shell: ls /root/.karaage_db_init
- ignore_errors: true
- sudo: true
+ name: "Check karaage DB has been initialized or not"
+ shell: mysql -h {{ karaageDbHost }}  -u {{ karaageDbName }} --password={{ karaagePassword }} -Bse 'use karaage; show tables;' | wc -l 
  register: karaage_db_init
 
--
- name: "Enable wsgi config"
- file: src=/etc/apache2/mods-available/wsgi.conf path=/etc/apache2/mods-enabled/wsgi.conf state=link 
- sudo: true
+- name: enable wsgi
+  shell: a2enmod wsgi
+  sudo: true
 
--
- name: "Enable wsgi load"
- file: src=/etc/apache2/mods-available/wsgi.load path=/etc/apache2/mods-enabled/wsgi.load state=link 
- sudo: true
+- name: enable shibboleth
+  shell: a2enmod shib2
+  sudo: true
 
 -
  name: " Create DB tables"
- shell: kg-manage migrate && touch /root/.karaage_db_init 
+ shell: kg-manage migrate 
  sudo: true
- when: karaage_db_init is not defined
+ when: karaage_db_init.stdout.find("0") == 0
 
 -
- name: "Restarting Celery"
- service: name=karaage3-celery state=restarted
+ name: "Create IDP institutes (disable it as cache is not available)"
+ shell: kg-idps /tmp/metadata.aaf.xml 
  sudo: true
- when: ansible_os_family == "Debian"
+ when: karaage_db_init.stdout.find("0") == 0
+
+-
+ name: "Create projects"
+ shell: kg_init /etc/karaage3/kginit.conf {{ admin_password }}
+ sudo: true
+ when: karaage_db_init.stdout.find("0") == 0
+
+- name: install postfix
+  apt: name=postfix state=present
+  sudo: true
+
+- name: configure postfix
+  template: src=main_cf.j2 dest=/etc/postfix/main.cf
+  sudo: true
+  notify: restart postfix
+
 -
  name: "Reloading apache"
  service: name=apache2 state=reloaded
@@ -178,3 +186,8 @@
  service: name=httpd state=reloaded
  sudo: true
  when: ansible_os_family == "RedHat"
+
+- name: "Start cron job for creating idps"
+  cron: name=idps job=/usr/bin/kg-idps user=root day=*/1 state=present
+  sudo: true
+

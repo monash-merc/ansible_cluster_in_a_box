@@ -1,0 +1,12 @@
+server_packages:
+  - python
+  - python-devel
+  - MySQL-python
+  - mariadb-server 
+
+client_packages:
+  - mariadb
+  - python
+  - MySQL-python
+
+sqlServiceName: mariadb

@@ -1,5 +1,4 @@
 ---
-  ldapcert: /etc/openldap/certs/ldapcert.pem
-  ldapkey: /etc/openldap/certs/ldapkey.pem
-  cacert: /etc/openldap/certs/cacert.pem
-
+ldapCertDest: "{{ ldapDir }}/ssl/certs/ldapcert.pem"
+ldapKeyDest: "{{ ldapDir }}/ssl/private/ldapkey.pem"
+ldapCAChainDest: "{{ ldapDir }}/ssl/certs/cacert.pem"

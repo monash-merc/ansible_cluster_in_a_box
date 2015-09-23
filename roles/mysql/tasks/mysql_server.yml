@@ -1,51 +1,22 @@
 ---
 - name: "Installing MySQL Debian"
   apt: name="{{ item }}" update_cache=yes cache_valid_time=3600 state=present
-  with_items:
-    - python
-    - python-dev
-    - libmysqlclient-dev
-    - python-pip
-    - libapache2-mod-wsgi
-    - python-mysql.connector
-    - mysql-server
-    - python-mysqldb
+  with_items: server_packages
   sudo: true
   when: ansible_os_family == "Debian"
 
 - name: Installing MySQL RedHat
-  yum: name="{{ item }}" state=latest
-  with_items:
-    - python
-    - python-devel
-    - mysql-devel
-    - mysql-libs
-    - MySQL-python
-    - mysql-server
+  yum: name={{ item }}
+  with_items: server_packages
   sudo: true
   when: ansible_os_family == "RedHat"
 
 - name: "Starting MySQL"
-  service: name=mysql state=started enabled=true
+  service: name={{ sqlServiceName }} state=started enabled=true
   sudo: true
-  when: ansible_os_family == "Debian"
-
-- name: "Starting MySQL"
-  service: name=mysqld state=started enabled=true
-  sudo: true
-  when: ansible_os_family == "RedHat" and ansible_distribution_major_version < 7
-
-- name: "Starting MySQL"
-  service: name=mariadb state=started enabled=true
-  sudo: true
-  when: ansible_os_family == "RedHat" and ansible_distribution_major_version >= 7
 
 - name: make sure mysql conf directory exists
   file: dest=/etc/mysql/conf.d state=directory
-  sudo: true
-
-- name: "Templating mysql configure file"
-  template: src="mysql.cnf.j2" dest=/etc/mysql/conf.d/{{ mysql_config_file_name }}.cnf owner=root group=root
   sudo: true
 
 - name: "Adding root"

@@ -3,6 +3,10 @@
   sudo: true
   when: ansible_os_family == 'RedHat'
 
+- name: remove the bad repo on centos7 images
+  file: path=/etc/yum.repos.d/rdo-release.repo state=absent
+  sudo: true
+
 - name: "Make yum cache"
   command: yum makecache
   sudo: true

@@ -1,9 +1,9 @@
 dn: cn=config
 replace: olcTLSCACertificateFile
-olcTLSCACertificateFile: {{ cacert }}
+olcTLSCACertificateFile: {{ ldapCAChainDest }}
 -
 replace: olcTLSCertificateFile
-olcTLSCertificateFile:  {{ ldapcert }}
+olcTLSCertificateFile:  {{ ldapCertDest }}
 -
 replace: olcTLSCertificateKeyFile
-olcTLSCertificateKeyFile: {{ ldapkey }}
+olcTLSCertificateKeyFile: {{ ldapKeyDest }}

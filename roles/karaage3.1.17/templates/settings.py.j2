@@ -31,6 +31,10 @@
 #
 # DEBUG = True
 
+{% if user_id_file is defined %}
+USER_ID_FILES = {{ user_id_file }}
+{% endif %}
+
 # Implemented by Shahaan due to the django-pipeline bug
 PIPELINE_ENABLED = False
 STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
@@ -78,11 +82,6 @@ ADMINS = (
 # link notifications when BrokenLinkEmailsMiddleware is enabled.
 MANAGERS = ADMINS
 
-{% if defaultProject is defined and defaultMachineCategory is defined %}
-DEFAULT_PROJECT_PID = "{{ defaultProject }}"
-DEFAULT_MACHINE_CATEGORY_NAME = "{{ defaultMachineCategory }}"
-{% endif %}
-
 # A dictionary containing the settings for all databases to be used with
 # Django. It is a nested dictionary whose contents maps database aliases to a
 # dictionary containing the options for an individual database.
@@ -106,7 +105,7 @@ LDAP = {
           'PASSWORD': '{{ ldapManagerPassword }}',
           'REQUIRE_TLS': True,
           'START_TLS': True,
-          'TLS_CA': '{{ x509_cacert_file }}',
+          'TLS_CA': '{{ apache_config }}/ssl/certs/ldap_ca.cert.pem',
      }
 }
 
@@ -294,7 +293,8 @@ ACCOUNTS_ORG_NAME = '{{ karaageAcountName }}'
 #
 # default: SHIB_SUPPORTED = False
 #
-# SHIB_SUPPORTED = True
+# TODO: Should we add a variable to use shibboleth or not???
+SHIB_SUPPORTED = True
 
 # Path to AUP policy. Note that setting this will not disable the Karaage
 # default page, it might be better to replace the AUP with a file in
@@ -308,7 +308,7 @@ ACCOUNTS_ORG_NAME = '{{ karaageAcountName }}'
 #
 # default:  ALLOW_REGISTRATIONS = False
 #
-# ALLOW_REGISTRATIONS = True
+ALLOW_REGISTRATIONS = True
 
 # Do we allow any logged in user to access all usage information?
 #
@@ -335,5 +335,5 @@ PLUGINS = [
      'karaage.plugins.kgapplications.plugin',
      'karaage.plugins.kgsoftware.plugin',
      'karaage.plugins.kgsoftware.applications.plugin',
-     'karaage.plugins.kgusage.plugin',
+#     'karaage.plugins.kgusage.plugin',
  ]

@@ -4,5 +4,4 @@
   sudo: true
   when: ansible_os_family == "Debian"
 
-- include: mkFilesystem.yml 
 - include: startServer.yml

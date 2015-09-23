@@ -1,24 +1,21 @@
 ---
-- name: "Create exports if necessary"
-  file: dest={{ item.src }} state=directory mode=755 owner=root group=root
-  sudo: true
-  with_items: exportList
-
 - name: "Templating /etc/exports"
   copy: src=files/etcExports dest=/etc/exports owner=root group=root mode=644
   sudo: true
+  register: exports
 
 - name: "Start the Server"
   service: "name=nfs state=restarted"
   sudo: true
-  when: ansible_os_family == "RedHat"
+  when: ansible_os_family == "RedHat" and exports.changed
 
 - name: "Start the Server"
   service: "name=nfs-kernel-server state=restarted"
   sudo: true
-  when: ansible_os_family == "Debian"
+  when: ansible_os_family == "Debian" and exports.changed
 
 - name : "Pause ... clients sometimes have errors"
   command: sleep 60
   notify: "Reload exports"
+  when: exports.changed
 
