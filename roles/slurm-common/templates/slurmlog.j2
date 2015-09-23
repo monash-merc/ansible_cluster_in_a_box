@@ -1,7 +1,7 @@
 {% if slurmctrl == inventory_hostname %}
 {{ slurmctlddebug.log }}
 {{ slurmschedlog.log }}
-{% else *}
+{% else %}
 {{ slurmddebug.log }}
 {% endif %}
 {
