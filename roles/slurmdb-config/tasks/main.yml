@@ -32,3 +32,7 @@
   sudo: true
   when: slurm_dir is not defined
 
+- name: add slurm db log rotate config
+  template: src=slurmdblog.j2 dest=/etc/logrotate.d/slurmdb mode=644
+  sudo: true
+
