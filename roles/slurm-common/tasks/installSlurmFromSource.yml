@@ -41,5 +41,6 @@
   template: src=slurmdblog.j2 dest=/etc/logrotate.d/slurmdb mode=644
   sudo: true
   delegate_to: "{{ slurmctrl }}"
+  run_once: true
 
 
