@@ -25,3 +25,4 @@
     line: /usr/local/Modules/modulefiles
   ignore_errors: true
   sudo: true
+  when: ansible_os_family == 'Debian'
