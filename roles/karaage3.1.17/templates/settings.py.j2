@@ -31,7 +31,8 @@
 #
 # DEBUG = True
 
-{% if user_id_file is defined %}
+{% if user_id_file is defined and user_id_file_dir is defined %}
+USER_ID_DIR = "{{ user_id_file_dir }}"
 USER_ID_FILES = {{ user_id_file }}
 {% endif %}
 

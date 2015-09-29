@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import os, sys
+import os, sys, time
 os.environ['DJANGO_SETTINGS_MODULE'] = "karaage.conf.settings"
 from django.conf import settings
 from karaage.projects.models import Project
@@ -19,6 +19,7 @@ class HpcIdInit():
         self.path = configfile 
         self.password = password
         self.debug = debug
+        self.logfile = None
         if not debug:
             self.logfile = open("/tmp/kg_init.log", "w") 
 
@@ -32,13 +33,16 @@ class HpcIdInit():
             log("Invalid input data")    
 
     def __del__(self):
-        self.logfile.close()
+        if self.logfile:  
+            if not self.logfile.closed():
+                self.logfile.close()
 
     def log(self, message):
         if self.debug:
             print message
         else:
-            self.logfile.write(message + "\n") 
+            now = time.strftime("%c")
+            self.logfile.write(now + ": " + message + "\n") 
 
     def getGroup(self, name):
         group = None
@@ -185,6 +189,7 @@ class HpcIdInit():
             if len(delegates) == 0:
                 self.log("Create institution delegate %s"%(su.username))
                 institute.delegates.add(su)
+                self.log("Create institution delegate %s OK"%(su.username))
         except:
             result = False 
             self.log("Create institution delegate exception: %s" %(traceback.format_exc()))
@@ -192,7 +197,7 @@ class HpcIdInit():
             return result 
 
     def setup(self):
-        self.log("Password = %s, debug = %s" %(self.password, self.debug))
+        self.log("Debug = %s" %(self.debug))
         su = self.getUser(self.user["username"])
         if su:
             self.log("Find super user %s" %(su.username))
