@@ -32,3 +32,7 @@
   args:
     chdir: /tmp/slurm-{{ slurm_version }}
     creates: "{{ slurm_dir }}/bin/srun"
+
+- name: add slurm log rotate config
+  template: src=slurmlog.j2 dest=/etc/logrotate.d/slurm mode=644
+  sudo: true

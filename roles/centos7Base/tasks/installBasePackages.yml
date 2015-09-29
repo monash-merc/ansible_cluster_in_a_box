@@ -1,0 +1,31 @@
+---
+-
+ name: Removing the RDO repository
+ file: path=/etc/yum.repos.d/rdo-release.repo state=absent
+ sudo: true
+-
+ name: Install epel-release
+ yum: name=epel-release-7-5.noarch state=present
+ sudo: true
+-
+ name: Enable epel
+ command: yum-config-manager --enable epel
+ sudo: true
+-
+ name: Installing Base Packages
+ yum: name={{ item }} state=present
+ with_items:
+  - yum-utils
+  - deltarpm-3.6-3.el7.x86_64
+  - yum-plugin-versionlock
+ sudo: true
+-
+ name: Installing Core packages
+ yum: name="{{ item.software }}-{{ item.version }}.{{ item.arch }}" state=present
+ with_items: package_list
+ sudo: true
+-
+ name: Performing version lock on the packages
+ shell: yum versionlock \*
+ sudo: true
+

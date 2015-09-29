@@ -1,0 +1,32 @@
+{% if slurmctrl == inventory_hostname %}
+{{ slurmctlddebug.log }}
+{{ slurmschedlog.log }}
+{% else %}
+{{ slurmddebug.log }}
+{% endif %}
+{
+ compress
+ missingok 
+ nocopytruncate 
+ nocreate 
+ nodelaycompress 
+ nomail  
+ notifempty 
+ noolddir 
+ rotate 5 
+ sharedscripts 
+ size=5M 
+ create 640 slurm root 
+{% if ansible_os_family == 'RedHat' and ansible_distribution_version >= '7' %}
+ postrotate
+{% if slurmctrl == inventory_hostname %}
+   {{ slurm_dir }}/sbin/slurmctld flushlogs 1>/dev/null || true
+{% else %}
+   {{ slurm_dir }}/sbin/slurmd flushlogs 1>/dev/null || true
+{% endif %}
+{% else %}
+ postrotate /etc/init.d/slurm reconfig 
+{% endif %}
+ endscript
+}
+

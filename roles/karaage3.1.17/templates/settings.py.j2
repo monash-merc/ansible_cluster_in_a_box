@@ -31,6 +31,10 @@
 #
 # DEBUG = True
 
+{% if user_id_file is defined %}
+USER_ID_FILES = {{ user_id_file }}
+{% endif %}
+
 # Implemented by Shahaan due to the django-pipeline bug
 PIPELINE_ENABLED = False
 STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
