@@ -1,10 +1,18 @@
 #!/usr/bin/env python
 import sys, os, string, subprocess, socket, re
 import copy, shlex,uuid, random, multiprocessing, time, shutil, json
-import novaclient.v1_1.client as nvclient
-import novaclient.exceptions as nvexceptions
+#import novaclient.v1_1.client as nvclient
+#import novaclient.exceptions as nvexceptions
 from keystoneclient.auth.identity import v2 as v2_auth
-from heatclient import client as heat_client
+#from heatclient import client as heat_client
+#from novaclient import client as nova_client
+#from cinderclient import client as cinder_client
+import heatclient
+import novaclient
+import cinderclient
+import heatclient.client
+import novaclient.client
+import cinderclient.client
 
 from keystoneclient import session as kssession
 
@@ -108,13 +116,13 @@ class OpenStackConnection:
                 raise Exception("You have multiple heat stacks in your OpenStack Project and I'm not sure which one to use.\n You can select a stack by symlinking to a stack, for example if you have a stack called mycluster do ln -s %s mycluster\n"%stack)
 
         def auth(self):
-		self.nc = nvclient.Client(	auth_url=self.authUrl,
-			username=self.username,
-			api_key=self.passwd,
-			project_id=self.tenantName,
-			tenant_id=self.tenantID,
-			service_type="compute"
-			)
+#		self.nc = nvclient.Client(	auth_url=self.authUrl,
+#			username=self.username,
+#			api_key=self.passwd,
+#			project_id=self.tenantName,
+#			tenant_id=self.tenantID,
+#			service_type="compute"
+#			)
                 kwargs = {
                     'insecure': False,
                 }
@@ -131,23 +139,28 @@ class OpenStackConnection:
                                                     self.authUrl,
                                                     **kwargs)
 
-                endpoint = keystone_auth.get_endpoint(keystone_session,service_type='orchestration', region_name=None)
-
-
+                endpoint = keystone_auth.get_endpoint(keystone_session,service_type='compute', region_name=None)
                 kwargs = {
-                    'username': self.username,
-                    'include_pass': False,
+                    'auth': keystone_auth,
+                }
+                api_version='2'
+                self.nc = novaclient.client.Client(api_version, endpoint, **kwargs)
+
+                endpoint = keystone_auth.get_endpoint(keystone_session,service_type='orchestration', region_name=None)
+                kwargs = {
                     'session': keystone_session,
-                    'auth_url': self.authUrl,
-                    'region_name': '',
-                    'endpoint_type': 'publicURL',
-                    'service_type': 'orchestration',
-                    'password': self.passwd,
                     'auth': keystone_auth,
                 }
                 api_version=1
+                self.hc = heatclient.client.Client(api_version, endpoint, **kwargs)
 
-                self.hc = heat_client.Client(api_version, endpoint, **kwargs)
+                endpoint = keystone_auth.get_endpoint(keystone_session,service_type='volume', region_name=None)
+                kwargs = {
+#                    'session': keystone_session,
+                    'auth': keystone_auth,
+                }
+                api_version=1
+                self.cc = cinderclient.client.Client(api_version, endpoint, **kwargs)
 
 	
         def recurse_resources(self,stack,resource):
@@ -170,6 +183,7 @@ class OpenStackConnection:
                             instance_ids.extend(self.recurse_resources(stack=i,resource=r))
 
                 nc=self.nc
+#                cc=self.cc
 		inventory = {}
 		inventory['_meta'] = { 'hostvars': {} }
 		for server in nc.servers.list():
@@ -190,6 +204,9 @@ class OpenStackConnection:
                                             inventory[server.metadata['ansible_host_group']].append(hostname)
                                     else:
                                             inventory[server.metadata['ansible_host_group']] = [hostname]
+                            #print dir(server)
+                            if len(server.to_dict()['os-extended-volumes:volumes_attached']) >0:
+                                pass
                             # Set the other host variables
                             inventory['_meta']['hostvars'][hostname] = {}
                             inventory['_meta']['hostvars'][hostname]['ansible_ssh_host'] = server.networks.values()[0][0]
