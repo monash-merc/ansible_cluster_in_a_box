@@ -17,7 +17,10 @@ AuthType=auth/munge
 #
 # slurmDBD info
 #DbdAddr=
-DbdHost={{ slurmctrl }}
+DbdHost={{ slurmdbd }}
+{% if slurmdbdbackup is defined %}
+DbdBackupHost={{ slurmdbdbackup }}
+{% endif %}
 #DbdPort=7031
 SlurmUser=slurm
 #MessageTimeout=300
@@ -36,7 +39,7 @@ PidFile=/var/run/slurmdbd.pid
 #
 # Database info
 StorageType=accounting_storage/mysql
-StorageHost=localhost
+StorageHost={{ mysql_host }}
 #StoragePort=1234
 StoragePass={{ slurmdb_passwd }}
 StorageUser=slurmdb
