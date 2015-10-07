@@ -5,7 +5,7 @@ ldapCaCertContents: |
   {{ l }}
 {% endfor %}
 ldapCaCertFile: /etc/ssl/certs/cacert.crt
-ldapDomain: "{{ ldapDomain }}"
+ldapDomain: "{{ domain }}"
 ldapURI: "ldaps://{{ ansible_fqdn }}:636"
 ldapBindDN: "{{ ldapBindDN }}"
 ldapBindDNPassword: "{{ ldapBindDNPassword }}"
