@@ -160,11 +160,11 @@
 # sudo: true
 # when: karaage_db_init.stdout.find("0") == 0
 
-#-
-# name: "Create projects"
-# shell: kg_init /etc/karaage3/kginit.conf {{ admin_password }}
-# sudo: true
-# when: karaage_db_init.stdout.find("0") == 0
+-
+ name: "Create projects"
+ shell: kg_init /etc/karaage3/kginit.conf {{ admin_password }}
+ sudo: true
+ when: karaage_db_init.stdout.find("0") == 0
 
 - name: install postfix
   apt: name=postfix state=present
