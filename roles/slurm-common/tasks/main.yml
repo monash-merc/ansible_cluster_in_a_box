@@ -27,11 +27,16 @@
   file: path={{ slurmdatadir }} state=directory owner=slurm group=slurm mode=755
   sudo: true
   when: slurmdatadir is defined 
+      
+- name: stat run directory
+  stat: path={{ slurmpiddir }} 
+  register: runstat
+  when: slurmpiddir is defined
 
 - name: create run directory
   file: path={{ slurmpiddir }} state=directory owner=root group=root mode=750
   sudo: true
-  when: slurmpiddir is defined 
+  when: slurmpiddir is defined and not runstat.stat.exists
 
 - name: create state directory
   file: path={{ slurmstatedir }} state=directory owner=slurm group=slurm mode=750
