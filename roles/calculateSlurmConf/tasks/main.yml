@@ -4,3 +4,10 @@
 
 - name: fetch slurm.conf
   fetch: src=/tmp/slurm.conf dest=files/slurm.conf flat=yes
+
+- name: "Templating slurmdbd.conf"
+  template: src=slurmdbd.conf.j2 dest=/tmp/slurmdbd.conf owner=root group=root mode=644
+  sudo: true
+
+- name: fetch slurm.conf
+  fetch: src=/tmp/slurmdbd.conf dest=files/slurmdbd.conf flat=yes

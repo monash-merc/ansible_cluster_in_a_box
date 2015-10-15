@@ -32,7 +32,7 @@ for user in ${user_list[*]}; do
             if [ -z "${find}" ]; then
                 su slurm -c "$sacctmgr -i add account ${account} Description=CVL Organization=monash cluster=${cluster}" || { echo "error to create account ${account}" >> ${log_file} && exit 1; }
             fi
-            find=$(sacctmgr list user ${user} | grep ${user})
+            find=$(sacctmgr list user --noheader -p ${user} | grep ${user})
             if [ -z "${find}" ]; then
                 su slurm -c "$sacctmgr -i add user ${user} account=${account} cluster=${cluster}" || { echo "error to create user ${user}" >> ${log_file} && exit 1; }
             fi

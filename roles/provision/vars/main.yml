@@ -1,1 +1,5 @@
 ---
+slurm_provision: "/usr/local/sbin/slurm_provision.sh"
+home_dir: "/home"
+provision: "/usr/local/sbin/provision.sh"
+

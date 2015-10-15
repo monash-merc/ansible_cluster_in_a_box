@@ -1,0 +1,22 @@
+---
+- name: add repo
+  copy: src=glusterfs-epel.repo dest=/etc/yum.repos.d/glusterfs-epel.repo
+  sudo: true
+  when: ansible_os_family == 'RedHat'
+
+- name: install gluster
+  yum: name={{ item }} state='latest'
+  when: ansible_os_family == 'RedHat'
+  with_items:
+  - glusterfs-client
+  sudo: true
+
+- name: install gluster
+  apt: name=glusterfs state='latest'
+  when: ansible_os_family == 'Debian'
+  sudo: true
+
+- name: mount volume
+#mount: name="{{ volmnt }}" src="{{ gluster_servers[0] }}:/{{ volname }}" state="mounted" fstype="glusterfs" opts="defaults,acl,_netdev,backupvolfile-server={{ gluster_servers[1] }}"
+  mount: name="{{ volmnt }}" src="{{ gluster_servers[0] }}:/{{ volname }}" state="mounted" fstype="glusterfs" opts="defaults,acl,backupvolfile-server={{ gluster_servers[1] }},noauto,comment=systemd.automount"
+  sudo: true

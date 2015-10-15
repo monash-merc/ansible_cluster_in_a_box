@@ -1,4 +1,8 @@
 ---
+- name: make  dir
+  file: path="{{ provision | dirname }}" state=directory mode=755 owner=root
+  sudo: true
+
 - name: copy provision template 
   template: src=provision.sh.j2 dest={{ provision }} mode=755 owner=root
   sudo: true

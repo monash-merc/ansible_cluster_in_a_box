@@ -1,13 +1,19 @@
 ---
-- name: stat usrlocal
+- name: stat
   stat: path={{ dest }}
-  register: stat_usrlocal
+  register: stat_r
 
 - name: mv
-  command: mv /usr/local /usr/local_old
-  when: stat_usrlocal.stat.isdir == True
+  command: mv "{{ dest }}" "{{ dest }}_old"
+  when: stat_r.stat.exists and stat_r.stat.isdir
   sudo: true
+
+- name: stat 
+  stat: path={{ dest }}
+  register: stat_r
+
 
 - name: link
   file: src="{{ src }}" dest="{{ dest }}" state=link
+  when: not stat_r.stat.exists
   sudo: true

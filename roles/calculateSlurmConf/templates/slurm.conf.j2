@@ -10,6 +10,9 @@
 #
 ClusterName={{ clustername }}
 ControlMachine={{ slurmctrl }}
+{% if slurmctrlbackup is defined %}
+BackupController={{ slurmctrlbackup }}
+{% endif %}
 #ControlAddr=
 #BackupController=
 #BackupAddr=
@@ -121,7 +124,10 @@ Epilog={{ slurmjob.epilog }}
 #JobAcctGatherFrequency=30
 #
 AccountingStorageType=accounting_storage/slurmdbd
-AccountingStorageHost={{ slurmctrl }}
+AccountingStorageHost={{ slurmdbd }}
+{% if slurmdbdbackup is defined %}
+AccountingStorageBackupHost={{ slurmdbdbackup }}
+{% endif %}
 #AccountingStorageEnforce=limits,safe
 #AccountingStorageLoc=
 #AccountingStoragePass=
