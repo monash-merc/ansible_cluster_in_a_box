@@ -92,7 +92,7 @@ class OpenStackConnection:
                             instance_ids.extend(self.recurse_resources(stack=i,resource=r))
 
                 nc=self.nc
-#                cc=self.cc
+                cc=self.cc
 		inventory = {}
 		inventory['_meta'] = { 'hostvars': {} }
 		for server in nc.servers.list():
@@ -114,8 +114,6 @@ class OpenStackConnection:
                                     else:
                                             inventory[server.metadata['ansible_host_group']] = [hostname]
                             #print dir(server)
-                            if len(server.to_dict()['os-extended-volumes:volumes_attached']) >0:
-                                pass
                             # Set the other host variables
                             inventory['_meta']['hostvars'][hostname] = {}
                             inventory['_meta']['hostvars'][hostname]['ansible_ssh_host'] = server.networks.values()[0][0]
@@ -124,6 +122,13 @@ class OpenStackConnection:
                                 if 'ansible_ssh' in key:
                                     inventory['_meta']['hostvars'][hostname][key] = server.metadata[key]
                             inventory['_meta']['hostvars'][hostname]['ansible_ssh_user'] = 'ec2-user'
+                            for vol in server.to_dict()['os-extended-volumes:volumes_attached']:
+                                for cv in cc.volumes.findall():
+                                    if cv.id == vol['id']:
+                                        devname = '/dev/disk/by-id/virtio-'+cv.id[0:20]
+                                        if not 'ansible_host_volumes' in inventory['_meta']['hostvars'][hostname]:
+                                            inventory['_meta']['hostvars'][hostname]['ansible_host_volumes']={}
+                                        inventory['_meta']['hostvars'][hostname]['ansible_host_volumes'][cv.display_name]={'uuid':vol['id'],'dev':devname}
 		print json.dumps(inventory)
 
 if __name__ == "__main__":
