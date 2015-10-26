@@ -154,11 +154,11 @@
  sudo: true
  when: karaage_db_init.stdout.find("0") == 0
 
--
- name: "Create IDP institutes (disable it as cache is not available)"
- shell: kg-idps /tmp/metadata.aaf.xml 
- sudo: true
- when: karaage_db_init.stdout.find("0") == 0
+#-
+# name: "Create IDP institutes (disable it as cache is not available)"
+# shell: kg-idps /tmp/metadata.aaf.xml 
+# sudo: true
+# when: karaage_db_init.stdout.find("0") == 0
 
 -
  name: "Create projects"
