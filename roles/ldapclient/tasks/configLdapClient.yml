@@ -43,4 +43,9 @@
   service: name=sssd state=started
   sudo: true
 
+- name: "start idmpad"
+  service: name=rpcidmapd state=started
+  sudo: true
+  when: nfs_server is defined
+
 
