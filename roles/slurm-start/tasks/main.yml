@@ -44,6 +44,11 @@
   sudo: true
   when: start_slurmdbd is defined
 
+
+- name: "create cluster in slurm db"
+  shell:  "{{slurm_dir}}/bin/sacctmgr -i create cluster {{ clustername }}"
+  sudo: true
+
 - name: start slurmctl
   service: name=slurmctld state=started enabled=yes
   sudo: true
