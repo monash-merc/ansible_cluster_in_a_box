@@ -15,13 +15,19 @@
   sudo: true
 
 - name: install gluster
-  apt: name=glusterfs state='latest'
+  apt: name=glusterfs-server state='latest'
   when: ansible_os_family == 'Debian'
   sudo: true
 
 - name: start daemon
   service: name=glusterd enabled=yes state=started
   sudo: true
+  when: ansible_os_family == 'RedHat'
+
+- name: start daemon
+  service: name=glusterfs-server enabled=yes state=started
+  sudo: true
+  when: ansible_os_family == 'Debian'
 
 - name: make server list
   set_fact: 

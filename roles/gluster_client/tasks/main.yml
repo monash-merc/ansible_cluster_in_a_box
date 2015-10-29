@@ -12,7 +12,7 @@
   sudo: true
 
 - name: install gluster
-  apt: name=glusterfs state='latest'
+  apt: name=glusterfs-client state='latest'
   when: ansible_os_family == 'Debian'
   sudo: true
 
