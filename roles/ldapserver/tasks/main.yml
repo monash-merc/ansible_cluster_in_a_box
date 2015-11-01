@@ -77,6 +77,10 @@
   copy: src="files/{{ ldapCAChain }}" dest="{{ ldapCAChainDest }}"
   sudo: true
 
+- name: copy ca root cert
+  copy: src="files/{{ ldap_TLSCARoot }}" dest="{{ ldapCARootDest }}"
+  sudo: true
+  when: ldap_TLSCARoot is defined
 
 - name: copy key
   copy: src="files/{{ ldapKey }}" dest="{{ ldapKeyDest }}" mode=600 owner={{ ldapuser }} group={{ ldapgroup }} 

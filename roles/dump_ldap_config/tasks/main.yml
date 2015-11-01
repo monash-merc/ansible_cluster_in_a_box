@@ -1,6 +1,6 @@
 ---
 - name: grab cacert
-  shell: cat {{ ldapCertDest }} 
+  shell: cat {{ ldapCARootDest }} 
   register: ldapCaCertContents
 
 - name: dump vars
