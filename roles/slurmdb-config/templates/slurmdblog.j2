@@ -1,0 +1,23 @@
+{{ slurmdbdlog.log }}
+{
+ compress
+ missingok 
+ nocopytruncate 
+ nocreate 
+ nodelaycompress 
+ nomail  
+ notifempty 
+ noolddir 
+ rotate 5 
+ sharedscripts 
+ size=5M 
+ create 640 slurm root 
+{% if ansible_os_family == 'RedHat' and ansible_distribution_version >= '7' %}
+  postrotate
+    {{ slurm_dir }}/sbin/slurmdbd flushlogs  1>/dev/null || true
+{% else %}
+ postrotate /etc/init.d/slurmdbd reconfig 
+{% endif %}
+ endscript
+}
+

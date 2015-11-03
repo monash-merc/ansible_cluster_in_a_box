@@ -1,12 +1,26 @@
 #!/usr/bin/env python
 import sys, os, string, subprocess, socket, re
 import copy, shlex,uuid, random, multiprocessing, time, shutil, json
-import novaclient.v1_1.client as nvclient
-import novaclient.exceptions as nvexceptions
+#import novaclient.v1_1.client as nvclient
+#import novaclient.exceptions as nvexceptions
 from keystoneclient.auth.identity import v2 as v2_auth
-from heatclient import client as heat_client
+#from heatclient import client as heat_client
+#from novaclient import client as nova_client
+#from cinderclient import client as cinder_client
+import heatclient
+import novaclient
+import cinderclient
+import heatclient.client
+import novaclient.client
+import cinderclient.client
+import keystoneclient.client
+from keystoneclient.auth.identity import v2
+from keystoneclient import session
+from novaclient import client
 
 from keystoneclient import session as kssession
+#NOVA_STANDALONE=True
+NOVA_STANDALONE=False
 
 
 class OpenStackConnection:
@@ -17,82 +31,6 @@ class OpenStackConnection:
 		self.tenantName= os.environ['OS_TENANT_NAME']
 		self.tenantID= os.environ['OS_TENANT_ID']
 		self.authUrl="https://keystone.rc.nectar.org.au:5000/v2.0"
-
-        def _get_keystone_v2_auth(self, v2_auth_url, **kwargs):
-            auth_token = kwargs.pop('auth_token', None)
-            tenant_id = kwargs.pop('project_id', None)
-            tenant_name = kwargs.pop('project_name', None)
-            if auth_token:
-                return v2_auth.Token(v2_auth_url, auth_token,
-                                     tenant_id=tenant_id,
-                                     tenant_name=tenant_name)
-            else:
-                return v2_auth.Password(v2_auth_url,
-                                        username=kwargs.pop('username', None),
-                                        password=kwargs.pop('password', None),
-                                        tenant_id=tenant_id,
-                                        tenant_name=tenant_name)
-
-
-        def _get_keystone_session(self, **kwargs):
-            # first create a Keystone session
-            cacert = kwargs.pop('cacert', None)
-            cert = kwargs.pop('cert', None)
-            key = kwargs.pop('key', None)
-            insecure = kwargs.pop('insecure', False)
-            timeout = kwargs.pop('timeout', None)
-            verify = kwargs.pop('verify', None)
-
-            # FIXME(gyee): this code should come from keystoneclient
-            if verify is None:
-                if insecure:
-                    verify = False
-                else:
-                    # TODO(gyee): should we do
-                    # heatclient.common.http.get_system_ca_fle()?
-                    verify = cacert or True
-            if cert and key:
-                # passing cert and key together is deprecated in favour of the
-                # requests lib form of having the cert and key as a tuple
-                cert = (cert, key)
-            return kssession.Session(verify=verify, cert=cert, timeout=timeout)
-
-        def _get_keystone_auth(self, session, auth_url, **kwargs):
-            # FIXME(dhu): this code should come from keystoneclient
-
-            # discover the supported keystone versions using the given url
-            v2_auth_url=auth_url
-            v3_auth_url=None
-
-            # Determine which authentication plugin to use. First inspect the
-            # auth_url to see the supported version. If both v3 and v2 are
-            # supported, then use the highest version if possible.
-            auth = None
-            if v3_auth_url and v2_auth_url:
-                user_domain_name = kwargs.get('user_domain_name', None)
-                user_domain_id = kwargs.get('user_domain_id', None)
-                project_domain_name = kwargs.get('project_domain_name', None)
-                project_domain_id = kwargs.get('project_domain_id', None)
-
-                # support both v2 and v3 auth. Use v3 if domain information is
-                # provided.
-                if (user_domain_name or user_domain_id or project_domain_name or
-                        project_domain_id):
-                    auth = self._get_keystone_v3_auth(v3_auth_url, **kwargs)
-                else:
-                    auth = self._get_keystone_v2_auth(v2_auth_url, **kwargs)
-            elif v3_auth_url:
-                # support only v3
-                auth = self._get_keystone_v3_auth(v3_auth_url, **kwargs)
-            elif v2_auth_url:
-                # support only v2
-                auth = self._get_keystone_v2_auth(v2_auth_url, **kwargs)
-            else:
-                raise exc.CommandError(_('Unable to determine the Keystone '
-                                         'version to authenticate with using the '
-                                         'given auth_url.'))
-
-            return auth
 
         def get_stack_name(self,stack):
             stacks=[]
@@ -108,46 +46,30 @@ class OpenStackConnection:
                 raise Exception("You have multiple heat stacks in your OpenStack Project and I'm not sure which one to use.\n You can select a stack by symlinking to a stack, for example if you have a stack called mycluster do ln -s %s mycluster\n"%stack)
 
         def auth(self):
-		self.nc = nvclient.Client(	auth_url=self.authUrl,
-			username=self.username,
-			api_key=self.passwd,
-			project_id=self.tenantName,
-			tenant_id=self.tenantID,
-			service_type="compute"
-			)
-                kwargs = {
-                    'insecure': False,
-                }
-                keystone_session = self._get_keystone_session(**kwargs)
+		
 
                 kwargs = {
                     'username': self.username,
                     'password': self.passwd,
-                    'project_id': self.tenantID,
-                    'project_name': self.tenantName 
+                    'tenant_id': self.tenantID,
+	            'auth_url':self.authUrl,
                 }
 
-                keystone_auth = self._get_keystone_auth(keystone_session,
-                                                    self.authUrl,
-                                                    **kwargs)
-
-                endpoint = keystone_auth.get_endpoint(keystone_session,service_type='orchestration', region_name=None)
-
-
+		auth = v2.Password(**kwargs)
+		sess = session.Session(auth=auth)
                 kwargs = {
-                    'username': self.username,
-                    'include_pass': False,
-                    'session': keystone_session,
-                    'auth_url': self.authUrl,
-                    'region_name': '',
-                    'endpoint_type': 'publicURL',
-                    'service_type': 'orchestration',
-                    'password': self.passwd,
-                    'auth': keystone_auth,
+		    'session':sess,
+		
                 }
+                api_version='2'
+                self.nc = novaclient.client.Client(api_version, session=sess)
+
                 api_version=1
+		endpoint="https://heat.rc.nectar.org.au:8004/v1/%s"%self.tenantID
+                self.hc = heatclient.client.Client(api_version, endpoint, session=sess)
 
-                self.hc = heat_client.Client(api_version, endpoint, **kwargs)
+                api_version=1
+                self.cc = cinderclient.client.Client(api_version, session=sess)
 
 	
         def recurse_resources(self,stack,resource):
@@ -170,6 +92,7 @@ class OpenStackConnection:
                             instance_ids.extend(self.recurse_resources(stack=i,resource=r))
 
                 nc=self.nc
+                cc=self.cc
 		inventory = {}
 		inventory['_meta'] = { 'hostvars': {} }
 		for server in nc.servers.list():
@@ -190,6 +113,7 @@ class OpenStackConnection:
                                             inventory[server.metadata['ansible_host_group']].append(hostname)
                                     else:
                                             inventory[server.metadata['ansible_host_group']] = [hostname]
+                            #print dir(server)
                             # Set the other host variables
                             inventory['_meta']['hostvars'][hostname] = {}
                             inventory['_meta']['hostvars'][hostname]['ansible_ssh_host'] = server.networks.values()[0][0]
@@ -198,6 +122,13 @@ class OpenStackConnection:
                                 if 'ansible_ssh' in key:
                                     inventory['_meta']['hostvars'][hostname][key] = server.metadata[key]
                             inventory['_meta']['hostvars'][hostname]['ansible_ssh_user'] = 'ec2-user'
+                            for vol in server.to_dict()['os-extended-volumes:volumes_attached']:
+                                for cv in cc.volumes.findall():
+                                    if cv.id == vol['id']:
+                                        devname = '/dev/disk/by-id/virtio-'+cv.id[0:20]
+                                        if not 'ansible_host_volumes' in inventory['_meta']['hostvars'][hostname]:
+                                            inventory['_meta']['hostvars'][hostname]['ansible_host_volumes']={}
+                                        inventory['_meta']['hostvars'][hostname]['ansible_host_volumes'][cv.display_name]={'uuid':vol['id'],'dev':devname}
 		print json.dumps(inventory)
 
 if __name__ == "__main__":

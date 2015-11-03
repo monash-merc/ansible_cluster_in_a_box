@@ -1,0 +1,53 @@
+---
+
+- name: add repo
+  copy: src=glusterfs-epel.repo dest=/etc/yum.repos.d/glusterfs-epel.repo
+  sudo: true
+  when: ansible_os_family == 'RedHat'
+
+- name: install gluster
+  yum: name={{ item }} state='latest'
+  when: ansible_os_family == 'RedHat'
+  with_items:
+  - glusterfs
+  - glusterfs-server
+
+  sudo: true
+
+- name: install gluster
+  apt: name=glusterfs-server state='latest'
+  when: ansible_os_family == 'Debian'
+  sudo: true
+
+- name: start daemon
+  service: name=glusterd enabled=yes state=started
+  sudo: true
+  when: ansible_os_family == 'RedHat'
+
+- name: start daemon
+  service: name=glusterfs-server enabled=yes state=started
+  sudo: true
+  when: ansible_os_family == 'Debian'
+
+- name: make server list
+  set_fact: 
+    server_list: "{{ gluster_servers|join(',') }}"
+
+
+- name: echo server list
+  debug: var=server_list
+
+- name: make brick dir
+  file: state=directory path="{{ brickmnt }}/brick"
+  sudo: true
+
+- name: create volume
+  gluster_volume: 
+    name: "{{ volname }}"
+    brick: "{{ brickmnt }}/brick"
+    cluster: "{{ server_list }}"
+    replicas: "{{ replicas }}"
+    state: present
+  sudo: true
+  run_once: true
+

@@ -51,7 +51,7 @@
 
 -
  name: "Getting Karaage from Github"
- git: repo="https://github.com/monash-merc/karaage.git" dest="/root/karaage3.1.7" force=yes
+ git: repo="https://github.com/monash-merc/karaage.git" dest="/root/karaage3.1.7" {% if karaage_source_version is defined %}version="{{ karaage_source_version }}" {% endif %} force=yes
  sudo: true
 
 -
@@ -116,7 +116,7 @@
   sudo: true
 
 - name: install shibboleth cache file 
-  template: src=metadata.aaf.xml.j2 dest=/tmp/metadata.aaf.xml 
+  template: src="files/{{ shibboleth_deploy }}_metadata.aaf.xml.j2" dest=/tmp/metadata.aaf.xml 
 
 -
  name: "enabling Karaage configuration"
@@ -190,4 +190,11 @@
 - name: "Start cron job for creating idps"
   cron: name=idps job=/usr/bin/kg-idps user=root day=*/1 state=present
   sudo: true
+
+-
+ name: "Templating username list"
+ template: src=files/{{ item }} dest=/{{ user_id_file_dir }}/{{ item }}
+ with_items: user_id_file
+ sudo: true
+ when: user_id_file is defined and user_id_file_dir is defined
 

@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 import sys, os, string, socket, re
 import shlex, multiprocessing, time, shutil, json
-import novaclient.v1_1.client as nvclient
+from novaclient import client as nvclient
 import novaclient.exceptions as nvexceptions
 import keystoneclient.v2_0.client as ksclient
 from joblib import Parallel, delayed
 from multiprocessing import Process, Manager, Pool
+from libnmap.process import NmapProcess
+from libnmap.parser import NmapParser, NmapParserException
 
 def gatherInfo(tenantName, tenantID, userName, passwd, authUrl, inventory):
-	
 	## Fetch the Nova Object
 	projectName = os.path.basename(sys.argv[0])
 	nc = nvclient.Client(	auth_url=authUrl,
@@ -16,24 +17,23 @@ def gatherInfo(tenantName, tenantID, userName, passwd, authUrl, inventory):
 		api_key=passwd,
 		project_id=tenantName,
 		tenant_id=tenantID,
-		service_type="compute"
+		version="2"
 		)
 	for server in nc.servers.list():
 		if server.metadata and \
 		'ansible_host_groups' in server.metadata and \
-		server.metadata['project_name'] == projectName.strip():
+		'project_name' in  server.metadata:
+			if server.metadata['project_name'].strip() != projectName.strip(): continue
 			unwantedChars = """][")("""
 			rgx = re.compile('[%s]' % unwantedChars)
 			ansible_groups = rgx.sub('', server.metadata['ansible_host_groups']).split(',')
 			hostname = socket.gethostbyaddr(server.networks.values()[0][0])[0]
-			closed=True
-			while closed:
-				hostSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-				if not hostSocket.connect_ex((hostname, 22)): 
-					closed = False
-					break
-				time.sleep(5)
-				hostSocket.close()
+			novaVolumes = nc.volumes.get_server_volumes(server.id)
+			# Let's do some port scanning using nmap
+			nmproc = NmapProcess(hostname, "-p 22 -sV -Pn")
+			rc = nmproc.run()
+			if rc != 0: continue
+			parsed = NmapParser.parse(nmproc.stdout)
 			# Set Ansible Host Group
 			for group in ansible_groups:
 				groupName = group.strip()
@@ -43,11 +43,12 @@ def gatherInfo(tenantName, tenantID, userName, passwd, authUrl, inventory):
 			for key, value in server.metadata.iteritems():
 				if key not in ('project_name','ansible_host_groups'):
 					inventory['_meta']['hostvars'][hostname] = { key:value }
+			if novaVolumes:
+				inventory['_meta']['hostvars'][hostname]['volumeList'] = [ volume.id for volume in novaVolumes ]
+			inventory['_meta']['hostvars'][hostname]['status']  = parsed.hosts[0].status
 		else:
 			continue
 	#print inventory
-	#inventoryList.append(inventory)
-	#print json.dumps(inventory)
 
 if __name__ == "__main__":
 	inventory = {}

@@ -1,6 +1,6 @@
 ---
 - name: grab cacert
-  shell: cat /etc/openldap/certs/cacert.pem
+  shell: cat {{ ldapCARootDest }} 
   register: ldapCaCertContents
 
 - name: dump vars

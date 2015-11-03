@@ -1,13 +1,31 @@
 ---
-- name: Format File Systems
-  filesystem: fstype={{ item.fstype }} dev={{ item.dev }} opts={{ item.opts }}
-  with_items: mkFileSystems
+- name: format volumes
+  filesystem: fstype={{ item.fstype }} dev={{ hostvars[ansible_hostname]['ansible_host_volumes'][item.name]['dev'] }}
+  with_items: volumes
   sudo: true
-  when: mkFileSystems is defined
 
-- name: Mount device 
-  mount: name={{ item.name }} src={{ item.dev }} fstype={{ item.fstype }} opts={{ item.opts }} state=mounted
-  with_items: mountFileSystems
+- name: format volumes
+  mount: name={{ item.mntpt }} fstype={{ item.fstype }} src={{ hostvars[ansible_hostname]['ansible_host_volumes'][item.name]['dev'] }} state=mounted
+  with_items: volumes
   sudo: true
-  when: mountFileSystems is defined
 
+- name: symlink volumes
+  file: force=yes state=link src="{{ item.mntpt }}" path="{{ item.linkto }}"
+  when: item.linkto is defined
+  with_items: volumes
+  sudo: true
+
+
+#- name: Format File Systems
+#  filesystem: fstype={{ item.fstype }} dev={{ item.dev }} opts={{ item.opts }}
+#  with_items: mkFileSystems
+#  sudo: true
+#  when: mkFileSystems is defined
+#
+#- name: Mount device 
+#  mount: name={{ item.name }} src={{ item.dev }} fstype={{ item.fstype }} opts={{ item.opts }} state=mounted
+#  with_items: mountFileSystems
+#  sudo: true
+#  when: mountFileSystems is defined
+#
+#

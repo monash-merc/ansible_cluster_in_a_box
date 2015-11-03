@@ -31,7 +31,8 @@
 #
 # DEBUG = True
 
-{% if user_id_file is defined %}
+{% if user_id_file is defined and user_id_file_dir is defined %}
+USER_ID_DIR = "{{ user_id_file_dir }}"
 USER_ID_FILES = {{ user_id_file }}
 {% endif %}
 
@@ -144,7 +145,7 @@ GLOBAL_DATASTORES = [
 ]
 # The email address that error messages come from, such as those sent to ADMINS
 # and MANAGERS.
-SERVER_EMAIL = '{{ karaageAdminEmail }}'
+SERVER_EMAIL = '{{ karaageServerEmail }}'
 
 # The host to use for sending email.
 EMAIL_HOST = 'localhost'
@@ -266,7 +267,7 @@ LOGGING = {
 
 # Users are advised to contact this address if having problems.
 # This is also used as the from address in outgoing emails.
-ACCOUNTS_EMAIL = '{{ karaageAdminEmail }}'
+ACCOUNTS_EMAIL = '{{ karaageAccountEmail }}'
 
 # This organisation name, used in outgoing emails.
 ACCOUNTS_ORG_NAME = '{{ karaageAcountName }}' 
