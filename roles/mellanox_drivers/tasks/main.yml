@@ -1,0 +1,50 @@
+---
+- name: restart machine
+  command: shutdown -r now "Ansible updates triggered"
+  async: 0
+  poll: 0
+  ignore_errors: true
+
+- name: waiting for server to come back
+  local_action: wait_for host={{ inventory_hostname }}
+                state=started
+  sudo: false
+
+- name: test for existing installation of drivers
+  command: ibv_devinfo
+  sudo: true
+  register: drivers_installed
+  ignore_errors: true
+
+- name: copy driver source
+  unarchive: copy=yes src=MLNX_OFED_LINUX-3.1-1.0.3-rhel7.1-x86_64-ext.tgz dest=/tmp/MLNX_OFED_LINUX-3.1-1.0.3-rhel7.1-x86_64-ext
+  sudo: true
+  when: drivers_installed|failed and ansible_os_family=="RedHat" and ansible_distribution_major_version == "7"
+
+- name: install drivers
+  command: ./mlnxofedinstall -q
+  args:
+    path: /tmp/MLNX_OFED_LINUX-3.1-1.0.3-rhel7.1-x86_64-ext
+  sudo: true
+  when: drivers_installed failed and ansible_distribution_major_version == "7"
+
+
+- name: get IP address
+  command: ./scripts/map_ib_ip.pl {{ inventory_hostname }}
+  local_action: true
+  register: ip_address
+  
+- name: template IP address
+  template: dest=/etc/sysconfig/network-scripts/ifcfg-ens6 source=ifcfg-ens6.j2 owner=root group=root
+  sudo: true
+  when: ansible_distribution_major_version == "7"
+ 
+- name: bring up interface
+  command: ifup ens6
+  sudo: true
+  when: ansible_distribution_major_version == "7"
+   
+  
+
+
+
