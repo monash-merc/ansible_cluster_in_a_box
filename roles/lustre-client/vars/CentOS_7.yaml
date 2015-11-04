@@ -1,0 +1,5 @@
+---
+lustre_pkgs:
+  - lustre-client-modules-2.7.0-3.10.0_229.14.1.el7.x86_64.x86_64.rpm
+  - lustre-client-2.7.0-3.10.0_229.14.1.el7.x86_64.x86_64.rpm
+
