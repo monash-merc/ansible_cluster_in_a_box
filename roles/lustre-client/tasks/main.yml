@@ -19,3 +19,4 @@ lustre_pkgs:
 - name: "Mount lustre filesystems"
   mount: name="{{ item.mntpt }}" src= "{{ item.servers }}"/"{{ item.src }}" state="mounted" fstype="lustre" opts="_netdev,flock 0 0" 
   sudo: true
+  with_tiems: {{ mntlist }}
