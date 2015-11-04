@@ -1,0 +1,22 @@
+---
+- include_vars: "{{ ansible_distribution }}_{{ ansible_distirubtion_major_version }}.yaml"
+
+lustre_pkgs: 
+  - lustre-client-modules-2.7.0-3.10.0_229.14.1.el7.x86_64.x86_64.rpm
+  - lustre-client-2.7.0-3.10.0_229.14.1.el7.x86_64.x86_64.rpm
+
+- name: copy rpms
+  copy: dest=/tmp/ src={{ item }}
+  with_items:
+    {{ lustre_pkgs }}
+
+- name: install rpms
+  yum: name= /tmp/{{ item }}
+  sudo: true
+  with_tiems:
+    {{ lustre_pkgs }}
+  
+- name: "Mount lustre filesystems"
+  mount: name="{{ item.mntpt }}" src= "{{ item.servers }}"/"{{ item.src }}" state="mounted" fstype="lustre" opts="_netdev,flock 0 0" 
+  sudo: true
+  with_tiems: {{ mntlist }}
