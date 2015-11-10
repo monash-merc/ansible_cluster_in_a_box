@@ -36,7 +36,7 @@
   when: use_systemd is defined
 
 - name: start munge
-  service: name=munge state=started
+  service: name=munge state=started enabled=yes
   sudo: true
 
 - name: start slurmdbd
