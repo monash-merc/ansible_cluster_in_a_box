@@ -1,4 +1,4 @@
 --- 
 - 
   name: "Run rpcbind service"
-  service: "name=rpcbind state=started"
+  service: "name=rpcbind state=started enabled=yes"

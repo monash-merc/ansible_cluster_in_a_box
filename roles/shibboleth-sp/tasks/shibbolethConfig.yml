@@ -140,4 +140,4 @@
 -
  name: "Starting shibboleth"
  sudo: true
- service: name=shibd state=started
+ service: name=shibd state=started enabled=yes
