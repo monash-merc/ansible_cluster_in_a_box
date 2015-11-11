@@ -116,7 +116,7 @@
   sudo: true
 
 - name: install shibboleth cache file 
-  template: src="{{ shibboleth_deploy }}_metadata.aaf.xml.j2" dest=/tmp/metadata.aaf.xml 
+  template: src="files/{{ shibboleth_deploy }}_metadata.aaf.xml.j2" dest=/tmp/metadata.aaf.xml 
 
 -
  name: "enabling Karaage configuration"
@@ -154,11 +154,11 @@
  sudo: true
  when: karaage_db_init.stdout.find("0") == 0
 
-#-
-# name: "Create IDP institutes (disable it as cache is not available)"
-# shell: kg-idps /tmp/metadata.aaf.xml 
-# sudo: true
-# when: karaage_db_init.stdout.find("0") == 0
+-
+ name: "Create IDP institutes (disable it as cache is not available)"
+ shell: kg-idps /tmp/metadata.aaf.xml 
+ sudo: true
+ when: karaage_db_init.stdout.find("0") == 0
 
 -
  name: "Create projects"
