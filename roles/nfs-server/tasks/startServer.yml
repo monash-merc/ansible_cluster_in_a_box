@@ -5,16 +5,16 @@
   with_items: exportList
 
 - name: "Starting rpcbind"
-  service: "name=rpcbind state=started"
+  service: "name=rpcbind state=started enabled=true"
   sudo: true
   when: ansible_os_family == "RedHat"
 
 - name: "Start the Server"
-  service: "name=nfs state=started"
+  service: "name=nfs state=started enabled=true"
   sudo: true
   when: ansible_os_family == "RedHat"
 
 - name: "Start the Server"
-  service: "name=nfs-kernel-server state=started"
+  service: "name=nfs-kernel-server state=started enabled=true"
   sudo: true
   when: ansible_os_family == "Debian"
