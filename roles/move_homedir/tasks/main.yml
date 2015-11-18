@@ -48,7 +48,7 @@
   args:
     dest: /etc/passwd
     regexp: "{{ ansible_ssh_user }}:x:1000:1000:Ubuntu:/home/{{ ansible_ssh_user }}:.*"
-    line: "{{ ansible_ssh_user }}:x:1000:1000:/Ubuntu:local_home/{{ ansible_ssh_user }}:/bin/bash"
+    line: "{{ ansible_ssh_user }}:x:1000:1000:/Ubuntu:/local_home/{{ ansible_ssh_user }}:/bin/bash"
     backrefs: yes
   sudo: true
   register: edit4
