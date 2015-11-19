@@ -16,6 +16,7 @@
     line: /usr/local/Modules/modulefiles
   ignore_errors: true
   sudo: true
+  when: ansible_os_family == 'RedHat'
 
 # for some reason ubuntu uses lowercase modules
 - name: add /usr/local/Modules to the module file path
