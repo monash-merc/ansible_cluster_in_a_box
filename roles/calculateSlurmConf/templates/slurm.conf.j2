@@ -30,7 +30,8 @@ SwitchType=switch/none
 MpiDefault=pmi2
 SlurmctldPidFile={{ slurmpiddir }}/slurmctld.pid
 SlurmdPidFile={{ slurmpiddir }}/slurmd.pid
-ProctrackType=proctrack/linuxproc
+#ProctrackType=proctrack/linuxproc
+ProctrackType=proctrack/cgroup
 #PluginDir=
 CacheGroups=0
 #FirstJobId=
@@ -78,16 +79,16 @@ SelectType={{ slurmselecttype }}
 SelectTypeParameters=CR_Core_Memory
 {% endif %}
 FastSchedule={{ slurmfastschedule }}
-#PriorityType=priority/multifactor
+PriorityType=priority/multifactor
 #PriorityFlags=Ticket_Based
 #PriorityCalcPeriod=5
 #PriorityDecayHalfLife=0
 #PriorityUsageResetPeriod=14-0
-##PriorityWeightFairshare=10000
-#PriorityWeightAge=10000
-#PriorityWeightPartition=10000
-#PriorityWeightJobSize=10000
-#PriorityMaxAge=14-0
+PriorityWeightFairshare=10000
+PriorityWeightAge=10000
+PriorityWeightPartition=10000
+PriorityWeightJobSize=10000
+PriorityMaxAge=14-0
 #
 # LOGGING
 {% if slurmctlddebug %}
@@ -120,21 +121,21 @@ Epilog={{ slurmjob.epilog }}
 {% endif %}
 #
 # ACCOUNTING
-#JobAcctGatherType=jobacct_gather/linux
-#JobAcctGatherFrequency=30
+JobAcctGatherType=jobacct_gather/linux
+JobAcctGatherFrequency=30
 #
 AccountingStorageType=accounting_storage/slurmdbd
 AccountingStorageHost={{ slurmdbd }}
 {% if slurmdbdbackup is defined %}
 AccountingStorageBackupHost={{ slurmdbdbackup }}
 {% endif %}
-#AccountingStorageEnforce=limits,safe
+AccountingStorageEnforce=limits,safe
 #AccountingStorageLoc=
 #AccountingStoragePass=
 #AccountingStorageUser=
 #
 #GRES
-GresTypes=gpu
+#GresTypes=gpu
 
 # Fair share
 {% if slurmfairshare.def %}
@@ -154,6 +155,10 @@ MpiParams=ports=12000-12999
 {% for node in nodelist|unique %}
 NodeName={{ hostvars[node]['ansible_hostname'] }} Procs={{ hostvars[node]['ansible_processor_vcpus'] }} RealMemory={{ hostvars[node].ansible_memory_mb.real.total }} Sockets={{ hostvars[node]['ansible_processor_vcpus'] }} CoresPerSocket=1 ThreadsPerCore={{ hostvars[node].ansible_processor_threads_per_core }} {% if hostvars[node].ansible_hostname.find('vis') != -1 %}Gres=gpu:1{% endif %} {% if hostvars[node]['ansible_processor_vcpus'] == 1 %}Weight=1{% endif %}{% if hostvars[node]['ansible_processor_vcpus'] > 1 and hostvars[node]['ansible_processor_vcpus'] <= 16 %}Weight=3{% endif %}{% if hostvars[node]['ansible_processor_vcpus'] > 16 and hostvars[node]['ansible_processor_vcpus'] <= 20 %}Weight=5{% endif %}{% if hostvars[node]['ansible_processor_vcpus'] > 20 and hostvars[node]['ansible_processor_vcpus'] <= 40 %}Weight=7{% endif %}{% if hostvars[node]['ansible_processor_vcpus'] > 40 and hostvars[node]['ansible_processor_vcpus'] <= 64 %}Weight=8{% endif %}{% if hostvars[node]['ansible_processor_vcpus'] > 64 and hostvars[node]['ansible_processor_vcpus'] <= 128 %}Weight=9{% endif %}{% if hostvars[node]['ansible_processor_vcpus'] > 128 %}Weight=10{% endif %} Feature=stage1 State=UNKNOWN  
 {% endfor %}
+
+#monarch specific to stop stupid warning messages
+NodeName={{ hostvars[groups['LoginNodes'][0]]['ansible_hostname'] }} State=DOWN
+NodeName={{ slurmctrl }} State=DOWN
 
 {% for queue in slurmqueues %}
 {% set nodenames = [] %}
