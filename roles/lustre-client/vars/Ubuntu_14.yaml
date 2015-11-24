@@ -1,0 +1,5 @@
+---
+lustre_pkgs:
+  - linux-patch-lustre_2.7.62-1_all.deb
+  - lustre-client-modules-3.13.0-58-generic_2.7.62-1_amd64.deb
+  - lustre-utils_2.7.62-1_amd64.deb

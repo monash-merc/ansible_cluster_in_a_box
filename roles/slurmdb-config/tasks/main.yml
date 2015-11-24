@@ -22,13 +22,13 @@
   sudo: true
 
 - name: install slurmdb.conf
-  template: src=slurmdbd.conf.j2 dest={{ slurm_dir }}/etc/slurmdbd.conf
+  copy: src=files/slurmdbd.conf dest={{ slurm_dir }}/etc/slurmdbd.conf
   sudo: true
   when: slurm_dir is defined
 
 
 - name: install slurmdbd.conf
-  template: src=slurmdbd.conf.j2 dest=/etc/slurm/slurmdbd.conf
+  copy: src=slurmdbd.conf dest=/etc/slurm/slurmdbd.conf
   sudo: true
   when: slurm_dir is not defined
 

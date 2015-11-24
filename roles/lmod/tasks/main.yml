@@ -12,6 +12,17 @@
 #  sudo: true
 #  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
 
+- name: Install epel-release
+  yum: name=epel-release-7-5.noarch state=present
+  sudo: true
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+
+- name: Enable epel
+  command: yum-config-manager --enable epel
+  sudo: true
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+
+
 - name: install lua
   yum: name={{ item }} state=installed
   with_items:
