@@ -117,6 +117,9 @@ JobCompType=jobcomp/none
 {% if slurmjob is defined %}
 Prolog={{ slurmjob.prolog }}
 Epilog={{ slurmjob.epilog }}
+{% else %}
+Prolog={{ slurm_dir }}/bin/slurm.prolog
+Epilog={{ slurm_dir }}/bin/slurm.epilog
 {% endif %}
 #
 # ACCOUNTING
