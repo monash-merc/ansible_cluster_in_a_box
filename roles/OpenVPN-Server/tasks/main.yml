@@ -3,5 +3,5 @@
  include: installOpenVPN.yml
 
 - name: "Start OpenVPN"
-  service: name=openvpn state=started
+  service: name=openvpn state=started enabled=yes
   sudo: true

@@ -1,0 +1,4 @@
+---
+ #note. do not add '.tgz' to driver src. done in playbook
+ MELLANOX_DRIVER_SRC: "{% if ansible_os_family == 'RedHat'  %}MLNX_OFED_LINUX-3.1-1.0.3-rhel7.1-x86_64-ext{% elif ansible_os_family == 'Debian' %}MLNX_OFED_LINUX-3.1-1.0.3-ubuntu14.04-x86_64{% endif %}"
+ MELLANOX_DEVICE_NAME: "{% if ansible_os_family == 'RedHat'  %}ens6{% elif  ansible_os_family == 'Debian' %}eth1{% endif %}"

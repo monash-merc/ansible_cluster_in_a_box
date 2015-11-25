@@ -1,10 +1,11 @@
 ---
 - include_vars: "{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yaml"
 
-- name: copy rpms
+- name: copy rpms/debs
   copy: dest=/tmp/ src=lustre-install/{{ item }}
   with_items:
     "{{ lustre_pkgs }}"
+
 
 #- name: install rpms
 #  yum: name="/tmp/{{ item }}"
@@ -14,13 +15,38 @@
 - name: install rpms
   yum: name=/tmp/lustre-client-modules-2.7.0-3.10.0_229.14.1.el7.x86_64.x86_64.rpm
   sudo: true
+  when: ansible_os_family == "RedHat"
 
 - name: install rpms
   yum: name=/tmp/lustre-client-2.7.0-3.10.0_229.14.1.el7.x86_64.x86_64.rpm
   sudo: true
+  when: ansible_os_family == "RedHat"
 
-  
+# instructions to build these debs:
+# Instantiate an Ubuntu 14.04 instance
+# git clone git://git.hpdd.intel.com/fs/lustre-release.git
+# cd lustre-release
+# optionally git checkout 0754bc8f2623bea184111af216f7567608db35b6 <- I know this commit works on Ubuntu, but I had a lot of trouble with other branches
+# sh autogen.sh
+# ./configure --enable-dist --disable-doc  --disable-server --disable-dependency-tracking --with-o2ib=/var/lib/dkms/mlnx-ofed-kernel/3.1/build/
+# mkdir BUILD
+# cd BUILD
+# ln -s ../lustre-2.7.62.tar.gz lustre-2.7.62.orig.tar.gz
+# tar zxvf ../lustre-2.7.62.tar.gz
+# cd lustre-2.7.62
+# ./configure --disable-doc  --disable-server --disable-dependency-tracking --with-o2ib=/var/lib/dkms/mlnx-ofed-kernel/3.1/build/
+# vi debian/changelog (the version number on the first line is incorrect)
+# make debs
+#
+- name: install debs
+  apt: name="/tmp/{{ item }}"
+  sudo: true
+  with_items: "{{ lustre_pkgs }}"
+  when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "14"
+
 - name: "Mount lustre filesystems"
   mount: name="{{ item.mntpt }}" src="{{ item.servers }}"/"{{ item.src }}" state="mounted" fstype="lustre" opts="_netdev,flock" 
   sudo: true
   with_items: "{{ mntlist }}"
+
+

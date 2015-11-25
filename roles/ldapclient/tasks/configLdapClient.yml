@@ -40,5 +40,5 @@
   notify: restart sssd
 
 - name: "start sssd"
-  service: name=sssd state=started
+  service: name=sssd state=started enabled=yes
   sudo: true
