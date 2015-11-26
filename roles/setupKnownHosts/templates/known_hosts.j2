@@ -2,14 +2,22 @@
 {% for node in groups['all'] %}
 {% for interface in hostvars[node]['ansible_interfaces'] %}
 {% if interface != "lo" %}
-{% set host = {'name': node, 'ip': hostvars[node]['ansible_'+interface]['ipv4']['address'], 'rsa': hostvars[node]['ansible_ssh_host_key_rsa_public']} %}
+{% if hostvars[node]['ansible_ssh_host_key_rsa_public'] %}
+{% set host = {'name': node, 'ip': hostvars[node]['ansible_'+interface]['ipv4']['address'], 'keytype':'ssh-rsa', 'key': hostvars[node]['ansible_ssh_host_key_rsa_public']} %}
 {% if nodelist.append(host) %}
+{% endif %}
+{% endif %}
+{% if hostvars[node]['ansible_ssh_host_key_ecdsa_public'] %}
+#{% set host = {'name': node, 'ip': hostvars[node]['ansible_'+interface]['ipv4']['address'], 'keytype':'ssh-ecdsa', 'key': hostvars[node]['ansible_ssh_host_key_ecdsa_public']} %}
+{% set host = {'name': node, 'ip': hostvars[node]['ansible_'+interface]['ipv4']['address'], 'keytype':'ecdsa-sha2-nistp256', 'key': hostvars[node]['ansible_ssh_host_key_ecdsa_public']} %}
+{% if nodelist.append(host) %}
+{% endif %}
 {% endif %}
 {% endif %}
 {% endfor %}
 {% endfor %}
 
-{% for host in nodelist|unique %}
-{{ host.ip }} ssh-rsa {{ host.rsa }}
-{{ host.name }} ssh-rsa {{ host.rsa }}
+{% for host in nodelist %}
+{{ host.ip }} {{ host.keytype }} {{ host.key }}
+{{ host.name }} {{ host.keytype }} {{ host.key }}
 {% endfor %}
