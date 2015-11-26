@@ -136,7 +136,6 @@
 - name: setup envirnment variables 
   template: src=slurm_setup.sh.j2 dest=/etc/profile.d/slurm_setup.sh
   sudo: true
-  when: ansible_os_family == 'RedHat' 
 
 - name: setup plugin
   template: src=job_submit.lua.j2 dest={{ slurm_dir }}/etc/job_submit.lua

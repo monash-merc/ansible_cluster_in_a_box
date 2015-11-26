@@ -19,6 +19,7 @@
   sudo: true
   register: edit1
 
+
 - name: edit passwd file
   lineinfile:
   args:
@@ -29,6 +30,8 @@
   sudo: true
   register: edit2
 
+
+
 - name: edit passwd file
   lineinfile:
   args:
@@ -38,4 +41,15 @@
     backrefs: yes
   sudo: true
   register: edit3
+
+# ubuntu:x:1000:1000:Ubuntu:/home/ubuntu:/bin/bash
+- name: edit passwd file for ubuntu 14
+  lineinfile:
+  args:
+    dest: /etc/passwd
+    regexp: "{{ ansible_ssh_user }}:x:1000:1000:Ubuntu:/home/{{ ansible_ssh_user }}:.*"
+    line: "{{ ansible_ssh_user }}:x:1000:1000:Ubuntu:/local_home/{{ ansible_ssh_user }}:/bin/bash"
+    backrefs: yes
+  sudo: true
+  register: edit4
 
