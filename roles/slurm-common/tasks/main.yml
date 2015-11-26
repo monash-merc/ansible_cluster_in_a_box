@@ -123,6 +123,14 @@
   sudo: true
   when: slurm_gres_list is defined
 
+- name: install slurm prolog
+  template: src=slurm.prolog.j2 dest={{ slurm_dir }}/bin/slurm.prolog
+  sudo: true
+
+- name: install slurm epilog
+  template: src=slurm.epilog.j2 dest={{ slurm_dir }}/bin/slurm.epilog
+  sudo: true
+
 - name: install slurm.conf
   copy: src=files/slurm.conf dest={{ slurm_dir }}/etc/slurm.conf
   sudo: true
