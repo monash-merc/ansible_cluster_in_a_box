@@ -8,11 +8,17 @@
   ignore_errors: true
   when: ansible_os_family == "RedHat"
   
+- name: test for existing installation of drivers
+  command: ibv_devinfo
+  sudo: true
+  register: drivers_installed
+  ignore_errors: true
+
 - name: yum update to upgrade kernel
   shell: "yum update -y"
   sudo: true
   ignore_errors: true
-  when: ansible_os_family == "RedHat"
+  when: ansible_os_family == "RedHat" and  drivers_installed|failed
   
 #
 # A REBOOT IS NEEDED AFTER a KERNEL UPDATE
@@ -23,10 +29,9 @@
   poll: 0
   ignore_errors: true
   sudo: true
-  when: ansible_os_family == "RedHat"
+  when: ansible_os_family == "RedHat" and  drivers_installed|failed
 
 - name: waiting for server to come back
-  #local_action: wait_for host={{ ansible_host }} state=started port=22 delay=10 search_regex=OpenSSH
   local_action: wait_for host={{ ansible_ssh_host }} state=started port=22 delay=10 search_regex=OpenSSH
   sudo: false
 
@@ -34,11 +39,6 @@
   local_action: wait_for host={{ ansible_ssh_host }} state=started port=22 delay=10 search_regex=OpenSSH
   sudo: false
 
-- name: test for existing installation of drivers
-  command: ibv_devinfo
-  sudo: true
-  register: drivers_installed
-  ignore_errors: true
 
 - name: copy driver source
   #make this a variable
@@ -62,12 +62,14 @@
   local_action: command ./scripts/map_ib_ip.pl {{ inventory_hostname }}
   register: ip_address
   sudo: false
+  #when: drivers_installed|failed
 
   
 - name: template IP address
   template: dest=/etc/sysconfig/network-scripts/ifcfg-ens6 src=ifcfg-ens6.j2 owner=root group=root
   sudo: true
-  when:  ansible_os_family=="RedHat" and  ansible_distribution_major_version == "7"
+  when:  ansible_os_family=="RedHat" and  ansible_distribution_major_version == "7" and  drivers_installed|failed
+
 #ubuntu equivalent of previous command
 - name: Ubuntu network interfaces - line 1
   lineinfile:
@@ -76,7 +78,8 @@
       line: auto {{ MELLANOX_DEVICE_NAME }}
       state: present
   sudo: true
-  when: ansible_os_family=="Debian"
+  when: ansible_os_family=="Debian" and  drivers_installed|failed
+
 - name: Ubuntu network interfaces - line 2
   lineinfile:
   args: 
@@ -85,7 +88,7 @@
       state: present
       insertafter: "auto {{ MELLANOX_DEVICE_NAME }}"
   sudo: true
-  when: ansible_os_family=="Debian"
+  when: ansible_os_family=="Debian" and  drivers_installed|failed
 - name: Ubuntu network interfaces - line 3
   lineinfile:
   args: 
@@ -94,7 +97,7 @@
       state: present
       insertafter: "iface {{ MELLANOX_DEVICE_NAME }} inet static"
   sudo: true
-  when: ansible_os_family=="Debian"
+  when: ansible_os_family=="Debian" and  drivers_installed|failed
 #
 # A REBOOT IS NEEDED AFTER SUCCESSFUL INSTALL
 #
@@ -104,12 +107,12 @@
   poll: 0
   ignore_errors: true
   sudo: true
-  when: ansible_os_family=="Centos"
+  when: ansible_os_family=="Centos" and  drivers_installed|failed
 
 - name: restart machine for Ubuntu -cos it is 'special'
-  command: "sudo shutdown -r now"
+  shell: "sleep 5; sudo shutdown -r now"
   async: 2
-  poll: 0
+  poll: 1
   ignore_errors: true
   sudo: true
   when: ansible_os_family=="Debian"
