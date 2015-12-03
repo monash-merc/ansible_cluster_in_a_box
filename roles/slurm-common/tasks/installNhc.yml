@@ -33,6 +33,10 @@
   template: dest={{ nhc_dir }}/sbin/nhc_cron src=nhc_cron.j2 mode=755
   sudo: true
 
+- name: copy node-mark-online to fix log noises 
+  template: dest={{ nhc_dir }}/libexec/nhc/node-mark-online src=node-mark-online.j2 mode=755
+  sudo: true
+
 - name: copy nhc log rotate script
   template: dest=/etc/logrotate.d/nhc src=nhclog.j2 mode=644
   sudo: true
