@@ -44,11 +44,9 @@
   sudo: true
   when: start_slurmdbd is defined
 
-
-- name: "create cluster in slurm db"
-  shell:  "{{slurm_dir}}/bin/sacctmgr -i create cluster {{ clustername }}"
+- name: "Create cluster in slurm db if it does not exist"
+  shell:  "sacctmgr list cluster {{ clustername }} | grep {{ clustername }} > /dev/null || {{slurm_dir}}/bin/sacctmgr -i create cluster {{ clustername }}"
   sudo: true
-  ignore_errors: true
   when: start_slurmdbd is defined
 
 - name: start slurmctl
