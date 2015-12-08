@@ -1,0 +1,6 @@
+#!/bin/sh
+# specific files to be deleted to clean up after a Strudel session
+find /tmp -user ${SLURM_JOB_USER} -name "pulse*" | xargs rm -rf
+find /tmp -user ${SLURM_JOB_USER} -name ".esd-*" | xargs rm -rf
+find /tmp -user ${SLURM_JOB_USER} -name ".X*-lock" | xargs rm -rf
+find /tmp/.X11-unix -user ${SLURM_JOB_USER} -name "X*" | xargs rm -rf

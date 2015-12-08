@@ -33,3 +33,9 @@
 
 - name: "Giving priviliges to user"
   mysql_user: name={{ mysql_user_name }} host={{ mysql_user_host }} password={{ mysql_user_password }} login_user=root login_password={{ mysql_root_password }} priv={{ mysql_user_db_name }}.*:ALL state=present
+  when: mysql_user_host is defined
+
+- name: "Giving priviliges to user"
+  mysql_user: name={{ mysql_user_name }} host={{ hostvars[item].ansible_fqdn }} password={{ mysql_user_password }} login_user=root login_password={{ mysql_root_password }} priv={{ mysql_user_db_name }}.*:ALL state=present
+  with_items: mysql_user_hosts_group
+  when: mysql_user_hosts_group is defined

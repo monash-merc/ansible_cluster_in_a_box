@@ -128,6 +128,14 @@
   sudo: true
   when: slurm_gres_list is defined
 
+- name: install slurm prolog
+  template: src=slurm.prolog.j2 dest={{ slurm_dir }}/bin/slurm.prolog
+  sudo: true
+
+- name: install slurm epilog
+  template: src=slurm.epilog.j2 dest={{ slurm_dir }}/bin/slurm.epilog
+  sudo: true
+
 - name: install slurm.conf
   copy: src=files/slurm.conf dest={{ slurm_dir }}/etc/slurm.conf
   sudo: true
@@ -141,7 +149,6 @@
 - name: setup envirnment variables 
   template: src=slurm_setup.sh.j2 dest=/etc/profile.d/slurm_setup.sh
   sudo: true
-  when: ansible_os_family == 'RedHat' 
 
 - name: setup plugin
   template: src=job_submit.lua.j2 dest={{ slurm_dir }}/etc/job_submit.lua

@@ -1,6 +1,6 @@
 ---
  system_packages:
-   - "@desktop"
+   - "@Desktop"
    - tigervnc-server
    - "@xfce"
    - libXcomposite
@@ -12,4 +12,5 @@
    - graphite2
    - xterm
    - libpng
-   - "@MATE Desktop"
+   - "@mate-desktop-environment"
+   #- "@MATE Desktop"

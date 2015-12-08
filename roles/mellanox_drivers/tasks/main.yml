@@ -1,0 +1,133 @@
+---
+- include_vars: mellanoxVars.yml
+
+
+- name: yum install dependencies
+  yum:  name=perl,pciutils,gtk2,atk,cairo,gcc-gfortran,libxml2-python,tcsh,libnl,lsof,tcl,tk
+  sudo: true
+  ignore_errors: true
+  when: ansible_os_family == "RedHat"
+  
+- name: test for existing installation of drivers
+  command: ibv_devinfo
+  sudo: true
+  register: drivers_installed
+  ignore_errors: true
+
+- name: yum update to upgrade kernel
+  shell: "yum update -y"
+  sudo: true
+  ignore_errors: true
+  when: ansible_os_family == "RedHat" and  drivers_installed|failed
+  
+#
+# A REBOOT IS NEEDED AFTER a KERNEL UPDATE
+#
+- name: restart machine
+  shell: sleep 5; sudo shutdown -r now "Ansible updates triggered"
+  async: 2
+  poll: 0
+  ignore_errors: true
+  sudo: true
+  when: ansible_os_family == "RedHat" and  drivers_installed|failed
+
+- name: waiting for server to come back
+  local_action: wait_for host={{ ansible_ssh_host }} state=started port=22 delay=10 search_regex=OpenSSH
+  sudo: false
+
+- name: waiting for server to come back number 2
+  local_action: wait_for host={{ ansible_ssh_host }} state=started port=22 delay=10 search_regex=OpenSSH
+  sudo: false
+
+
+- name: copy driver source
+  #make this a variable
+  unarchive: copy=yes src="files/{{ MELLANOX_DRIVER_SRC }}.tgz" dest=/tmp 
+  sudo: true
+  #when: drivers_installed|failed and ansible_os_family=="RedHat" and ansible_distribution_major_version == "7"
+  when: drivers_installed|failed 
+
+- name: install drivers
+  shell: ./mlnxofedinstall -q
+  args:
+    #more changes
+    chdir: "/tmp/{{ MELLANOX_DRIVER_SRC }}"
+  sudo: true
+  when: drivers_installed|failed 
+
+#
+# get IP address before reboot
+#
+- name: get IP address
+  local_action: command ./scripts/map_ib_ip.pl {{ inventory_hostname }}
+  register: ip_address
+  sudo: false
+  #when: drivers_installed|failed
+
+  
+- name: template IP address
+  template: dest=/etc/sysconfig/network-scripts/ifcfg-ens6 src=ifcfg-ens6.j2 owner=root group=root
+  sudo: true
+  when:  ansible_os_family=="RedHat" and  ansible_distribution_major_version == "7" and  drivers_installed|failed
+
+#ubuntu equivalent of previous command
+- name: Ubuntu network interfaces - line 1
+  lineinfile:
+  args: 
+      dest: /etc/network/interfaces
+      line: auto {{ MELLANOX_DEVICE_NAME }}
+      state: present
+  sudo: true
+  when: ansible_os_family=="Debian" and  drivers_installed|failed
+
+- name: Ubuntu network interfaces - line 2
+  lineinfile:
+  args: 
+      dest: /etc/network/interfaces
+      line: iface {{ MELLANOX_DEVICE_NAME }} inet static
+      state: present
+      insertafter: "auto {{ MELLANOX_DEVICE_NAME }}"
+  sudo: true
+  when: ansible_os_family=="Debian" and  drivers_installed|failed
+- name: Ubuntu network interfaces - line 3
+  lineinfile:
+  args: 
+      dest: /etc/network/interfaces
+      line: address {{ ip_address.stdout }}
+      state: present
+      insertafter: "iface {{ MELLANOX_DEVICE_NAME }} inet static"
+  sudo: true
+  when: ansible_os_family=="Debian" and  drivers_installed|failed
+#
+# A REBOOT IS NEEDED AFTER SUCCESSFUL INSTALL
+#
+- name: restart machine
+  command: "sleep 5; sudo shutdown -r now"
+  async: 2
+  poll: 0
+  ignore_errors: true
+  sudo: true
+  when: ansible_os_family=="Centos" and  drivers_installed|failed
+
+- name: restart machine for Ubuntu -cos it is 'special'
+  shell: "sleep 5; sudo shutdown -r now"
+  async: 2
+  poll: 1
+  ignore_errors: true
+  sudo: true
+  when: ansible_os_family=="Debian"
+
+- name: waiting for server to come back
+  local_action: wait_for host={{ ansible_ssh_host }} state=started port=22 delay=10 search_regex=OpenSSH
+  sudo: false
+
+- name: waiting for server to come back 2
+  local_action: wait_for host={{ ansible_ssh_host }} state=started port=22 delay=10 search_regex=OpenSSH
+
+- name: bring up interface
+  #variable=eth0 or ens6
+  command: ifup {{ MELLANOX_DEVICE_NAME }} 
+  sudo: true
+  when: ansible_distribution_major_version == "7"
+   
+  
