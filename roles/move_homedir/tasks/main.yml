@@ -13,43 +13,12 @@
   lineinfile:
   args:
     dest: /etc/passwd
-    regexp: "{{ ansible_ssh_user }}:x:1001:1001::/home/{{ ansible_ssh_user }}:.*"
-    line: "{{ ansible_ssh_user }}:x:1001:1001::/local_home/{{ ansible_ssh_user }}:/bin/bash"
+    regexp: '{{ ansible_ssh_user }}:x:(.*):(.*):(.*):/home/{{ ansible_ssh_user }}:(.*)'
+    line: '{{ ansible_ssh_user }}:x:\1:\2:\3:/local_home/{{ ansible_ssh_user }}:\4'
     backrefs: yes
   sudo: true
-  register: edit1
-
-
-- name: edit passwd file
-  lineinfile:
-  args:
-    dest: /etc/passwd
-    regexp: "{{ ansible_ssh_user }}:x:500:500::/home/{{ ansible_ssh_user }}:.*"
-    line: "{{ ansible_ssh_user }}:x:500:500::/local_home/{{ ansible_ssh_user }}:/bin/bash"
-    backrefs: yes
-  sudo: true
-  register: edit2
+  register: edit
 
 
 
-- name: edit passwd file
-  lineinfile:
-  args:
-    dest: /etc/passwd
-    regexp: "{{ ansible_ssh_user }}:x:1000:1000::/home/{{ ansible_ssh_user }}:.*"
-    line: "{{ ansible_ssh_user }}:x:1000:1000::/local_home/{{ ansible_ssh_user }}:/bin/bash"
-    backrefs: yes
-  sudo: true
-  register: edit3
-
-# ubuntu:x:1000:1000:Ubuntu:/home/ubuntu:/bin/bash
-- name: edit passwd file for ubuntu 14
-  lineinfile:
-  args:
-    dest: /etc/passwd
-    regexp: "{{ ansible_ssh_user }}:x:1000:1000:Ubuntu:/home/{{ ansible_ssh_user }}:.*"
-    line: "{{ ansible_ssh_user }}:x:1000:1000:Ubuntu:/local_home/{{ ansible_ssh_user }}:/bin/bash"
-    backrefs: yes
-  sudo: true
-  register: edit4
 

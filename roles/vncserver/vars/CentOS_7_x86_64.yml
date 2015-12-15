@@ -1,8 +1,6 @@
 ---
  system_packages:
-   - "@Desktop"
    - tigervnc-server
-   - "@xfce"
    - libXcomposite
    - libXdamage
    - mesa-libEGL
@@ -12,5 +10,11 @@
    - graphite2
    - xterm
    - libpng
-   - "@mate-desktop-environment"
-   #- "@MATE Desktop"
+   - xorg-x11-fonts-100dpi
+   - xorg-x11-fonts-75dpi
+   - xorg-x11-fonts-misc
+
+ system_group_packages:
+   - "mate-desktop-environment"
+   - "graphical-server-environment"
+

@@ -11,3 +11,10 @@
   command: yum makecache
   sudo: true
   when: ansible_os_family == 'RedHat'
+
+# For some reason ed went missing from the NeCTAR official CentOS 7 image
+# This meant that fail2ban could ban you, but could never unban you
+- name: "make sure ed is installed"
+  yum: name=ed state=installed
+  sudo: true
+  when: ansible_os_family == 'RedHat'
