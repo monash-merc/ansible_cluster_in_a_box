@@ -1,0 +1,76 @@
+#!/usr/bin/python
+import ldap
+import traceback
+import os
+import stat
+import subprocess
+
+class ldapSearchConfig:
+    def __init__(self):
+        self.ldapserver=""
+        self.binddn=""
+        self.bindpw=""
+        self.baseDN=""
+        self.searchFilter=""
+        self.cacertfile=''
+
+class genericUser:
+    def __init__(self):
+        self.dn=""
+        self.cn=""
+        self.entry=""
+	self.uid=""
+
+
+def get_users(server):
+#    ldap.set_option(ldap.OPT_X_TLS_CACERTFILE,server.cacertfile)
+    ldap.set_option( ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_NEVER )
+    l=ldap.initialize(server.ldapserver)
+    l.simple_bind_s(server.binddn,server.bindpw)
+    retrieveAttributes = ["*"]
+    searchScope=ldap.SCOPE_SUBTREE
+    try:
+        ldap_result_id = l.search(server.baseDN,searchScope,server.searchFilter,retrieveAttributes)
+    except ldap.LDAPError, e:
+        pass
+    rtype,rdata = l.result(ldap_result_id,1)
+    allusers={}
+    for user in rdata:
+        dn=user[0]
+        attrs=user[1]
+        allusers[dn]=genericUser()
+        allusers[dn].dn=dn
+        allusers[dn].entry=attrs
+    return allusers
+
+
+def mk_slurmaccount(acct):
+    output=subprocess.check_output(["{{ slurm_dir }}/bin/sacctmgr","--noheader","list","account",acct])
+    if acct in output:
+        return
+    else:
+        subprocess.call(["{{ slurm_dir }}/bin/sacctmgr","-i","create","account",acct])
+
+def mk_slurmuser(user,acct):
+    output=subprocess.check_output(["{{ slurm_dir }}/bin/sacctmgr","--noheader","list","Association","user=%s"%user,"format=account"])
+    if acct in output.splitlines():
+        return
+    else:
+        subprocess.call(["{{ slurm_dir }}/bin/sacctmgr","-i","create","user",user,"account=%s"%acct,"DefaultAccount=%s"%acct])
+
+
+s=ldapSearchConfig()
+s.ldapserver="{{ ldapURI }}"
+s.binddn="{{ ldapBindDN }}"
+s.bindpw="{{ ldapBindDNPassword }}"
+s.baseDN="{{ ldapBase }}"
+s.searchFilter = "{{ search_filter }}"
+
+users=get_users(s)
+mk_slurmaccount("default")
+for user in users:
+	try:
+                mk_slurmuser(users[user].entry['uid'][0],"default")
+	except:
+		print traceback.format_exc()
+		pass

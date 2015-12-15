@@ -1,0 +1,25 @@
+---
+- name: make  dir
+  file: path="{{ provision_homedir | dirname }}" state=directory mode=755 owner=root
+  sudo: true
+  run_once: true
+
+- name: install python packages
+  yum: name=python-ldap, state=installed
+  sudo: true
+  when: ansible_os_family == 'RedHat'
+
+- name: install python packages
+  apt: name=python-ldap, state=installed
+  sudo: true
+  when: ansible_os_family == 'Debian'
+
+- name: copy provision_homedir template 
+  template: src=provision_homedir.py.j2 dest={{ provision_homedir }} mode=700 owner=root
+  sudo: true
+  run_once: true
+
+# the lockfile for makeing home directories should be located on the shared directory where the home directories will be created. Otherwise it will be racey
+- name: provision_homedir cron job 
+  cron: name=provision_homedir job="/usr/bin/flock -x -n /home/provision.lck -c {{ provision_homedir }}" user=root minute=*/30 state=present
+  sudo: true

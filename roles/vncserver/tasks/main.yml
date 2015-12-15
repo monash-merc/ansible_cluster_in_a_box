@@ -35,8 +35,24 @@
   with_items: system_packages
   when: ansible_os_family == 'Debian'
 
+- name: yum group installs
+  shell: yum -y group install {{ item }}
+  sudo: true
+  with_items: system_group_packages
+  when: system_group_packages is defined
+
 - name: install system packages yum
   yum: name={{ item }} state=installed update_cache=yes
   sudo: true
   with_items: system_packages
   when: ansible_os_family == 'RedHat'
+
+- name: force the use of mate desktop
+  template: src=vncserver.centos dest=/bin/vncserver
+  sudo: true
+  when: ansible_os_family == 'RedHat'
+
+- name: force the use of mate desktop
+  template: src=vncserver.ubuntu dest=/usr/bin/vncserver
+  sudo: true
+  when: ansible_os_family == 'Debian'

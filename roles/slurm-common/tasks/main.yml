@@ -38,11 +38,21 @@
   sudo: true
   when: slurmpiddir is defined and not runstat.stat.exists
 
+- name: create shared state directory
+  file: path={{slurmsharedstatedir }} state=directory owner=slurm group=slurm mode=750
+  sudo: true
+  run_once: true
+  when: usesharedstatedir
+
+- name: symlink shared state dir
+  file: path={{ slurmstatedir }} src={{ slurmsharedstatedir }} state=link
+  sudo: true
+  when: usesharedstatedir
+
 - name: create state directory
   file: path={{ slurmstatedir }} state=directory owner=slurm group=slurm mode=750
-
   sudo: true
-  when: slurmstatedir is defined 
+  when: slurmstatedir is defined  and not usesharedstatedir
 
 - name: create log directory
   file: path={{ slurmlogdir }} state=directory owner=slurm group=slurm mode=750
@@ -129,11 +139,11 @@
   when: slurm_gres_list is defined
 
 - name: install slurm prolog
-  template: src=slurm.prolog.j2 dest={{ slurm_dir }}/bin/slurm.prolog
+  template: src=slurm.prolog.j2 dest={{ slurm_dir }}/bin/slurm.prolog mode=755
   sudo: true
 
 - name: install slurm epilog
-  template: src=slurm.epilog.j2 dest={{ slurm_dir }}/bin/slurm.epilog
+  template: src=slurm.epilog.j2 dest={{ slurm_dir }}/bin/slurm.epilog mode=755
   sudo: true
 
 - name: install slurm.conf

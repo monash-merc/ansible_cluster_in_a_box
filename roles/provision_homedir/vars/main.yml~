@@ -1,0 +1,5 @@
+---
+use_active_directory: False
+provision_homedir: /usr/local/sbin/provision_homedir.py
+homeDirEntry: "{% if use_active_directory %} unixHomeDirectory {% else %}homeDirectory {% endif %}"
+search_filter: "{% if use_active_directory %} (unixHomeDirectory=*) {% else %} (objectClass=posixAccount) {% endif %}"

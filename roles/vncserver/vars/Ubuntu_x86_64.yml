@@ -1,5 +1,6 @@
 ---
  system_packages:
    - tightvncserver
-   - xfce4-session
-   - xfwm4
+   - ubuntu-mate-desktop
+#   - xfce4-session
+#   - xfwm4

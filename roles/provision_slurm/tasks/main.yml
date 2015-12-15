@@ -1,0 +1,25 @@
+---
+- name: make  dir
+  file: path="{{ provision_slurm | dirname }}" state=directory mode=755 owner=root
+  sudo: true
+  run_once: true
+
+- name: install python packages
+  yum: name=python-ldap state=installed
+  sudo: true
+  when: ansible_os_family == 'RedHat'
+
+- name: install python packages
+  apt: name=python-ldap state=installed
+  sudo: true
+  when: ansible_os_family == 'Debian'
+
+- name: copy provision_slurm template 
+  template: src=provision_slurm.py.j2 dest={{ provision_slurm }} mode=700 owner=root
+  sudo: true
+  run_once: true
+
+# the lockfile for makeing home directories should be located on the shared directory where the home directories will be created. Otherwise it will be racey
+- name: provision_slurm cron job 
+  cron: name=provision_slurm job="/usr/bin/flock -x -n /home/provision.lck -c {{ provision_slurm }}" user=root minute=*/30 state=present
+  sudo: true
