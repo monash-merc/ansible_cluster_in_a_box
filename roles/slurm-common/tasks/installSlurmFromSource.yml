@@ -19,6 +19,7 @@
   shell: tar jxf /tmp/slurm-{{ slurm_version }}.tar.bz2
   args:
     chdir: /tmp
+    creates: /tmp/slumr-{{ slurm_version }}
 
 - name: build slurm
   shell: ./configure --prefix={{ slurm_dir }} --with-munge={{ munge_dir }} && make
