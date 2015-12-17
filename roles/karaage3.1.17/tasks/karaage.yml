@@ -26,7 +26,7 @@
 
 -
  name: "Installing prerequisites Redhat"
- yum: name={{ item }} state=latest
+ yum: name={{ item }} state=present
  sudo: true
  with_items:
   - libxml2-devel

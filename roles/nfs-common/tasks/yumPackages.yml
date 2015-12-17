@@ -4,5 +4,5 @@
   with_items: 
     - bind-utils
     - nfs-utils
-  yum: "name={{ item }} state=latest"
+  yum: "name={{ item }} state=present"
   sudo: true

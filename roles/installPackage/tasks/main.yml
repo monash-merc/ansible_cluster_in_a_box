@@ -14,7 +14,7 @@
   when: ansible_distribution == 'CentOS' and importRepo is defined
 
 - name: Install yum packages 
-  yum: name={{ item }} state=latest
+  yum: name={{ item }} state=present
   with_items: yumPackageList
   sudo: true
   when: ansible_distribution == 'CentOS' and yumPackageList is defined

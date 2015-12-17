@@ -1,6 +1,6 @@
 ---
 - name: install nfs kernel server
-  apt: name=nfs-kernel-server state=latest
+  apt: name=nfs-kernel-server state=present
   sudo: true
   when: ansible_os_family == "Debian"
 

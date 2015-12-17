@@ -6,7 +6,7 @@
   when: ansible_os_family == "Debian"
 
 - name: Installing MySQL RedHat
-  yum: name="{{ item }}" state=latest
+  yum: name="{{ item }}" state=present
   with_items: client_packages
   sudo: true
   when: ansible_os_family == "RedHat"
