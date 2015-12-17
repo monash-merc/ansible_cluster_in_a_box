@@ -161,7 +161,7 @@
   sudo: true
 
 - name: setup plugin
-  template: src=job_submit.lua.j2 dest={{ slurm_dir }}/etc/job_submit.lua
+  template: src=job_submit.lua.j2 dest={{ slurm_dir }}/etc/job_submit.lua mode=755
   delegate_to: "{{ slurmctrl }}"
   run_once: true
   sudo: true
