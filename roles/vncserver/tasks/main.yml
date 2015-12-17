@@ -23,14 +23,8 @@
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
   ignore_errors: true
 
-- name: add epel on CentOS 7
-  shell: yum -y update
-  sudo: true
-  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
-
-
 - name: install system packages apt
-  apt: name={{ item }} state=installed update_cache=true  force=yes
+  apt: name={{ item }} state=present update_cache=true  force=yes
   sudo: true
   with_items: system_packages
   when: ansible_os_family == 'Debian'
@@ -42,7 +36,7 @@
   when: system_group_packages is defined
 
 - name: install system packages yum
-  yum: name={{ item }} state=installed update_cache=yes
+  yum: name={{ item }} state=present update_cache=yes
   sudo: true
   with_items: system_packages
   when: ansible_os_family == 'RedHat'

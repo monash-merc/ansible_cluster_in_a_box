@@ -2,7 +2,7 @@
 - include_vars: "{{ ansible_distribution }}_{{ ansible_distribution_version }}_{{ ansible_architecture }}.yml"
 
 - name: install system packages apt
-  apt: name={{ item }} state=installed update_cache=true
+  apt: name={{ item }} state=installed
   sudo: true
   with_items: system_packages
   when: ansible_os_family == 'Debian'

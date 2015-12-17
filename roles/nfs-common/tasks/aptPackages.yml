@@ -4,6 +4,6 @@
   with_items:
     - nfs-common
     - nfs-kernel-server
-  apt: "name={{ item }} state=latest"
+  apt: "name={{ item }} state=present"
   sudo: true
 
