@@ -1,0 +1,19 @@
+---
+- name: create nagios user
+  user: name=nagios system=yes createhome=yes home=/var/lib/nagios shell=/bin/bash
+  sudo: true
+
+- name: authorize_key
+  authorized_key: user=nagios key="{{ monitor_pubkey }}"
+  sudo: true
+
+- name: make scripts directory
+  file: path=/var/lib/nagios/scripts state=directory owner=nagios mode=755
+  sudo: true
+
+- name: install monitor scripts
+  copy: dest=/var/lib/nagios/scripts/{{ item }} src=scripts/{{ item }} mode=755
+  with_items:
+   - check_load
+   - check_munge
+  sudo: true

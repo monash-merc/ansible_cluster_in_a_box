@@ -1,0 +1,14 @@
+{% set nodelist = [] %}
+{% for group in groups %}
+{% for node in groups[group] %}
+{% if nodelist.append(node) %}
+{% endif %}
+{% endfor %}
+{% endfor %}
+{% for host in nodelist|unique %}
+define host{
+  use generic-host
+  host_name {{ host }}
+  address {{ hostvars[host]['ansible_hostname'] }}
+}
+{% endfor %}

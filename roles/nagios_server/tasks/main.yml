@@ -1,0 +1,31 @@
+---
+- name: copy priv key
+  template: src={{ monitor_privkey_file }} dest=/var/lib/nagios/.ssh/id_rsa mode=600 owner=nagios
+  sudo: true
+
+- name: install packages
+  apt: name={{ item }} state=installed
+  with_items:
+  - nagios3
+  - python-passlib
+  - python3-passlib
+  sudo: true
+
+- name: configure nagios authentication
+  htpasswd: path=/etc/nagios3/htpasswd.users name={{ nagios_username }} password={{ nagios_password }}
+  sudo: true
+
+- name: configure monitoring
+  template: src={{ item }}_nagios2.cfg.j2 dest=/etc/nagios3/conf.d/{{ item }}_nagios2.cfg 
+  with_items:
+  - 'hostgroups'
+  - 'hosts'
+  - 'commands'
+  - 'services'
+  - 'extinfo'
+  sudo: true
+
+- name: force restart
+  service: name=nagios3 state=restarted
+  sudo: true
+

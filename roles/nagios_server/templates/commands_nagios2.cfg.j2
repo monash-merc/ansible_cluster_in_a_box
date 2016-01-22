@@ -1,0 +1,9 @@
+define command {
+        command_name    check_mount
+        command_line    /usr/lib/nagios/plugins/check_by_ssh -H $HOSTADDRESS$ -C "/var/lib/nagios/scripts/check_mount.pl -m $ARG1$"
+}
+define command {
+        command_name    check_munge
+        command_line    /usr/lib/nagios/plugins/check_by_ssh -H $HOSTADDRESS$ -C "/var/lib/nagios/scripts/check_munge"
+}
+

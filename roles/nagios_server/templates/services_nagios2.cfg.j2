@@ -1,0 +1,9 @@
+{% for service in nagios_services %}
+define service {
+    service_description {{ service.description }}
+    hostgroup_name {{ service.groups|join(',') }}
+    check_command {{ service.command }}
+    use generic-service
+    notification_interval 0
+}
+{% endfor %}

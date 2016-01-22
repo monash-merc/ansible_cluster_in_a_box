@@ -1,0 +1,21 @@
+#!/usr/bin/python
+import sys, os, pwd
+import getopt
+import commands
+import subprocess
+
+STATE_OK=0
+STATE_WARNING=1
+
+check_munge=subprocess.Popen("/usr/sbin/service munge status", shell=True, stdout=subprocess.PIPE)
+munge_status=check_munge.communicate()[0]
+
+if "run" in munge_status:
+   print "Munge is Running"
+   sys.exit(STATE_OK)
+else:
+   print "Munge is NOT Running !!"   
+   sys.exit(STATE_WARNING)
+
+sys.exit(STATE_OK)
+
