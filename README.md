@@ -1,3 +1,10 @@
+FORK ALERT
+==========
+
+This repo has been forked. The current development occurs at https://gitlab.erc.monash.edu.au/hpc-team/HPCasCode/ . We're leaving this here as an artifact
+
+
+
 ansible_cluster_in_a_box
 ========================
 
